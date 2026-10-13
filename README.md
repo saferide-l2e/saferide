@@ -1,4 +1,17 @@
 # SafeRide — Learn2Earn MVP
+
+## New to SafeRide? Start here! 👋
+
+- **[EVERYONE: simple team guide](docs/TEAM_HUB.md)** — find your job and learn how to contribute.
+- **[Frontend tasks](docs/TEAM_FRONTEND.md)** · **[Backend tasks](docs/TEAM_BACKEND.md)** · **[Database tasks](docs/TEAM_DATABASE.md)**
+- **[Team lead: create the progress board](docs/PROJECT_BOARD_GUIDE.md)** — the board and GitHub teams are **not set up yet**.
+- **[2-minute meeting talk](docs/PRESENT_TO_TEAM.md)** — easy words for the whole group.
+- **[All 45 GitHub Issues](https://github.com/saferide-l2e/saferide/issues)** — full instructions, checks and tests.
+
+**Today:** Read your team's task, ask to be assigned one issue, work on a new branch, and request review. **Do not push directly to main.**
+
+---
+
 **Friday demo: 16 October 2026** · **Status: foundation only; features are NOT implemented.**
 
 SafeRide is a privacy-conscious, bilateral-verification public bus discovery and seat reservation prototype. A verified passenger searches Jibowu → Mile 2, examines a participating driver/vehicle profile, holds one seat for **10 minutes**, boards with a single-use code, completes the trip and can leave a review or private safety report. Drivers and passengers both require **simulated admin-approved eligibility** for the demo; no real identity/background screening occurs.
