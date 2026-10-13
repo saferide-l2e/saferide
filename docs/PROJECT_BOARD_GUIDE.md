@@ -1,41 +1,27 @@
-# How to make the SafeRide Project board (team lead)
+# SafeRide Project Board — what to do next
 
-**This is a guide. The board is NOT created yet.** Only the repository and 45 issues are in place. The team lead or organization owner must do these steps in GitHub.
+**TEAM SETUP UPDATE — 13 OCT 2026:** The SafeRide Project board is created with **45 existing issues** and four status columns (**Backlog / In Progress / In Review / Done**). Frontend, Backend and Database views exist, and team labels were applied to all **35 team issues**. **Still to check:** team invitations, member assignment, repository Write access and private board access. [Open the board](https://github.com/orgs/saferide-l2e/projects/1/views/1).
 
-## A Project board is our task chart
-Imagine four boxes. Each card is one GitHub Issue. You move the card as you work:
+## Do these next, not another board
+1. Open [SafeRide MVP Development](https://github.com/orgs/saferide-l2e/projects/1/views/1). Click the `...` menu at top right → **Settings** → **Manage access** (wording may differ). Because the board is private (lock icon), give the three teams access to read and update project item status; prefer **Write** for members who will move their cards. Test with a teammate who is not an owner.
+2. Check the tabs **Frontend**, **Backend**, **Database**. Click each tab and confirm 13 FE, 14 BE, 8 DB items. The frontend and backend labels exist; use filters `label:team:frontend`, `label:team:backend`, `label:team:database` where supported. The simple title text filters `FE-`, `BE-`, `DB-` also work. **Save changes to each view** and reopen it to confirm the filter stayed.
+3. Use the issue **Assignees** area to give each active task one named GitHub owner (only after members accept their invitation). You may add one helper. Don't assign all 45 to everyone.
+4. When a member starts an issue, move card **Backlog → In Progress**. After their PR opens, move **In Review**. Only move **Done** after review, merge, and tests.
+5. Organize a 5-minute check-in each day: **finished / next / blocked**. Friday demo is **16 Oct 2026**.
 
-| Backlog | In Progress | In Review | Done |
-|---|---|---|---|
-| Not started | Someone is building it | A PR is being checked | Merged and tested |
+## What the team will see
+| Status | Means | Rule |
+|---|---|---|
+| Backlog | Not started | Ready to claim |
+| In Progress | A person is building it | Ask for help if blocked |
+| In Review | A Pull Request is open | One teammate checks code and tests |
+| Done | Reviewed, merged and tested | Don't mark Done for mock-ups |
 
-**Never move an issue to Done only because its owner says “I finished.”** It needs a reviewed, merged PR and working tests.
+## Links
+- [Board](https://github.com/orgs/saferide-l2e/projects/1/views/1)
+- [Team meeting guide](TEAM_MEETING_GUIDE.md)
+- [Frontend issues](https://github.com/saferide-l2e/saferide/issues?q=is%3Aissue%20is%3Aopen%20label%3Ateam%3Afrontend)
+- [Backend issues](https://github.com/saferide-l2e/saferide/issues?q=is%3Aissue%20is%3Aopen%20label%3Ateam%3Abackend)
+- [Database issues](https://github.com/saferide-l2e/saferide/issues?q=is%3Aissue%20is%3Aopen%20label%3Ateam%3Adatabase)
 
-## Create the board (organization owner)
-1. Open **https://github.com/orgs/saferide-l2e/projects**.
-2. Click **New project** (sometimes called **New project** then **Board** or **Board layout**).
-3. Name it exactly: **SafeRide MVP Development**.
-4. Set the **Status** choices to: **Backlog**, **In Progress**, **In Review**, **Done**. If GitHub starts with *Todo*, rename it to *Backlog*. Add *In Review* if missing. Find the status setting in the board field menu.
-5. Add the existing repository issues as project items. Use **+ Add item** to search for an issue from `saferide-l2e/saferide` or paste its issue URL. Repeat or use multi-select if the UI offers it. There are **45** existing issues; do not create duplicates.
-6. Keep all new issue cards in **Backlog** first. Claiming or starting a task moves it to **In Progress**. PR opened moves to **In Review**. Merged+tested moves to **Done**.
-7. Copy the **real Project URL** and send it to the group. Check that all organization members with project access can open it.
-
-## Make teams and give access
-1. Open **https://github.com/orgs/saferide-l2e/teams** and create **frontend**, **backend**, **database** if missing.
-2. Open **https://github.com/orgs/saferide-l2e/people** and invite members using their **actual GitHub usernames**. Only invite known teammates.
-3. Give all three teams **Write** access to `saferide`. Keep owner/admin rights for trusted leads only.
-4. Assign a specific teammate to each active issue in its **Assignees** field. Don't assign everyone to every issue. One main owner and optional helper is enough.
-
-## Better team filtering (optional but useful)
-1. Open **https://github.com/saferide-l2e/saferide/labels**.
-2. Create three labels: `team:frontend`, `team:backend`, `team:database`.
-3. Add a label to each existing issue by its title: `[FE-]` = Frontend, `[BE-]` = Backend, `[DB-]` = Database. Shared issues `[QA-]` and `[OPS-]` stay shared.
-4. In the board, you can filter or make a saved view for each label, if that option is available.
-5. **No labels have been added yet.** Until they are, use the linked team task lists. Each team already has exact issue URLs.
-
-## Daily check-in
-Start each day by opening the board. Ask each owner what is done, next, and blocked. If someone is stuck, arrange a pair-programming session. This is a learning project, not a blame board.
-
-**If a button is missing in GitHub**, ask an owner to check their permissions. GitHub's interface and available project settings can change. Don't claim a board/team was created until you can open the real URL.
-
-[Return to Start Here](TEAM_HUB.md)
+**Reminder:** Creating the board does NOT create user accounts or add people to GitHub Teams; confirm access and assignment separately.

@@ -1,6 +1,6 @@
 # SafeRide — GitHub Issue Tracker
 
-**45 issues** created 13 Oct 2026; all begin in Backlog until a teammate claims an issue. **Feature code is NOT complete just because the issue exists.**
+**45 issues** created 13 Oct 2026; all are on the [SafeRide board](https://github.com/orgs/saferide-l2e/projects/1/views/1) with team views and team labels; tasks start in Backlog until claimed. **Feature code is NOT complete just because the issue exists.**
 
 ## Friday delivery priorities
 - **P0**: must work to show an end-to-end booking and explain safety boundaries. 33 P0 feature/QA issues plus organization/integration.
@@ -70,5 +70,5 @@
 ## Real work routing
 Read issue body for ownership, exact requirements, tests, dependencies and copyable coding-agent prompt. Follow [CONTRIBUTING.md](../CONTRIBUTING.md); PRs must link to issues. Don't allocate GitHub usernames until each person supplies their correct handle.
 
-## Manual settings still needed
-The connector cannot create organization teams or project boards. Owner must complete [TEAM_SETUP.md](TEAM_SETUP.md), confirm 3 team URLs, a single project board, user invitations, labels and branch review enforcement; do **not** count these as configured yet. See [EVERYONE_START_HERE.md](EVERYONE_START_HERE.md) to explain the workflow simply.
+## Board and team access status
+The board and three organization teams are created; labels have been applied to all 35 team issues. **Still check:** invitation acceptance, team membership, repository Write access, board Write access and named issue Assignees. Follow [TEAM_SETUP.md](TEAM_SETUP.md) and [TEAM_MEETING_GUIDE.md](TEAM_MEETING_GUIDE.md). Do not claim implementation issues are complete until their PRs are merged and tests pass.

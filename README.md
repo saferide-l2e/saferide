@@ -2,9 +2,11 @@
 
 ## New to SafeRide? Start here! 👋
 
+**[Group meeting script and screenshot checklist](docs/TEAM_MEETING_GUIDE.md)**
+
 - **[EVERYONE: simple team guide](docs/TEAM_HUB.md)** — find your job and learn how to contribute.
 - **[Frontend tasks](docs/TEAM_FRONTEND.md)** · **[Backend tasks](docs/TEAM_BACKEND.md)** · **[Database tasks](docs/TEAM_DATABASE.md)**
-- **[Team lead: create the progress board](docs/PROJECT_BOARD_GUIDE.md)** — the board and GitHub teams are **not set up yet**.
+- **[Team lead: finish the progress board setup](docs/PROJECT_BOARD_GUIDE.md)** — the board and teams exist; check member access and assignment.
 - **[2-minute meeting talk](docs/PRESENT_TO_TEAM.md)** — easy words for the whole group.
 - **[All 45 GitHub Issues](https://github.com/saferide-l2e/saferide/issues)** — full instructions, checks and tests.
 

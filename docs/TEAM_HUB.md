@@ -1,5 +1,7 @@
 # SafeRide — Start here, everyone!
 
+**TEAM SETUP UPDATE — 13 OCT 2026:** The SafeRide Project board is created with **45 existing issues** and four status columns (**Backlog / In Progress / In Review / Done**). Frontend, Backend and Database views exist, and team labels were applied to all **35 team issues**. **Still to check:** team invitations, member assignment, repository Write access and private board access. [Open the board](https://github.com/orgs/saferide-l2e/projects/1/views/1).
+
 **Friday, 16 October 2026** is demo day. This page explains our work in simple words.
 
 ## What is SafeRide?
