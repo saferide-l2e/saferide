@@ -1,0 +1,40 @@
+{% extends "base.html" %}{% load static %}
+{% block title %}Publish departure | SafeRide Driver{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/driver_dashboard.css' %}">{% endblock %}
+{% block content %}
+<section class="driver-home container" aria-labelledby="publish-title">
+ {% if dashboard_url %}<a href="{{ dashboard_url }}" class="driver-back">← Back to dashboard</a>{% endif %}
+ <span class="eyebrow">Ready for the route?</span><h1 id="publish-title">Publish a departure.</h1>
+ <p class="driver-intro">Choose your approved vehicle and route, then select a date and time. Boarding must be possible for at least ten minutes before departure.</p>
+ <div class="driver-home__grid">
+  <div class="departure-form-card">
+   {% if error_message %}<p role="alert" class="driver-flash driver-flash--error">{{ error_message }}</p>{% endif %}
+   {% if can_publish and form and form_action %}
+    <form method="post" action="{{ form_action }}" novalidate>
+     {% csrf_token %}
+     {% if form.non_field_errors %}<div class="driver-flash driver-flash--error" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+     {% for field in form %}
+       <div class="driver-form-field{% if field.errors %} driver-form-field--error{% endif %}">
+         {{ field.label_tag }}{{ field }}
+         {% if field.help_text %}<p class="driver-help">{{ field.help_text }}</p>{% endif %}
+         {% include "ui/field_errors.html" with field=field only %}
+       </div>
+     {% endfor %}
+     <p class="driver-time-note">Displayed time zone: <strong>{{ time_zone_label|default:"Africa/Lagos (WAT, UTC+1)" }}</strong>. The backend converts and validates the departure time.</p>
+     <button class="button button--primary driver-submit" type="submit">Publish scheduled departure <span aria-hidden="true">→</span></button>
+    </form>
+   {% else %}
+     <h2>Publishing is not available yet.</h2>
+     <p>{{ action_message|default:"Your driver profile and vehicle must be eligible and approved before scheduling a trip." }}</p>
+     {% if vehicle_list_url %}<a class="button button--outline" href="{{ vehicle_list_url }}">Review my vehicles <span aria-hidden="true">→</span></a>{% endif %}
+   {% endif %}
+  </div>
+  <aside class="driver-home__side">
+   <span class="driver-home__label">Before you publish</span><h2>Make sure you're ready.</h2>
+   <ol><li>An approved driver account</li><li>An approved bus with a positive seat capacity</li><li>A supported route and boarding point</li><li>A departure time that leaves at least 10 minutes for boarding</li></ol>
+   <p>The server checks every rule again. Publishing doesn't bypass staff approval or availability rules.</p>
+  </aside>
+ </div>
+ {% include "ui/demo_notice.html" %}
+</section>
+{% endblock %}
