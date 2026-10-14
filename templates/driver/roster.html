@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Boarding roster | SafeRide Driver{% endblock %}
+{% block description %}Review your assigned departure roster and board safely with one-time codes.{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/driver_boarding.css' %}"><script defer src="{% static 'js/roster.js' %}"></script>{% endblock %}
+{% block content %}
+<section class="driver-page container" aria-labelledby="roster-title">
+  <div class="driver-heading"><div><span class="eyebrow">Driver boarding desk</span><h1 id="roster-title">Who's on board?</h1><p>{{ departure.route_label }}{% if departure.scheduled_departure_at %} · {{ departure.scheduled_departure_at|date:"D j M, g:i A" }}{% endif %}</p></div>
+    {% if can_check_in and checkin_url %}<a class="button button--primary" href="{{ checkin_url }}">Check in passenger <span aria-hidden="true">→</span></a>{% endif %}
+  </div>
+  {% if error_message %}<div class="boarding-error" role="alert">{{ error_message }}</div>{% endif %}
+  <div class="driver-stats" {% if status_url %}data-roster-status-url="{{ status_url }}"{% endif %}>
+    <article class="driver-stat"><strong data-boarded-count>{{ boarded_count|default:0 }}</strong><span>Passengers boarded</span></article>
+    <article class="driver-stat"><strong data-held-count>{{ held_count|default:0 }}</strong><span>Seats on hold</span></article>
+    <article class="driver-stat"><strong>{{ capacity|default:"—" }}</strong><span>Total bus seats</span></article>
+  </div>
+  <p class="roster-refresh-status" data-roster-message aria-live="polite">Passenger check-ins and capacity are controlled by the server.</p>
+  <div class="driver-roster">
+    <div class="driver-roster__heading"><h2>Boarding list</h2><span>Only passengers assigned to this departure</span></div>
+    {% if roster %}
+      <div class="roster-rows">
+        {% for passenger in roster %}
+          <article class="roster-row" aria-label="Booking {{ passenger.short_reference }}">
+            <span class="roster-avatar" aria-hidden="true">{{ passenger.initials|default:"SR" }}</span>
+            <div class="roster-row__main"><h3>{{ passenger.public_display_name }}</h3><p>Reference: <strong>{{ passenger.short_reference }}</strong></p>
+              {% if passenger.expires_at and passenger.status == "HELD" %}<p>Hold expires <time datetime="{{ passenger.expires_at|date:'c' }}">{{ passenger.expires_at|date:"g:i A" }}</time></p>{% endif %}
+            </div>
+            <div class="roster-row__status">
+              {% if passenger.status == "BOARDED" %}{% include "ui/status_badge.html" with badge_text="Boarded" badge_variant="positive" only %}
+              {% else %}{% include "ui/status_badge.html" with badge_text=passenger.status badge_variant="neutral" only %}{% endif %}
+              {% if passenger.verified %}<small>Profile approved</small>{% else %}<small>Approval status unavailable</small>{% endif %}
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="roster-empty" role="status"><h3>No passengers listed yet.</h3><p>Eligible bookings appear here after the server confirms a seat hold.</p></div>
+    {% endif %}
+  </div>
+  <div class="roster-bottom">
+    <div><strong>Privacy matters</strong><p>The driver sees only booking references, public display names, profile status and boarding details. No phone numbers or identity documents belong on this page.</p></div>
+    {% if can_advance and advance_action %}
+      <form method="post" action="{{ advance_action }}" data-boarding-submit>{% csrf_token %}<button class="button button--outline" type="submit">Close boarding <span aria-hidden="true">→</span></button></form>
+    {% endif %}
+  </div>
+  <p data-roster-offline hidden class="boarding-offline" role="status">You're offline. Reconnect and refresh for the latest roster.</p>
+  {% include "ui/demo_notice.html" %}
+</section>
+{% endblock %}
