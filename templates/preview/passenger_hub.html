@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}My Trips | SafeRide{% endblock %}
+{% block content %}
+<section class="site-account-hero"><div class="container"><span class="site-kicker">YOUR ACCOUNT</span><h1>Good to have you here.</h1><p>Plan a ride, check an active booking or revisit a past journey—all from one place.</p><a class="site-button site-button--lime" href="/preview/search/">Find a ride ↗</a></div></section>
+<section class="container site-account-grid">
+<article class="site-account-card site-account-card--large"><small>CURRENT JOURNEY</small><h2>Jibowu <span aria-hidden="true">→</span> Mile 2</h2><p>See your journey milestones and check-in information.</p><div class="site-account-progress" aria-hidden="true"><span></span><span></span><span></span></div><a href="/preview/trip/" class="site-button site-button--dark">View journey details ↗</a></article>
+<article class="site-account-card"><small>MY BOOKINGS</small><h2>Your seat, clearly tracked.</h2><p>View your reservation status and private boarding instructions.</p><a href="/preview/reservation/" class="site-text-link">View reservation ↗</a></article>
+<article class="site-account-card"><small>TRIP HISTORY</small><h2>All your journeys.</h2><p>Past trips, arrival confirmations and travel history together.</p><a href="/preview/history/" class="site-text-link">Open trip history ↗</a></article>
+<article class="site-account-card"><small>MY ACCOUNT</small><h2>Make sure you're ready.</h2><p>Review account verification and the details visible on your public profile.</p><a href="/preview/verification/" class="site-text-link">Account status ↗</a></article>
+</section>
+{% endblock %}
