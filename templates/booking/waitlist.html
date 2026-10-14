@@ -38,7 +38,7 @@
       </article>
     </div>
     <aside class="queue-aside">
-      <div class="queue-trip-card"><span class="queue-trip-card__label">Selected route</span><strong>{{ route_label|default:entry.route_label }}</strong><p>New seats are allocated by SafeRide's server, not by queue animations on your device.</p>
+      <div class="queue-trip-card"><span class="queue-trip-card__label">Selected route</span><strong>{% if route_label %}{{ route_label }}{% elif entry %}{{ entry.route_label }}{% else %}Route details pending{% endif %}</strong><p>New seats are allocated by SafeRide's server, not by queue animations on your device.</p>
         {% if entry and entry.status == "WAITING" and leave_action %}
           <form method="post" action="{{ leave_action }}" data-one-time-submit>{% csrf_token %}<button type="submit" class="button button--outline queue-leave">Leave waitlist</button></form>
         {% endif %}

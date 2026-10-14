@@ -31,7 +31,7 @@
       <p class="offer-focus__refresh"><a href="{{ request.path }}">Refresh offer status <span aria-hidden="true">↻</span></a></p>
     </article>
     <aside class="offer-aside">
-      <div class="offer-trip-card"><span>YOUR JOURNEY</span><h2>{{ offer.route_label|default:route_label }}</h2><p>An accepted offer becomes a new 600-second seat hold. It does not extend any earlier reservation.</p>
+      <div class="offer-trip-card"><span>YOUR JOURNEY</span><h2>{% if offer and offer.route_label %}{{ offer.route_label }}{% elif route_label %}{{ route_label }}{% else %}Route details pending{% endif %}</h2><p>An accepted offer becomes a new 600-second seat hold. It does not extend any earlier reservation.</p>
         {% if queue_url %}<a href="{{ queue_url }}">Back to waitlist <span aria-hidden="true">→</span></a>{% endif %}
       </div>
       <p class="queue-offline" hidden role="status" data-queue-offline>You're offline. This offer could expire while you're disconnected. Reconnect and refresh before acting.</p>
