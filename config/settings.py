@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     "apps.core",
     "apps.accounts",
     "apps.verification",
+    "apps.vehicles.apps.VehiclesConfig",
 ]
 
 # Custom User Model configuration (Required before running initial migrations)
