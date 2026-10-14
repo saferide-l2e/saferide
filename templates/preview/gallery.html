@@ -7,7 +7,7 @@
   <span class="eyebrow">Team design review</span>
   <h1 id="review-title">Every screen. One journey.</h1>
   <p class="review-lead">Open a page below to review how SafeRide looks on mobile, tablet or desktop. These pages use sample visual content; forms and booking actions don't change real data.</p>
-  <a class="review-home-link" href="/preview/">Enter the SafeRide website <span aria-hidden="true">↗</span></a>
+  <a class="review-home-link" href="{% url 'home' %}">View homepage <span aria-hidden="true">↗</span></a>
   {% for group_name, pages in groups %}
     <section class="review-group" aria-labelledby="review-group-{{ forloop.counter }}">
       <div class="review-group-title"><span class="review-group-number">0{{ forloop.counter }}</span><h2 id="review-group-{{ forloop.counter }}">{{ group_name }}</h2></div>

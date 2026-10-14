@@ -22,40 +22,47 @@
     <button type="button" class="menu-toggle" data-nav-toggle aria-controls="primary-navigation" aria-expanded="false" aria-label="Open navigation"><span></span><span></span><span></span></button>
     <nav class="primary-navigation" id="primary-navigation" aria-label="Main navigation" data-primary-nav>
       {% if preview_gallery_url %}
-        <a data-nav-link href="/preview/"{% if preview_area == "home" %} aria-current="page"{% endif %}>Home</a>
-        <a data-nav-link href="/preview/search/"{% if preview_area == "discover" %} aria-current="page"{% endif %}>Discover</a>
-        <a data-nav-link href="/preview/trip/"{% if preview_area == "journey" %} aria-current="page"{% endif %}>Journey</a>
-        <a data-nav-link href="/preview/route-updates/"{% if preview_area == "safety" %} aria-current="page"{% endif %}>Safety</a>
-        <a data-nav-link href="/preview/driver-dashboard/"{% if preview_area == "driver" %} aria-current="page"{% endif %}>Driver Space</a>
-        <a data-nav-link href="/preview/login/">Sign in</a>
-        <a data-nav-link class="nav-cta" href="/preview/register/">Get started <span aria-hidden="true">↗</span></a>
+        {% if preview_section == "driver" %}
+          <a data-nav-link href="/preview/driver-dashboard/" {% if preview_area == "driver-dashboard" %}aria-current="page"{% endif %}>Dashboard</a>
+          <a data-nav-link href="/preview/vehicles/" {% if preview_area == "vehicles" %}aria-current="page"{% endif %}>Vehicles</a>
+          <a data-nav-link href="/preview/publish-departure/" {% if preview_area == "departures" %}aria-current="page"{% endif %}>Departures</a>
+          <a data-nav-link href="/preview/roster/" {% if preview_area == "boarding" %}aria-current="page"{% endif %}>Boarding</a>
+          <a data-nav-link href="/preview/driver-history/">History</a>
+          <a data-nav-link class="site-nav__secondary" href="/preview/">Public website <span aria-hidden="true">↗</span></a>
+        {% elif preview_section == "passenger" %}
+          <a data-nav-link href="/preview/my-trips/" {% if preview_area == "my-trips" %}aria-current="page"{% endif %}>Overview</a>
+          <a data-nav-link href="/preview/search/" {% if preview_area == "routes" %}aria-current="page"{% endif %}>Find a Ride</a>
+          <a data-nav-link href="/preview/history/" {% if preview_area == "history" %}aria-current="page"{% endif %}>My Trips</a>
+          <a data-nav-link href="/preview/route-updates/">Route Updates</a>
+          <a data-nav-link href="/preview/verification/">My Account</a>
+          <a data-nav-link class="site-nav__secondary" href="/preview/">Public website <span aria-hidden="true">↗</span></a>
+        {% else %}
+          <a data-nav-link href="/preview/search/" {% if preview_area == "routes" %}aria-current="page"{% endif %}>Find a Ride</a>
+          <a data-nav-link href="/preview/how-it-works/" {% if preview_area == "how" %}aria-current="page"{% endif %}>How It Works</a>
+          <a data-nav-link href="/preview/drive/" {% if preview_area == "drive" %}aria-current="page"{% endif %}>For Drivers</a>
+          <a data-nav-link href="/preview/support/" {% if preview_area == "support" %}aria-current="page"{% endif %}>Safety &amp; Support</a>
+          <a data-nav-link class="site-nav__secondary" href="/preview/login/">Sign In</a>
+          <a data-nav-link class="nav-cta" href="/preview/register/">Get Started <span aria-hidden="true">↗</span></a>
+        {% endif %}
       {% else %}
-      <a data-nav-link href="{% url 'home' %}#discover">Discover</a>
-      <a data-nav-link href="{% url 'home' %}#journey">Journey</a>
-      <a data-nav-link href="{% url 'home' %}#safety">Safety</a>
-      {% if user.is_authenticated %}
-      <span class="account-chip">{% if user.role == "DRIVER" %}Driver{% elif user.role == "PASSENGER" %}Passenger{% else %}Account{% endif %}</span>
-      {% url 'logout' as logout_href %}
-      {% if logout_href %}<form class="nav-logout-form" method="post" action="{{ logout_href }}">{% csrf_token %}<button type="submit" class="nav-logout">Sign out</button></form>{% endif %}
-      {% else %}
-      {% url 'login' as login_href %}
-      {% url 'register' as register_href %}
-      {% if login_href %}<a data-nav-link href="{{ login_href }}">Sign in</a>{% endif %}
-      {% if register_href %}<a data-nav-link class="nav-cta" href="{{ register_href }}">Join SafeRide <span aria-hidden="true">↗</span></a>
-      {% else %}<a data-nav-link class="nav-cta" href="{% url 'home' %}#how-it-works">How it works <span aria-hidden="true">↗</span></a>{% endif %}
-      {% endif %}
+        <a data-nav-link href="{% url 'home' %}#discover">Discover</a>
+        <a data-nav-link href="{% url 'home' %}#journey">Journey</a>
+        <a data-nav-link href="{% url 'home' %}#safety">Safety</a>
+        {% if user.is_authenticated %}
+          <span class="account-chip">{% if user.role == "DRIVER" %}Driver{% elif user.role == "PASSENGER" %}Passenger{% else %}Account{% endif %}</span>
+          {% url 'logout' as logout_href %}
+          {% if logout_href %}<form class="nav-logout-form" method="post" action="{{ logout_href }}">{% csrf_token %}<button type="submit" class="nav-logout">Sign out</button></form>{% endif %}
+        {% else %}
+          {% url 'login' as login_href %}{% url 'register' as register_href %}
+          {% if login_href %}<a data-nav-link href="{{ login_href }}">Sign in</a>{% endif %}
+          {% if register_href %}<a data-nav-link class="nav-cta" href="{{ register_href }}">Join SafeRide <span aria-hidden="true">↗</span></a>
+          {% else %}<a data-nav-link class="nav-cta" href="{% url 'home' %}#how-it-works">How it works <span aria-hidden="true">↗</span></a>{% endif %}
+        {% endif %}
       {% endif %}
     </nav>
   </div>
 </header>
-{% if preview_gallery_url %}
-  <aside class="preview-review-bar" aria-label="Internal design review">
-    <div class="container preview-review-bar__inner">
-      <span>Design review · Sample content · No live bookings</span>
-      <a href="/preview/screens/">View all 25 screens ↗</a>
-    </div>
-  </aside>
-{% endif %}
+
 {% if messages %}<div class="container site-messages" aria-label="Notifications">
   {% for message in messages %}{% include "ui/notice.html" with notice_text=message notice_level=message.tags only %}{% endfor %}
 </div>{% endif %}
@@ -70,18 +77,30 @@
 </nav>
 {% endif %}
 <footer class="site-footer">
-  <div class="container footer-inner">
-    <div><a href="{% if preview_gallery_url %}/preview/{% else %}{% url 'home' %}{% endif %}" class="brand brand--footer"><span>Safe<strong>Ride</strong></span></a><p>Every journey matters.</p></div>
-    {% if preview_gallery_url %}
-      <nav aria-label="Footer navigation">
-        <a href="/preview/search/">Discover</a><a href="/preview/trip/">Journey</a><a href="/preview/route-updates/">Safety</a>
-        <a href="/preview/driver-dashboard/">Driver Space</a>
+  {% if preview_gallery_url %}
+    <div class="container site-footer__premium">
+      <div class="site-footer__identity">
+        <a href="/preview/" class="brand brand--footer"><span>Safe<strong>Ride</strong></span><svg aria-hidden="true" class="brand-pin" width="16" height="20" viewBox="0 0 16 20" fill="none"><path d="M8 1a7 7 0 0 0-7 7c0 4.5 7 11 7 11s7-6.5 7-11a7 7 0 0 0-7-7Z" fill="currentColor"/><circle cx="8" cy="8" r="2.4" fill="white"/></svg></a>
+        <p>Every journey matters.</p><small>Built around clearer transport experiences.</small>
+      </div>
+      <nav class="site-footer__columns" aria-label="Footer navigation">
+        <div><strong>Ride</strong><a href="/preview/search/">Find a Ride</a><a href="/preview/how-it-works/">How It Works</a><a href="/preview/my-trips/">My Trips</a></div>
+        <div><strong>Drive</strong><a href="/preview/drive/">Drive with SafeRide</a><a href="/preview/driver-dashboard/">Driver Portal</a><a href="/preview/vehicles/">My Vehicles</a></div>
+        <div><strong>Company</strong><a href="/preview/support/">Safety &amp; Support</a><a href="/preview/route-updates/">Route Updates</a><a href="/preview/report/">Report a Concern</a></div>
       </nav>
-      {% else %}
+    </div>
+    <div class="container site-footer__bottom">
+      <span>© 2026 SafeRide. Every journey matters.</span>
+      <span>Preview environment · Sample routes and profiles · No active bookings</span>
+      <a href="/preview/screens/">Design library</a>
+    </div>
+  {% else %}
+    <div class="container footer-inner">
+      <div><a href="{% url 'home' %}" class="brand brand--footer"><span>Safe<strong>Ride</strong></span></a><p>Every journey matters.</p></div>
       <nav aria-label="Footer navigation"><a href="{% url 'home' %}#discover">Discover</a><a href="{% url 'home' %}#journey">Journey</a><a href="{% url 'home' %}#safety">Safety</a></nav>
-      {% endif %}
-  </div>
-  <p class="container footer-note">SafeRide is in development. Route illustrations and sample journeys are not live tracking or identity-screening services.</p>
+    </div>
+    <p class="container footer-note">SafeRide is in development. Route illustrations and sample journeys are not live tracking or identity-screening services.</p>
+  {% endif %}
 </footer>
 {% block extra_scripts %}{% endblock %}
 </body>
