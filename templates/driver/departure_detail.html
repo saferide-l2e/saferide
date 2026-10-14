@@ -1,0 +1,50 @@
+{% extends "base.html" %}{% load static %}
+{% block title %}Manage departure | SafeRide Driver{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/driver_dashboard.css' %}">{% endblock %}
+{% block content %}
+<section class="driver-home container" aria-labelledby="departure-title">
+ {% if dashboard_url %}<a class="driver-back" href="{{ dashboard_url }}">← Driver dashboard</a>{% endif %}
+ {% if departure %}
+ <div class="driver-home__heading">
+   <div><span class="eyebrow">Manage departure</span><h1 id="departure-title">{{ departure.route_label }}</h1><p>{{ departure.scheduled_departure_at|date:"D j M, g:i A" }} · {{ departure.plate_display }}</p></div>
+   {% include "ui/status_badge.html" with badge_text=departure.status_label badge_variant="neutral" only %}
+ </div>
+ {% if error_message %}<p class="driver-flash driver-flash--error" role="alert">{{ error_message }}</p>{% endif %}
+ {% if success_message %}<p class="driver-flash" role="status">{{ success_message }}</p>{% endif %}
+ <div class="driver-stats">
+   <article class="driver-stat"><span>Confirmed aboard</span><strong>{{ departure.boarded_count|default:0 }}</strong></article>
+   <article class="driver-stat"><span>Seats held</span><strong>{{ departure.held_count|default:0 }}</strong></article>
+   <article class="driver-stat"><span>Vehicle capacity</span><strong>{{ departure.capacity }}</strong></article>
+ </div>
+ <div class="driver-home__grid">
+   <section class="departure-form-card" aria-labelledby="departure-management-title">
+    <h2 id="departure-management-title">Manage this journey</h2>
+    <p class="driver-intro">Actions depend on the departure's current server state. Only your own departures are manageable.</p>
+    {% if roster_url %}<a class="driver-action-link" href="{{ roster_url }}">View private boarding roster <span aria-hidden="true">→</span></a>{% endif %}
+    <div class="departure-actions">
+     {% if departure.status == "BOARDING_OPEN" and can_close and close_action %}
+       <form method="post" action="{{ close_action }}" data-transition-form>{% csrf_token %}<button class="button button--primary" type="submit">Close boarding</button></form>
+     {% endif %}
+     {% if departure.status == "BOARDING_CLOSED" and can_start and start_action %}
+       <form method="post" action="{{ start_action }}" data-transition-form>{% csrf_token %}<button class="button button--primary" type="submit">Start trip</button></form>
+     {% endif %}
+     {% if departure.status == "EN_ROUTE" and can_arrive and arrive_action %}
+       <form method="post" action="{{ arrive_action }}" data-transition-form>{% csrf_token %}<button class="button button--primary" type="submit">Mark arrived</button></form>
+     {% endif %}
+     {% if departure.status == "DRAFT" and can_cancel and cancel_action %}
+       <form method="post" action="{{ cancel_action }}" data-transition-form>{% csrf_token %}<button class="button button--outline" type="submit">Cancel departure</button></form>
+     {% endif %}
+    </div>
+    <p class="driver-time-note">Arrival marked by the driver is different from confirmation by each passenger. The backend records both events separately.</p>
+   </section>
+   <aside class="driver-home__side"><span class="driver-home__label">Journey lifecycle</span><h2>Every step matters.</h2>
+   <ol><li>Draft or boarding open</li><li>Boarding closed</li><li>Trip underway</li><li>Driver marked arrived</li><li>Passengers confirm their arrival separately</li></ol>
+   <p>Only actions permitted by the backend are shown here. No click on this page can bypass the required permissions.</p>
+   </aside>
+ </div>
+ {% else %}
+ <h1 id="departure-title">Departure unavailable</h1><p class="driver-intro">This departure may have changed or you might not have access to it.</p>
+ {% endif %}
+ {% include "ui/demo_notice.html" %}
+</section>
+{% endblock %}

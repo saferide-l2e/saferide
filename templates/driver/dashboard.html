@@ -1,0 +1,52 @@
+{% extends "base.html" %}{% load static %}
+{% block title %}Driver dashboard | SafeRide{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/driver_dashboard.css' %}">{% endblock %}
+{% block content %}
+<section class="driver-home container" aria-labelledby="driver-dashboard-title">
+ <div class="driver-home__heading">
+   <div><span class="eyebrow">Your driver space</span><h1 id="driver-dashboard-title">Your day, in motion.</h1><p>Stay on top of your vehicles, upcoming departures and boarding.</p></div>
+   {% if can_publish and publish_url %}<a class="button button--primary" href="{{ publish_url }}">+ Publish departure</a>{% endif %}
+ </div>
+ {% if info_message %}<p role="status" class="driver-flash">{{ info_message }}</p>{% endif %}
+ {% if error_message %}<p role="alert" class="driver-flash driver-flash--error">{{ error_message }}</p>{% endif %}
+ <div class="driver-stats">
+  <article class="driver-stat"><span>Upcoming departures</span><strong>{{ upcoming_count|default:0 }}</strong></article>
+  <article class="driver-stat"><span>Approved vehicles</span><strong>{{ approved_vehicle_count|default:0 }}</strong></article>
+  <article class="driver-stat"><span>Boarded today</span><strong>{{ boarded_today_count|default:0 }}</strong></article>
+ </div>
+ <div class="driver-home__grid">
+  <div>
+   <div class="driver-subhead"><h2>My departures</h2><span>Scheduled and active journeys</span></div>
+   {% if departures %}
+    <div class="departure-list">
+     {% for departure in departures %}
+       <article class="departure-card">
+         <div class="departure-card__top"><span class="departure-card__tag">{{ departure.scheduled_departure_at|date:"D j M, g:i A" }}</span>
+           {% if departure.status == "BOARDING_OPEN" %}{% include "ui/status_badge.html" with badge_text="Boarding open" badge_variant="positive" only %}
+           {% else %}{% include "ui/status_badge.html" with badge_text=departure.status_label badge_variant="neutral" only %}{% endif %}
+         </div>
+         <h3>{{ departure.route_label }}</h3>
+         <dl class="departure-facts"><div><dt>Assigned vehicle</dt><dd>{{ departure.plate_display }}</dd></div><div><dt>Seats</dt><dd>{{ departure.capacity }}</dd></div></dl>
+         {% if departure.detail_url %}<a class="departure-card__link" href="{{ departure.detail_url }}">Manage departure <span aria-hidden="true">→</span></a>{% endif %}
+       </article>
+     {% endfor %}
+    </div>
+   {% else %}
+    <div class="driver-empty" role="status"><h3>No scheduled departures yet.</h3><p>When your driver profile and bus are approved, you can publish a new journey.</p>
+    {% if can_publish and publish_url %}<a class="button button--primary" href="{{ publish_url }}">Publish a departure</a>{% endif %}</div>
+   {% endif %}
+  </div>
+  <aside class="driver-home__side">
+   <span class="driver-home__label">Your next steps</span><h2>Set up. Get approved. Drive.</h2>
+   <p>Only approved drivers and vehicles can publish departures.</p>
+   <div class="driver-quicklinks">
+    {% if verification_url %}<a href="{{ verification_url }}">My verification <span aria-hidden="true">↗</span></a>{% endif %}
+    {% if vehicle_list_url %}<a href="{{ vehicle_list_url }}">My vehicles <span aria-hidden="true">↗</span></a>{% endif %}
+    {% if history_url %}<a href="{{ history_url }}">Past journeys <span aria-hidden="true">↗</span></a>{% endif %}
+   </div>
+   <p class="driver-home__note">Profile approval and available seats come from SafeRide's backend. Displayed examples are not live GPS tracking.</p>
+  </aside>
+ </div>
+ {% include "ui/demo_notice.html" %}
+</section>
+{% endblock %}
