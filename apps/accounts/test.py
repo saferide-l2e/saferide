@@ -1,5 +1,7 @@
 from django.contrib.auth import get_user_model
+from django.db import IntegrityError
 from django.test import TestCase
+
 from apps.verification.models import VerificationStatus
 
 User = get_user_model()
@@ -35,7 +37,7 @@ class AccountsAndVerificationTests(TestCase):
             display_name="Rider One",
         )
 
-        with self.assertRaises(Exception):
+        with self.assertRaises(IntegrityError):
             User.objects.create_user(
                 username="rider2",
                 email="RIDER@SAFERIDE.COM",

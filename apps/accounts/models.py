@@ -1,4 +1,6 @@
 import uuid
+from typing import ClassVar
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
@@ -19,7 +21,7 @@ class User(AbstractUser):
     )
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ["username", "display_name"]
+    REQUIRED_FIELDS: ClassVar[list[str]] = ["username", "display_name"]
 
     def save(self, *args, **kwargs):
         # Case-folding: ensures "John@Email.com" and "john@email.com" are treated as the same account
