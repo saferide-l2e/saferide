@@ -23,8 +23,14 @@
       <a data-nav-link href="{% url 'home' %}#safety">Safety</a>
       {% if user.is_authenticated %}
       <span class="account-chip">{% if user.role == "DRIVER" %}Driver{% elif user.role == "PASSENGER" %}Passenger{% else %}Account{% endif %}</span>
+      {% url 'logout' as logout_href %}
+      {% if logout_href %}<form class="nav-logout-form" method="post" action="{{ logout_href }}">{% csrf_token %}<button type="submit" class="nav-logout">Sign out</button></form>{% endif %}
       {% else %}
-      <a data-nav-link class="nav-cta" href="{% url 'home' %}#how-it-works">How it works <span aria-hidden="true">↗</span></a>
+      {% url 'login' as login_href %}
+      {% url 'register' as register_href %}
+      {% if login_href %}<a data-nav-link href="{{ login_href }}">Sign in</a>{% endif %}
+      {% if register_href %}<a data-nav-link class="nav-cta" href="{{ register_href }}">Join SafeRide <span aria-hidden="true">↗</span></a>
+      {% else %}<a data-nav-link class="nav-cta" href="{% url 'home' %}#how-it-works">How it works <span aria-hidden="true">↗</span></a>{% endif %}
       {% endif %}
     </nav>
   </div>
