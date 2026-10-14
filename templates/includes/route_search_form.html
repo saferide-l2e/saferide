@@ -1,0 +1,15 @@
+{# GET-only route search; backend normalises route names and validates access. #}
+<form class="route-search" method="get" action="{{ search_url|default:request.path }}" role="search" aria-label="Find a bus">
+  <div class="route-search__field">
+    <label for="route-origin">Travelling from</label>
+    <input id="route-origin" name="origin" list="route-origins" value="{{ origin|default:'' }}" placeholder="e.g. Jibowu" autocomplete="off" maxlength="120" required>
+    <datalist id="route-origins"><option value="Jibowu"></option></datalist>
+  </div>
+  <span class="route-search__arrow" aria-hidden="true">→</span>
+  <div class="route-search__field">
+    <label for="route-destination">Travelling to</label>
+    <input id="route-destination" name="destination" list="route-destinations" value="{{ destination|default:'' }}" placeholder="e.g. Mile 2" autocomplete="off" maxlength="120" required>
+    <datalist id="route-destinations"><option value="Mile 2"></option></datalist>
+  </div>
+  <button class="button button--primary route-search__submit" type="submit">Find buses <span aria-hidden="true">→</span></button>
+</form>
