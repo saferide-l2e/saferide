@@ -50,8 +50,9 @@ class PreviewPagesTests(SimpleTestCase):
         request = self.request("/preview/results/?origin=Agege&destination=Ikeja")
         response = page(request, "results")
         html = response.content.decode()
-        self.assertIn("isn't in the current pilot listing", html)
+        self.assertIn("current pilot listing", html)
         self.assertIn("No matching departures", html)
+        self.assertNotIn("Inspect this bus", html)
 
     def test_public_marketing_and_account_pages_work(self):
         for slug in ("how-it-works", "drive", "support", "my-trips"):

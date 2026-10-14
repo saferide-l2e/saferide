@@ -353,6 +353,8 @@ def page(request, slug):
         end_point = " ".join(context["destination"].casefold().split())
         if start_point != "jibowu" or end_point not in {"mile 2", "mile2"}:
             context["buses"] = []
+            context.pop("preview_next_url", None)
+            context.pop("preview_next_text", None)
             context["error_message"] = (
                 "This route isn't in the current pilot listing. "
                 "Explore Jibowu to Mile 2 while more routes are being prepared."
