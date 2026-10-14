@@ -1,0 +1,44 @@
+/* FE-08 server-authoritative hold display. */
+.hold-page{padding-block:48px 100px}
+.hold-heading h1{font-size:clamp(2.3rem,5.8vw,4rem);letter-spacing:-.065em;line-height:1.13;margin:19px 0 10px}
+.hold-heading>p{color:var(--muted);font-size:.9rem}.hold-heading>p strong{color:var(--forest)}
+.hold-error{margin:23px 0;border-radius:13px;border:1px solid #e1ab9d;background:#fff0ed;color:#6c2a20;padding:15px 17px}
+.hold-error p{margin:5px 0 0}
+.hold-layout{display:grid;grid-template-columns:minmax(0,1fr);gap:24px;margin-top:30px}
+.hold-main{min-width:0;display:grid;gap:19px}
+.hold-timer-card{position:relative;isolation:isolate;overflow:hidden;background:var(--forest);color:white;padding:24px;border-radius:23px}
+.hold-timer-card::before{content:"";position:absolute;z-index:-1;border-radius:50%;width:400px;height:400px;right:-180px;top:-230px;background:#148264;opacity:.5}
+.hold-timer-card__header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:15px}
+.hold-timer-card__header>span:first-child{color:#e2f5e9;font-size:.75rem;font-weight:900;text-transform:uppercase;letter-spacing:.065em}
+.hold-timer-label{margin:43px 0 0;color:#daf0e4;font-size:1rem}
+.hold-timer-time{display:block;font-variant-numeric:tabular-nums;font-size:clamp(4.3rem,11vw,7.2rem);letter-spacing:-.075em;line-height:1.28;color:var(--lime)}
+.hold-progress{height:10px;border-radius:90px;background:#39735d;overflow:hidden;margin:6px 0 19px}
+.hold-progress span{display:block;width:0;height:100%;background:var(--lime);border-radius:inherit;transition:width .5s}
+.hold-deadline{font-size:.83rem;font-weight:650;color:#d4e9dc}
+.hold-a11y-status{font-size:.77rem;color:#d8efe0;line-height:1.6;min-height:34px}
+.hold-final-status{display:block;font-size:clamp(2.7rem,7vw,4.7rem);color:var(--lime);letter-spacing:-.055em;margin:22px 0 15px}
+.hold-timer-footer{border-top:1px solid #3e8168;margin-top:35px;padding-top:18px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:.79rem;color:#e0f4e7;font-weight:750}
+.hold-info-card{padding:25px;background:#fff;border:1px solid var(--line);border-radius:20px}
+.hold-info-card h2{margin:0 0 23px;font-size:1.5rem;letter-spacing:-.04em}
+.hold-steps{margin:0;padding:0;list-style:none;display:grid;gap:18px}
+.hold-steps li{display:flex;gap:16px;align-items:flex-start;font-size:.91rem;color:#284d42}
+.hold-step-number{display:grid;place-items:center;width:36px;height:36px;flex:none;border-radius:50%;background:var(--mint);color:var(--forest);font-size:.76rem;font-weight:900}
+.hold-steps li>span:last-child{padding-top:6px}
+.hold-sidebar{display:grid;gap:17px;align-content:start}
+.boarding-pass{background:#fff;border:1px solid var(--line);border-radius:20px;padding:26px}
+.boarding-pass__eyebrow{text-transform:uppercase;letter-spacing:.07em;font-weight:900;color:var(--green);font-size:.72rem}
+.boarding-pass h2{font-size:clamp(1.5rem,3vw,1.9rem);letter-spacing:-.045em;margin:15px 0 20px;line-height:1.2}
+.boarding-pass>p{color:var(--muted);font-size:.84rem;line-height:1.75}
+.boarding-pass__code{background:var(--mint);border-radius:13px;padding:18px;text-align:center}
+.boarding-pass__code span{display:block;font-size:.72rem;letter-spacing:.07em;text-transform:uppercase;color:var(--forest);font-weight:900}
+.boarding-pass__code strong{display:block;font-variant-numeric:tabular-nums;font-size:clamp(2rem,6vw,3.1rem);color:var(--ink);letter-spacing:.08em}
+.boarding-pass__cancel{width:100%;border:1px solid var(--line);cursor:pointer}
+.boarding-pass__cancel:disabled{opacity:.6;cursor:wait}
+.boarding-pass__back{display:table;margin-top:22px;font-weight:850;font-size:.88rem;color:var(--green);text-decoration:underline;text-underline-offset:4px}
+.hold-offline{background:#fff1d5;border:1px solid #e8c77a;color:#65481e;border-radius:12px;padding:14px;font-size:.83rem}
+.hold-empty{text-align:center;padding:55px 24px;background:white;border-radius:20px;border:1px solid var(--line);max-width:700px;margin:30px auto}
+.hold-empty h1{font-size:clamp(2rem,5vw,3rem);letter-spacing:-.05em}.hold-empty p{color:var(--muted);line-height:1.75}
+@media(min-width:900px){.hold-layout{grid-template-columns:minmax(0,1.55fr) minmax(290px,.9fr);gap:30px}.hold-page{padding-top:70px}.hold-sidebar{position:sticky;top:93px}.hold-timer-card{padding:35px}.hold-info-card{padding:32px}}
+@media(prefers-reduced-motion:reduce){.hold-progress span{transition:none}}
+
+.hold-refresh a{color:var(--lime);font-weight:850;text-decoration:underline;text-underline-offset:4px;font-size:.85rem}
