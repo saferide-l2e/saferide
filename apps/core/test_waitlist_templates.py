@@ -29,7 +29,6 @@ class WaitlistTemplateTests(SimpleTestCase):
         })
         self.assertIn("#4", html)
         self.assertIn("3 passengers ahead", html)
-        self.assertIn("Position can change", html) if False else None
         self.assertIn("may change", html)
         self.assertIn('data-status-url="/bookings/waitlist/status/"', html)
 
