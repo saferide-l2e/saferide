@@ -1,12 +1,18 @@
+from concurrent.futures import ThreadPoolExecutor
 from datetime import timedelta
+from threading import Barrier
 
 import pytest
-from django.db import IntegrityError, transaction
+from django.db import IntegrityError, close_old_connections, connection, transaction
 from django.utils import timezone
 
 from apps.accounts.models import User
-from apps.bookings.models import BoardingCredential, Booking
-from apps.bookings.services import issue_boarding_credential, verify_boarding_code
+from apps.bookings.models import BoardingCredential, Booking, WaitlistEntry
+from apps.bookings.services import (
+    issue_boarding_credential,
+    offer_next_waitlist_entry,
+    verify_boarding_code,
+)
 from apps.departures.services import create_departure
 from apps.routes.models import Route
 from apps.vehicles.models import DriverProfile, Vehicle
@@ -152,3 +158,100 @@ def test_boarding_credentials_are_unique_by_booking_and_digest(
             booking=second_booking,
             code_digest=first_credential.code_digest,
         )
+
+
+def make_waitlist_entry(departure, passenger):
+    return WaitlistEntry.objects.create(departure=departure, passenger=passenger)
+
+
+@pytest.mark.django_db(transaction=True)
+def test_waitlist_fifo_breaks_join_time_ties_by_uuid(departure, passenger):
+    second_passenger = User.objects.create_user(
+        username="fifo-passenger-two",
+        email="fifo-passenger-two@example.test",
+        password="safe-test-password",
+        display_name="FIFO Passenger Two",
+        role=User.Role.PASSENGER,
+    )
+    first_entry = make_waitlist_entry(departure, passenger)
+    second_entry = make_waitlist_entry(departure, second_passenger)
+    tied_time = timezone.now()
+    WaitlistEntry.objects.filter(pk__in=[first_entry.pk, second_entry.pk]).update(
+        joined_at=tied_time
+    )
+
+    ordered_ids = list(
+        WaitlistEntry.objects.filter(departure=departure).fifo().values_list("id", flat=True)
+    )
+    assert ordered_ids == sorted([first_entry.id, second_entry.id])
+
+
+@pytest.mark.django_db(transaction=True)
+def test_active_waitlist_unique_constraint_preserves_expired_history(departure, passenger):
+    first_entry = make_waitlist_entry(departure, passenger)
+    with pytest.raises(IntegrityError), transaction.atomic():
+        make_waitlist_entry(departure, passenger)
+
+    first_entry.status = WaitlistEntry.Status.EXPIRED
+    first_entry.save(update_fields=["status"])
+    next_entry = make_waitlist_entry(departure, passenger)
+    assert next_entry.status == WaitlistEntry.Status.WAITING
+    assert WaitlistEntry.objects.filter(departure=departure, passenger=passenger).count() == 2
+
+
+@pytest.mark.django_db(transaction=True)
+def test_fifo_offer_sets_audit_times_and_allocates_inventory(departure, passenger):
+    second_passenger = User.objects.create_user(
+        username="offer-passenger-two",
+        email="offer-passenger-two@example.test",
+        password="safe-test-password",
+        display_name="Offer Passenger Two",
+        role=User.Role.PASSENGER,
+    )
+    first_entry = make_waitlist_entry(departure, passenger)
+    second_entry = make_waitlist_entry(departure, second_passenger)
+    tied_time = timezone.now()
+    WaitlistEntry.objects.filter(pk__in=[first_entry.pk, second_entry.pk]).update(
+        joined_at=tied_time
+    )
+    now = timezone.now()
+
+    offered = offer_next_waitlist_entry(departure, now=now)
+
+    assert offered.id == min(first_entry.id, second_entry.id)
+    assert offered.status == WaitlistEntry.Status.OFFERED
+    assert offered.offered_at == now
+    assert offered.offer_expires_at == now + timedelta(seconds=120)
+    assert WaitlistEntry.objects.filter(departure=departure).allocated_offer_count(at=now) == 1
+    assert WaitlistEntry.objects.filter(departure=departure).allocated_offer_count(
+        at=offered.offer_expires_at
+    ) == 0
+
+
+@pytest.mark.django_db(transaction=True)
+def test_parallel_waitlist_joins_are_limited_by_database_unique_constraint(
+    departure, passenger
+):
+    if connection.vendor != "postgresql":
+        pytest.skip("Parallel unique-index behavior is verified on PostgreSQL.")
+
+    barrier = Barrier(2)
+
+    def insert_entry():
+        close_old_connections()
+        try:
+            with transaction.atomic():
+                connection.ensure_connection()
+                barrier.wait(timeout=10)
+                make_waitlist_entry(departure, passenger)
+            return "created"
+        except IntegrityError:
+            return "duplicate"
+        finally:
+            close_old_connections()
+
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        outcomes = list(executor.map(lambda _: insert_entry(), range(2)))
+
+    assert sorted(outcomes) == ["created", "duplicate"]
+    assert WaitlistEntry.objects.filter(departure=departure, passenger=passenger).count() == 1
