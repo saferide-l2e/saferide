@@ -1,6 +1,6 @@
 """FE-06 route-search frontend rendering, independent of unmerged BE-04 views."""
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from django.contrib.auth.models import AnonymousUser
 from django.template.loader import render_to_string
@@ -25,7 +25,7 @@ class RouteFrontendTests(SimpleTestCase):
     def test_results_are_rendered_from_server_context(self):
         result = {
             "route_label": "Jibowu → Mile 2",
-            "scheduled_departure_at": datetime(2026, 10, 15, 11, 30, tzinfo=timezone.utc),
+            "scheduled_departure_at": datetime(2026, 10, 15, 11, 30, tzinfo=UTC),
             "boarding_point": "Jibowu Park",
             "vehicle_type_display": "Minibus",
             "plate_display": "SRD-204",
