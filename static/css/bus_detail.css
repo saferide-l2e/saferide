@@ -1,0 +1,48 @@
+/* FE-07: bus and driver detail. Never infer booking eligibility from CSS. */
+.detail-page{padding-block:48px 95px}
+.detail-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:22px;flex-wrap:wrap;margin-bottom:30px}
+.detail-heading h1{font-size:clamp(2.3rem,5vw,4rem);letter-spacing:-.065em;line-height:1.1;margin:19px 0 10px}
+.detail-heading p{color:var(--muted);max-width:600px;line-height:1.7}
+.detail-back{display:table;margin-bottom:21px;font-size:.88rem;color:var(--green);font-weight:800;text-decoration:underline;text-underline-offset:4px}
+.detail-heading .status-badge{margin-top:27px}
+.detail-error,.detail-info{padding:14px 17px;border-radius:12px;border:1px solid #dfaca1;margin-bottom:23px;background:#fff0eb;color:#702d21}
+.detail-error p{margin:6px 0 0}.detail-info{border-color:#b3d9c1;color:var(--forest);background:var(--mint)}
+.detail-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:24px}
+.detail-main{display:grid;gap:19px;min-width:0}
+.detail-visual{position:relative;overflow:hidden;min-height:230px;padding:22px;background:var(--forest);border-radius:21px;display:flex;flex-direction:column;justify-content:space-between}
+.detail-visual::before{content:"";position:absolute;width:320px;height:320px;border-radius:50%;right:-110px;top:-160px;background:#148663;opacity:.4}
+.detail-visual__top{display:flex;gap:12px;justify-content:space-between;flex-wrap:wrap;color:#d6ecdf;font-size:.74rem;text-transform:uppercase;letter-spacing:.05em;font-weight:900}
+.detail-visual__top,.detail-vehicle-art,.detail-visual>p{position:relative;z-index:1}
+.detail-vehicle-art{align-self:center;width:min(90%,390px);max-height:220px}
+.detail-visual>p{font-size:.72rem;color:#c7e6d8;margin:0;align-self:flex-end}
+.detail-card{background:white;border:1px solid var(--line);border-radius:19px;padding:25px}
+.detail-card h2{font-size:1.45rem;letter-spacing:-.04em;margin:0 0 20px}
+.detail-facts{display:grid;grid-template-columns:1fr;gap:16px;margin:0}
+.detail-facts>div{border-bottom:1px solid var(--line);padding-bottom:13px}
+.detail-facts dt{font-size:.71rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:900}
+.detail-facts dd{font-size:1rem;font-weight:780;margin:5px 0 0;overflow-wrap:anywhere}
+.driver-profile__heading{display:flex;gap:17px;align-items:center;margin-bottom:16px}
+.driver-avatar{display:grid;place-items:center;min-width:69px;height:69px;background:var(--mint);border-radius:50%;font-size:1.35rem;font-weight:900;color:var(--forest)}
+.driver-profile h2{margin:0 0 4px}.driver-profile__heading p{margin:0;color:var(--muted)}
+.driver-privacy{border-top:1px solid var(--line);padding-top:16px;color:var(--muted);font-size:.83rem;margin-bottom:0;line-height:1.7}
+.detail-notices{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.detail-notices li{display:grid;gap:3px;background:var(--cream);border-radius:11px;padding:14px}
+.detail-notices span{font-size:.9rem}.detail-notices small{font-size:.72rem;color:var(--muted)}
+.detail-sidebar{display:grid;gap:15px;align-content:start}
+.detail-booking{background:#fff;border-radius:19px;border:1px solid var(--line);padding:25px;box-shadow:0 15px 38px rgba(4,55,39,.065)}
+.detail-booking__eyebrow{font-size:.72rem;font-weight:900;letter-spacing:.07em;color:var(--green);text-transform:uppercase}
+.detail-booking h2{font-size:1.75rem;letter-spacing:-.05em;line-height:1.15;margin:17px 0}
+.detail-booking__terms{font-size:.91rem;line-height:1.75;color:var(--ink)}
+.detail-booking__status{margin:24px 0;background:var(--mint);padding:18px 19px;border-radius:12px}
+.detail-booking__status strong{color:var(--forest);font-size:1.05rem}
+.detail-booking__status p{margin:5px 0 0;font-size:.83rem;color:#2f564a;line-height:1.65}
+.detail-submit{display:flex;width:100%;text-align:center}
+.detail-submit[type=submit]{border:none;cursor:pointer}
+.detail-booking__explanation{color:var(--muted);font-size:.88rem;line-height:1.7;padding:12px 0}
+.detail-booking__fineprint{font-size:.75rem;color:var(--muted);margin:20px 0 0;line-height:1.7}
+.detail-sidebar .data-notice{font-size:.78rem}
+.detail-empty{max-width:650px;margin:55px auto;text-align:center;background:#fff;border:1px solid var(--line);border-radius:21px;padding:50px 28px}
+.detail-empty h1{font-size:clamp(2rem,5vw,3rem);letter-spacing:-.06em;margin:0}
+.detail-empty p{color:var(--muted);line-height:1.7;margin:16px 0 28px}
+@media(min-width:650px){.detail-facts{grid-template-columns:repeat(2,minmax(0,1fr))}.detail-visual{min-height:280px}}
+@media(min-width:980px){.detail-grid{grid-template-columns:minmax(0,1.6fr) minmax(310px,.92fr);gap:27px}.detail-sidebar{position:sticky;top:96px}.detail-visual{min-height:320px}.detail-page{padding-top:70px}}
