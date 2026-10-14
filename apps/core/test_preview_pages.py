@@ -35,15 +35,23 @@ class PreviewPagesTests(SimpleTestCase):
         response = app_home(self.request("/preview/"))
         self.assertEqual(response.status_code, 200)
         html = response.content.decode()
-        for target in ("/preview/search/", "/preview/trip/", "/preview/route-updates/",
-                       "/preview/driver-dashboard/"):
+        for target in ("/preview/search/", "/preview/how-it-works/",
+                       "/preview/drive/", "/preview/support/",
+                       "/preview/my-trips/"):
             self.assertIn('href="' + target + '"', html)
-        self.assertIn("Your journey", html)
+        self.assertIn("Move smarter.", html)
 
     def test_route_search_get_navigates_to_results(self):
         response = page(self.request("/preview/search/"), "search")
         self.assertIn('action="/preview/results/"', response.content.decode())
         self.assertIn('method="get"', response.content.decode())
+
+    def test_unsupported_route_never_shows_invented_buses(self):
+        request = self.request("/preview/results/?origin=Agege&destination=Ikeja")
+        response = page(request, "results")
+        html = response.content.decode()
+        self.assertIn("isn't in the current pilot listing", html)
+        self.assertIn("No matching departures", html)
 
     def test_public_marketing_and_account_pages_work(self):
         for slug in ("how-it-works", "drive", "support", "my-trips"):
@@ -75,8 +83,8 @@ class PreviewPagesTests(SimpleTestCase):
                     response = page(self.request(f"/preview/{slug}/"), slug)
                     self.assertEqual(response.status_code, 200)
                     html = response.content.decode()
-                    self.assertIn("Design review", html)
-                    self.assertIn("Sample content", html)
+                    self.assertIn("Preview environment", html)
+                    self.assertIn("Sample routes and profiles", html)
                     self.assertIn("<main ", html)
                     self.assertNotIn("SECRET-LICENCE", html)
 
