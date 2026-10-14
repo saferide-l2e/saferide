@@ -29,6 +29,7 @@
             <div class="hold-progress" aria-hidden="true"><span data-hold-progress></span></div>
             <p class="hold-deadline">Expires: <time datetime="{{ booking.expires_at|date:'c' }}">{{ booking.expires_at|date:"D j M, g:i A" }}</time></p>
             <p class="hold-a11y-status" data-hold-message aria-live="polite">The displayed timer is a guide. Your reservation expiry is decided by the server.</p>
+            <p class="hold-refresh"><a href="{{ request.path }}">Refresh booking status <span aria-hidden="true">↻</span></a></p>
           {% else %}
             <p id="hold-timer-title" class="hold-timer-label">Current booking status</p><strong class="hold-final-status" data-hold-message role="status">{{ booking.get_status_display|default:booking.status }}</strong>
             <p>The server decides whether this seat is held, used, cancelled or expired.</p>
