@@ -14,6 +14,9 @@ from django.conf import settings
 
 if settings.PREVIEW_MODE:
     from apps.core.preview_views import app_home, gallery, page, public_page
+    # Visitors to this isolated Vercel preview land on the public site,
+    # not the old foundation landing page. Production main is unchanged.
+    urlpatterns[0] = path("", app_home, name="home")
 
     urlpatterns += [
         path("preview/", app_home, name="preview-home"),
