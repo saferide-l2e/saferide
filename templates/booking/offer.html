@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Your seat offer | SafeRide Journey{% endblock %}
+{% block description %}Accept or decline a time-limited SafeRide seat offer.{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/waitlist.css' %}"><script defer src="{% static 'js/waitlist.js' %}"></script>{% endblock %}
+{% block content %}
+<section class="offer-page container" aria-labelledby="offer-heading">
+  <span class="eyebrow">SafeRide Journey</span>
+  <h1 id="offer-heading">{% if offer and offer.status == "OFFERED" %}Your turn is here!{% elif offer %}Your seat offer has changed.{% else %}No active offer found.{% endif %}</h1>
+  <p class="queue-intro">Choose what to do with the next available seat. A new reservation begins only after the server accepts your offer.</p>
+  {% if error_message %}<div class="queue-error" role="alert">{{ error_message }}</div>{% endif %}
+  <div class="offer-grid">
+    <article class="offer-focus" aria-labelledby="offer-focus-title">
+      {% if offer and offer.status == "OFFERED" %}
+        <div data-offer-clock data-offer-status="{{ offer.status }}" data-offer-expires="{{ offer.expires_at|date:'c' }}" data-server-now="{{ server_now|date:'c' }}" {% if status_url %}data-status-url="{{ status_url }}"{% endif %}>
+          <span class="offer-focus__eyebrow">Seat offered to you</span><h2 id="offer-focus-title">Time left to accept</h2>
+          <strong class="offer-clock" data-offer-readout role="timer" aria-live="off">--:--</strong>
+          <div class="offer-track" aria-hidden="true"><span data-offer-progress></span></div>
+          <p data-offer-message aria-live="polite">You have two minutes to accept or decline. The backend controls this deadline.</p>
+        </div>
+        <div class="offer-actions">
+          {% if accept_action %}<form method="post" action="{{ accept_action }}" data-one-time-submit>{% csrf_token %}<button class="button button--lime" type="submit">Accept this seat <span aria-hidden="true">→</span></button></form>{% endif %}
+          {% if decline_action %}<form method="post" action="{{ decline_action }}" data-one-time-submit>{% csrf_token %}<button class="button button--outline" type="submit">Decline offer</button></form>{% endif %}
+          {% if not accept_action and not decline_action %}<p>Offer actions are not currently available. Refresh to confirm your status.</p>{% endif %}
+        </div>
+      {% elif offer %}
+        <span class="offer-focus__eyebrow">Offer status</span><h2 id="offer-focus-title">{{ offer.status }}</h2><p>This offer can no longer be accepted from this page. Refresh or return to your waitlist.</p>
+      {% else %}
+        <span class="offer-focus__eyebrow">No active offer</span><h2 id="offer-focus-title">Nothing to accept right now.</h2><p>You can revisit your waitlist to see your current position.</p>
+      {% endif %}
+      <p class="offer-focus__refresh"><a href="{{ request.path }}">Refresh offer status <span aria-hidden="true">↻</span></a></p>
+    </article>
+    <aside class="offer-aside">
+      <div class="offer-trip-card"><span>YOUR JOURNEY</span><h2>{% if offer and offer.route_label %}{{ offer.route_label }}{% elif route_label %}{{ route_label }}{% else %}Route details pending{% endif %}</h2><p>An accepted offer becomes a new 600-second seat hold. It does not extend any earlier reservation.</p>
+        {% if queue_url %}<a href="{{ queue_url }}">Back to waitlist <span aria-hidden="true">→</span></a>{% endif %}
+      </div>
+      <p class="queue-offline" hidden role="status" data-queue-offline>You're offline. This offer could expire while you're disconnected. Reconnect and refresh before acting.</p>
+      {% include "ui/demo_notice.html" %}
+    </aside>
+  </div>
+</section>
+{% endblock %}
