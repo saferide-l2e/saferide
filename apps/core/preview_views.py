@@ -221,10 +221,85 @@ def _sample():
     }
 
 
+WORKFLOWS = {
+    "search": ("results", "See matching buses"),
+    "results": ("bus-detail", "Inspect this bus"),
+    "bus-detail": ("reservation", "See seat reservation"),
+    "reservation": ("queue", "Explore virtual queue"),
+    "queue": ("offer", "See a seat offer"),
+    "offer": ("trip", "View journey progress"),
+    "trip": ("history", "View journey history"),
+    "history": ("review", "Rate a journey"),
+    "review": ("report", "Report a concern"),
+    "route-updates": ("contribute", "Share a route update"),
+    "register": ("verification", "View verification status"),
+    "login": ("driver-dashboard", "Explore driver dashboard"),
+    "verification": ("passenger-profile", "View public profile"),
+    "driver-dashboard": ("vehicles", "View my vehicles"),
+    "vehicles": ("register-vehicle", "Register a vehicle"),
+    "register-vehicle": ("publish-departure", "Publish a departure"),
+    "publish-departure": ("departure-detail", "Manage a departure"),
+    "departure-detail": ("roster", "View boarding roster"),
+    "roster": ("boarding", "Check in a passenger"),
+    "boarding": ("driver-history", "View previous journeys"),
+}
+
+
+def area(slug):
+    for group, entries in PAGE_GROUPS:
+        if any(current == slug for current, _label, _template in entries):
+            if group == "Discover":
+                return "discover"
+            if group == "Journey":
+                return "journey"
+            if group == "Driver Space":
+                return "driver"
+            return "safety" if slug in {"report", "route-updates", "contribute"} else "home"
+    return "home"
+
+
+@never_cache
+@require_GET
+def app_home(request):
+    """App-style entry point: one page with navigation into separate destinations."""
+    response = render(request, "preview/app_home.html", {
+        "preview_gallery_url": "/preview/",
+        "preview_area": "home",
+        "preview_section": "public",
+    })
+    response["X-Robots-Tag"] = "noindex, nofollow"
+    return response
+
+
+PUBLIC_PAGES = {
+    "how-it-works": ("preview/how_it_works.html", "how"),
+    "drive": ("preview/drive.html", "drive"),
+    "support": ("preview/support.html", "support"),
+    "my-trips": ("preview/passenger_hub.html", "my-trips"),
+}
+
+
+@never_cache
+@require_GET
+def public_page(request, slug):
+    """Company pages and passenger preview hub; never changes state."""
+    definition = PUBLIC_PAGES.get(slug)
+    if not definition:
+        raise Http404("Unknown site page")
+    template, active_page = definition
+    response = render(request, template, {
+        "preview_gallery_url": "/preview/",
+        "preview_area": active_page,
+        "preview_section": "passenger" if slug == "my-trips" else "public",
+    })
+    response["X-Robots-Tag"] = "noindex, nofollow"
+    return response
+
+
 @never_cache
 @require_GET
 def gallery(request):
-    response = render(request, "preview/gallery.html", {"groups": PAGE_GROUPS, "preview_gallery_url": "/preview/"})
+    response = render(request, "preview/gallery.html", {"groups": PAGE_GROUPS, "preview_gallery_url": "/preview/", "preview_area": "screens", "preview_section": "public"})
     response["X-Robots-Tag"] = "noindex, nofollow"
     return response
 
@@ -237,8 +312,51 @@ def page(request, slug):
         raise Http404("Unknown review page")
     context = _sample()
     context["preview_gallery_url"] = "/preview/"
+    context["preview_area"] = area(slug)
+    driver_pages = {
+        "driver-dashboard", "vehicles", "register-vehicle", "publish-departure",
+        "departure-detail", "roster", "boarding", "driver-history",
+    }
+    passenger_pages = {
+        "results", "bus-detail", "reservation", "queue", "offer",
+        "trip", "history", "review", "passenger-profile", "verification",
+    }
+    if slug in driver_pages:
+        context["preview_section"] = "driver"
+    elif slug in passenger_pages:
+        context["preview_section"] = "passenger"
+    else:
+        context["preview_section"] = "public"
+    if slug in {"search", "results", "bus-detail"}:
+        context["preview_area"] = "routes"
+    elif slug == "driver-dashboard":
+        context["preview_area"] = "driver-dashboard"
+    elif slug in {"vehicles", "register-vehicle"}:
+        context["preview_area"] = "vehicles"
+    elif slug in {"publish-departure", "departure-detail"}:
+        context["preview_area"] = "departures"
+    elif slug in {"roster", "boarding"}:
+        context["preview_area"] = "boarding"
+    elif slug == "history":
+        context["preview_area"] = "history"
+    if slug in WORKFLOWS:
+        next_slug, next_label = WORKFLOWS[slug]
+        context["preview_next_url"] = uri(next_slug)
+        context["preview_next_text"] = next_label
+    # Navigation follows the design journey, not a functional transaction.
+    if slug == "search":
+        context["search_url"] = uri("results")
+    elif slug == "results":
+        context["search_url"] = uri("results")
+        context["origin"] = request.GET.get("origin", "Jibowu")[:120]
+        context["destination"] = request.GET.get("destination", "Mile 2")[:120]
+    elif slug == "bus-detail":
+        context["search_url"] = uri("results")
     if slug == "register":
-        context["form"] = RegistrationForm()
+        role = request.GET.get("role", "PASSENGER")
+        context["form"] = RegistrationForm(initial={
+            "role": role if role in {"PASSENGER", "DRIVER"} else "PASSENGER"
+        })
         context["form_action"] = uri("register")
     elif slug == "login":
         context["form"] = LoginForm()
