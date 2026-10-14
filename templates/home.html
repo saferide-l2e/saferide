@@ -1,2 +1,88 @@
-{% extends "base.html" %}{% block title %}SafeRide — Demo foundation{% endblock %}
-{% block content %}<h1>SafeRide MVP</h1><p>The Django project foundation is ready. Passenger and driver workflows are being built by the team.</p><p><strong>Demo only:</strong> no real identity or driver background checks.</p>{% endblock %}
+{% extends "base.html" %}
+{% block title %}SafeRide — Discover. Journey. Safety.{% endblock %}
+{% block description %}Explore routes, understand each journey, and find safety information with SafeRide.{% endblock %}
+{% block content %}
+<section class="hero container" aria-labelledby="hero-title">
+ <div class="hero-copy">
+  <span class="eyebrow">Every journey matters</span>
+  <h1 id="hero-title">Your city.<br>Your journey.<br><span>More confidence.</span></h1>
+  <p class="hero-lead">Find the right bus. Know the route. Understand each step before you travel.</p>
+  <div class="hero-actions">
+   {% include "ui/action_link.html" with link_href="#discover" link_text="Explore SafeRide" link_variant="primary" only %}
+   {% include "ui/action_link.html" with link_href="#how-it-works" link_text="How it works" link_variant="outline" only %}
+  </div>
+  <div class="hero-steps"><span><strong>01</strong> Discover</span><span><strong>02</strong> Save a seat</span><span><strong>03</strong> Check in</span></div>
+ </div>
+ <div class="hero-visual">
+  <div class="map-illustration" role="img" aria-label="Illustrated route from Jibowu to Mile 2; this is not a live GPS map.">
+   <span class="map-glow map-glow--top" aria-hidden="true"></span><span class="map-glow map-glow--bottom" aria-hidden="true"></span>
+   <span class="map-chip">Route preview</span>
+   <svg viewBox="0 0 560 500" class="route-svg" aria-hidden="true" preserveAspectRatio="xMidYMid meet">
+    <path d="M75 394C168 382 150 231 256 222S391 305 435 219C460 168 468 113 475 77" fill="none" stroke="#D6F86C" stroke-width="6" stroke-linecap="round"/>
+    <circle cx="75" cy="394" r="21" fill="#D6F86C" fill-opacity=".28"/><circle cx="75" cy="394" r="9" fill="#D6F86C"/>
+    <circle cx="475" cy="77" r="21" fill="#D6F86C" fill-opacity=".28"/><circle cx="475" cy="77" r="9" fill="#D6F86C"/>
+    <g class="animated-bus"><rect width="74" height="43" rx="11" fill="#fff"/><rect x="8" y="7" width="58" height="21" rx="5" fill="#B9F1D7"/><rect x="4" y="30" width="67" height="5" rx="2.5" fill="#D6F86C"/><circle cx="17" cy="39" r="7" fill="#092D28"/><circle cx="57" cy="39" r="7" fill="#092D28"/></g>
+   </svg>
+   <span class="map-label map-label--start">Jibowu</span><span class="map-label map-label--end">Mile 2</span>
+   <span class="map-caption">Illustrative route · Not live GPS</span>
+  </div>
+  <div class="floating-note"><span aria-hidden="true" class="note-check">✓</span><span><strong>Know before you go</strong><small>Route, bus and boarding information</small></span></div>
+ </div>
+</section>
+
+<section id="how-it-works" class="section section--soft" aria-labelledby="how-title">
+ <div class="container">
+  <div class="section-heading"><span class="eyebrow">Made for the whole journey</span><h2 id="how-title">Less confusion.<br><span>More clarity.</span></h2><p>From finding a bus to finishing a trip, SafeRide brings the important steps together.</p></div>
+  <div class="feature-grid">
+   {% include "ui/feature_card.html" with feature_number="01" feature_title="Discover" feature_description="Browse routes, boarding stops, buses and trip information." feature_href="#discover" feature_action="Explore routes" only %}
+   {% include "ui/feature_card.html" with feature_number="02" feature_title="Journey" feature_description="Understand seat holds, boarding codes, trip progress and arrival." feature_href="#journey" feature_action="See the journey" only %}
+   {% include "ui/feature_card.html" with feature_number="03" feature_title="Safety" feature_description="Find helpful information, privacy-aware profiles and support options." feature_href="#safety" feature_action="Explore safety" only %}
+  </div>
+ </div>
+</section>
+
+<section id="discover" class="section" aria-labelledby="discover-title">
+ <div class="container section-split">
+  <div><span class="eyebrow">SafeRide Discover</span><h2 id="discover-title">Know the route.<br>Enjoy the journey.</h2><p class="section-lead">Everything begins with knowing where you're going. Explore the Jibowu to Mile 2 route, boarding points and planned stops.</p>
+   <ul class="check-list"><li>Route and boarding-point information</li><li>Bus and driver profile details</li><li>Departure and seat availability experience</li></ul>
+   {% include "ui/action_link.html" with link_href="#journey" link_text="See what comes next" link_variant="primary" only %}
+  </div>
+  <article class="preview-card">
+   <div class="preview-header"><span class="preview-kicker">Route explorer</span>{% include "ui/status_badge.html" with badge_text="Sample journey" badge_variant="neutral" only %}</div>
+   <h3>Jibowu <span aria-hidden="true">→</span> Mile 2</h3><p>From your starting point to your destination, see what lies ahead.</p>
+   <ol class="stop-list" aria-label="Illustrative route stops">
+    <li><span class="stop-number">01</span><span><strong>Jibowu</strong><small>Boarding point</small></span></li>
+    <li><span class="stop-number">02</span><span><strong>Oshodi</strong><small>Intermediate stop</small></span></li>
+    <li><span class="stop-number">03</span><span><strong>Mile 2</strong><small>Destination</small></span></li>
+   </ol>
+  </article>
+ </div>
+</section>
+
+<section id="journey" class="section section--dark" aria-labelledby="journey-title">
+ <div class="container section-split journey-split">
+  <div class="journey-preview">
+   <div class="preview-header"><span class="preview-kicker">Journey preview</span>{% include "ui/status_badge.html" with badge_text="Seat hold example" badge_variant="light" only %}</div>
+   <p class="timer-title">A clear countdown to check-in</p><strong class="timer-example" aria-label="Example countdown of nine minutes and forty two seconds">09:42</strong>
+   <div class="time-track" aria-hidden="true"><span></span></div><div class="journey-preview-footer"><span>Jibowu → Mile 2</span><span>One-time boarding code</span></div>
+  </div>
+  <div><span class="eyebrow eyebrow--dark">SafeRide Journey</span><h2 id="journey-title">Your place.<br>Your pace.</h2><p class="section-lead">An easy-to-follow trip experience: reserve a seat, follow a fair queue, check in and confirm arrival.</p>
+   <ul class="check-list"><li>10-minute seat reservation</li><li>Fair waitlist and two-minute offers</li><li>One-time boarding and arrival confirmation</li></ul>
+   <p class="section-disclosure">This is a design preview. Only the server can confirm a reservation or queue position.</p>
+  </div>
+ </div>
+</section>
+
+<section id="safety" class="section" aria-labelledby="safety-title">
+ <div class="container">
+  <div class="section-heading section-heading--center"><span class="eyebrow">SafeRide Safety</span><h2 id="safety-title">Confidence starts<br>with information.</h2><p>Know what to expect, keep personal information private and find help when you need it.</p></div>
+  <div class="safety-grid">
+   <article class="safety-card"><span class="safety-icon" aria-hidden="true">↗</span><h3>Share trip details</h3><p>Keep trusted people informed of your route and travel plans.</p>{% include "ui/status_badge.html" with badge_text="Planned feature" badge_variant="neutral" only %}</article>
+   <article class="safety-card"><span class="safety-icon" aria-hidden="true">✓</span><h3>Profile status</h3><p>See a limited approval status, never somebody's private documents.</p>{% include "ui/status_badge.html" with badge_text="Privacy first" badge_variant="positive" only %}</article>
+   <article class="safety-card"><span class="safety-icon safety-icon--warm" aria-hidden="true">!</span><h3>Emergency guidance</h3><p>Know how to contact emergency services directly when urgent help is needed.</p>{% include "ui/status_badge.html" with badge_text="No automatic dispatch" badge_variant="neutral" only %}</article>
+  </div>
+  <p class="safety-note">Identity checks, live tracking and emergency dispatch are not connected at this stage. Private reports will only be visible to authorised reviewers when implemented.</p>
+ </div>
+</section>
+<section class="closing-banner"><div class="container closing-inner"><div><span class="eyebrow eyebrow--dark">Every journey matters</span><h2>The better journey starts here.</h2></div>{% include "ui/action_link.html" with link_href="#discover" link_text="Explore SafeRide" link_variant="lime" only %}</div></section>
+{% endblock %}

@@ -1,7 +1,45 @@
-{% load static %}<!DOCTYPE html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>{% block title %}SafeRide{% endblock %}</title><link rel="stylesheet" href="{% static 'css/base.css' %}"></head>
-<body><a class="skip" href="#content">Skip to content</a><header><strong>SafeRide</strong></header>
-<main id="content">{% block content %}{% endblock %}</main>
-<footer>SafeRide demonstration — fictional identities and availability only. Verification cannot guarantee safety.</footer>
-</body></html>
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#064f40">
+  <meta name="description" content="{% block description %}SafeRide — Every journey matters.{% endblock %}">
+  <title>{% block title %}SafeRide — Every Journey Matters{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/base.css' %}">
+  <script defer src="{% static 'js/navigation.js' %}"></script>
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<header class="site-header" data-site-header>
+  <div class="container header-inner">
+    <a href="{% url 'home' %}" class="brand" aria-label="SafeRide homepage"><span>Safe<strong>Ride</strong></span><svg aria-hidden="true" class="brand-pin" width="16" height="20" viewBox="0 0 16 20" fill="none"><path d="M8 1a7 7 0 0 0-7 7c0 4.5 7 11 7 11s7-6.5 7-11a7 7 0 0 0-7-7Z" fill="currentColor"/><circle cx="8" cy="8" r="2.4" fill="white"/></svg></a>
+    <button type="button" class="menu-toggle" data-nav-toggle aria-controls="primary-navigation" aria-expanded="false" aria-label="Open navigation"><span></span><span></span><span></span></button>
+    <nav class="primary-navigation" id="primary-navigation" aria-label="Main navigation" data-primary-nav>
+      <a data-nav-link href="{% url 'home' %}#discover">Discover</a>
+      <a data-nav-link href="{% url 'home' %}#journey">Journey</a>
+      <a data-nav-link href="{% url 'home' %}#safety">Safety</a>
+      {% if user.is_authenticated %}
+      <span class="account-chip">{% if user.role == "DRIVER" %}Driver{% elif user.role == "PASSENGER" %}Passenger{% else %}Account{% endif %}</span>
+      {% else %}
+      <a data-nav-link class="nav-cta" href="{% url 'home' %}#how-it-works">How it works <span aria-hidden="true">↗</span></a>
+      {% endif %}
+    </nav>
+  </div>
+</header>
+{% if messages %}<div class="container site-messages" aria-label="Notifications">
+  {% for message in messages %}{% include "ui/notice.html" with notice_text=message notice_level=message.tags only %}{% endfor %}
+</div>{% endif %}
+<main id="main-content" tabindex="-1">{% block content %}{% endblock %}</main>
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <div><a href="{% url 'home' %}" class="brand brand--footer"><span>Safe<strong>Ride</strong></span></a><p>Every journey matters.</p></div>
+    <nav aria-label="Footer navigation"><a href="{% url 'home' %}#discover">Discover</a><a href="{% url 'home' %}#journey">Journey</a><a href="{% url 'home' %}#safety">Safety</a></nav>
+  </div>
+  <p class="container footer-note">SafeRide is in development. Route illustrations and sample journeys are not live tracking or identity-screening services.</p>
+</footer>
+{% block extra_scripts %}{% endblock %}
+</body>
+</html>
