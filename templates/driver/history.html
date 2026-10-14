@@ -1,0 +1,24 @@
+{% extends "base.html" %}{% load static %}
+{% block title %}Past departures | SafeRide Driver{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/journey.css' %}">{% endblock %}
+{% block content %}
+<section class="trip-page container" aria-labelledby="driver-history-title">
+ <span class="eyebrow">Driver journeys</span><h1 id="driver-history-title">Your completed routes.</h1><p class="trip-page__lead">A record of departures you operated. Passenger rosters stay private and aren't published here.</p>
+ {% if departures %}
+  <div class="history-list">
+  {% for departure in departures %}
+   <article class="history-card">
+    <div class="history-card__body"><span class="history-card__eyebrow">{{ departure.scheduled_departure_at|date:"D j M Y" }}</span><h2>{{ departure.route_label }}</h2>
+    <p>{{ departure.plate_display }} · {{ departure.display_status }}</p>
+    {% if departure.driver_arrived_at %}<p>Driver arrival recorded {{ departure.driver_arrived_at|date:"g:i A" }}</p>{% endif %}
+    </div>
+    {% if departure.detail_url %}<a class="history-card__link" href="{{ departure.detail_url }}">View departure <span aria-hidden="true">→</span></a>{% endif %}
+   </article>
+  {% endfor %}
+  </div>
+ {% else %}
+  <div class="history-empty" role="status"><h2>No completed routes yet.</h2><p>Once you operate a departure, its history appears here.</p>{% if dashboard_url %}<a href="{{ dashboard_url }}" class="button button--primary">Driver dashboard</a>{% endif %}</div>
+ {% endif %}
+ {% include "ui/demo_notice.html" %}
+</section>
+{% endblock %}

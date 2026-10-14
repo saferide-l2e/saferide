@@ -1,0 +1,48 @@
+{% extends "base.html" %}{% load static %}
+{% block title %}My journey | SafeRide{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/journey.css' %}">{% endblock %}
+{% block content %}
+<section class="trip-page container" aria-labelledby="trip-title">
+{% if trip %}
+ <div class="trip-page__heading"><div><span class="eyebrow">SafeRide Journey</span><h1 id="trip-title">Your journey, step by step.</h1><p>{{ trip.route_label }} · {{ trip.plate_display }}</p></div>
+ {% include "ui/status_badge.html" with badge_text=trip.display_status badge_variant="positive" only %}
+ </div>
+ {% if error_message %}<div class="trip-alert trip-alert--error" role="alert">{{ error_message }}</div>{% endif %}
+ {% if info_message %}<div class="trip-alert" role="status">{{ info_message }}</div>{% endif %}
+ <div class="trip-layout">
+  <div class="trip-panel">
+   <span class="trip-panel__kicker">Journey timeline</span>
+   <h2>See where you are.</h2>
+   <ol class="trip-steps">
+    <li class="{% if trip.booking_held_at %}trip-step--done{% endif %}"><span>01</span><div><strong>Seat reserved</strong><p>{% if trip.booking_held_at %}{{ trip.booking_held_at|date:"D j M, g:i A" }}{% else %}Not recorded{% endif %}</p></div></li>
+    <li class="{% if trip.boarded_at %}trip-step--done{% endif %}"><span>02</span><div><strong>Checked in with driver</strong><p>{% if trip.boarded_at %}{{ trip.boarded_at|date:"g:i A" }}{% else %}Not yet checked in{% endif %}</p></div></li>
+    <li class="{% if trip.en_route_at %}trip-step--done{% endif %}"><span>03</span><div><strong>Trip underway</strong><p>{% if trip.en_route_at %}{{ trip.en_route_at|date:"g:i A" }}{% else %}Awaiting departure{% endif %}</p></div></li>
+    <li class="{% if trip.driver_arrived_at %}trip-step--done{% endif %}"><span>04</span><div><strong>Driver marked arrived</strong><p>{% if trip.driver_arrived_at %}{{ trip.driver_arrived_at|date:"g:i A" }}{% else %}Waiting for driver's arrival update{% endif %}</p></div></li>
+    <li class="{% if trip.passenger_confirmed_at %}trip-step--done{% endif %}"><span>05</span><div><strong>You confirmed arrival</strong><p>{% if trip.passenger_confirmed_at %}{{ trip.passenger_confirmed_at|date:"g:i A" }}{% else %}Not yet confirmed by you{% endif %}</p></div></li>
+   </ol>
+  </div>
+  <aside class="trip-side">
+   <div class="trip-confirm">
+    <span>YOUR ARRIVAL</span>
+    {% if trip.passenger_confirmed_at %}
+     <h2>You confirmed your arrival.</h2><p>Thank you. Your arrival confirmation is recorded separately from the driver's update.</p>
+    {% elif trip.driver_arrived_at and trip.booking_status == "BOARDED" %}
+     <h2>Did you reach your stop?</h2><p>The driver marked the trip arrived. Please confirm only after you have personally arrived.</p>
+     {% if can_confirm and confirm_action %}<form method="post" action="{{ confirm_action }}">{% csrf_token %}<button class="button button--lime" type="submit">Yes, I've arrived <span aria-hidden="true">→</span></button></form>
+     {% else %}<p class="trip-side__hint">Arrival confirmation isn't available for this account at the moment.</p>{% endif %}
+    {% else %}
+     <h2>We'll keep you informed.</h2><p>Arrival confirmation is available only after you board and the assigned driver marks this journey arrived.</p>
+    {% endif %}
+   </div>
+   <div class="trip-side-links">{% if history_url %}<a href="{{ history_url }}">My trip history <span aria-hidden="true">→</span></a>{% endif %}
+   {% if reporting_url %}<a href="{{ reporting_url }}">Report a concern privately <span aria-hidden="true">→</span></a>{% endif %}
+   {% if rating_url and trip.passenger_confirmed_at %}<a href="{{ rating_url }}">Rate this trip <span aria-hidden="true">→</span></a>{% endif %}</div>
+   <p class="trip-offline-note">If your connection drops, refresh to get the latest server status. A page timer or map never confirms your arrival.</p>
+  </aside>
+ </div>
+{% else %}
+ <h1 id="trip-title">Journey unavailable</h1><p>This trip may not exist or may not belong to your account.</p>
+{% endif %}
+{% include "ui/demo_notice.html" %}
+</section>
+{% endblock %}
