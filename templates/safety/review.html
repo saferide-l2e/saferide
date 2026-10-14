@@ -1,0 +1,34 @@
+{% extends "base.html" %}{% load static %}
+{% block title %}Rate your journey | SafeRide{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/safety_ui.css' %}">{% endblock %}
+{% block content %}
+<section class="safety-page container" aria-labelledby="review-title">
+ <span class="eyebrow">Journey feedback</span><h1 id="review-title">How was your ride?</h1>
+ <p class="safety-page__lead">Every completed journey is a chance to make the next one better.</p>
+ <div class="safety-page__layout">
+  <article class="safety-panel">
+   {% if error_message %}<div class="safety-alert safety-alert--error" role="alert">{{ error_message }}</div>{% endif %}
+   {% if success_message %}<div class="safety-alert" role="status">{{ success_message }}</div>{% endif %}
+   {% if has_reviewed %}<h2>Your feedback is already recorded.</h2><p>You can submit only one rating for each eligible completed journey.</p>
+   {% elif can_review and trip_is_completed and form and review_action %}
+    <h2>Rate your completed journey</h2>
+    <p>Select from one to five stars and add a short note if you wish.</p>
+    <form method="post" action="{{ review_action }}" novalidate>
+     {% csrf_token %}
+     {% if form.non_field_errors %}<div class="safety-alert safety-alert--error" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+     {% for field in form %}
+       <div class="safety-field">{{ field.label_tag }}{{ field }}
+         {% if field.help_text %}<p class="safety-field__hint">{{ field.help_text }}</p>{% endif %}
+         {% include "ui/field_errors.html" with field=field only %}
+       </div>
+     {% endfor %}
+     <button class="button button--primary safety-submit" type="submit">Submit my rating <span aria-hidden="true">→</span></button>
+    </form>
+   {% else %}<h2>Rating isn't available yet.</h2><p>{{ action_message|default:"Ratings become available after you've completed an eligible journey." }}</p>{% endif %}
+  </article>
+  <aside class="safety-side"><span class="safety-side__eyebrow">Your feedback matters</span><h2>Every journey can improve.</h2><p>Ratings relate to completed trips. If something serious happened, submit a confidential report instead of including personal allegations in public feedback.</p>
+  {% if report_url %}<a href="{{ report_url }}" class="safety-side__link">Report a safety concern privately <span aria-hidden="true">→</span></a>{% endif %}</aside>
+ </div>
+ {% include "ui/demo_notice.html" %}
+</section>
+{% endblock %}
