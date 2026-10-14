@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Bus details | SafeRide{% endblock %}
+{% block description %}Review bus, driver, seat and boarding information before reserving a SafeRide seat.{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/search.css' %}">
+<link rel="stylesheet" href="{% static 'css/bus_detail.css' %}">
+{% endblock %}
+{% block content %}
+<section class="detail-page container" aria-labelledby="bus-detail-title">
+  {% if bus %}
+    <div class="detail-heading">
+      <div>
+        {% if search_url %}<a class="detail-back" href="{{ search_url }}">← Back to buses</a>{% endif %}
+        <span class="eyebrow">Know your ride</span>
+        <h1 id="bus-detail-title">{{ bus.route_label }}</h1>
+        <p>Review your bus, assigned driver and boarding information before you travel.</p>
+      </div>
+      {% if bus.is_full %}
+        {% include "ui/status_badge.html" with badge_text="Bus full" badge_variant="neutral" only %}
+      {% elif bus.is_open %}
+        {% include "ui/status_badge.html" with badge_text="Booking open" badge_variant="positive" only %}
+      {% else %}
+        {% include "ui/status_badge.html" with badge_text="Booking unavailable" badge_variant="neutral" only %}
+      {% endif %}
+    </div>
+    {% if error_message %}<div class="detail-error" role="alert"><strong>We couldn't complete that request.</strong><p>{{ error_message }}</p></div>{% endif %}
+    {% if info_message %}<div class="detail-info" role="status">{{ info_message }}</div>{% endif %}
+    <div class="detail-grid">
+      <div class="detail-main">
+        <div class="detail-visual">
+          <div class="detail-visual__top"><span>Assigned vehicle</span><span>Trip information</span></div>
+          <svg class="detail-vehicle-art" viewBox="0 0 390 220" role="img" aria-label="Illustration of a bus; it is not a photograph of the assigned vehicle" fill="none">
+            <rect x="41" y="41" width="308" height="136" rx="29" fill="white"/>
+            <rect x="69" y="65" width="252" height="77" rx="15" fill="#B7EEDA"/>
+            <path d="M166 65V142M243 65V142" stroke="#317F63" stroke-width="6"/>
+            <rect x="58" y="151" width="274" height="13" rx="6" fill="#D6F86C"/>
+            <circle cx="109" cy="178" r="26" fill="#102F2C"/><circle cx="281" cy="178" r="26" fill="#102F2C"/>
+            <circle cx="109" cy="178" r="10" fill="#D6F86C"/><circle cx="281" cy="178" r="10" fill="#D6F86C"/>
+          </svg>
+          <p>Vehicle preview illustration</p>
+        </div>
+        <article class="detail-card" aria-labelledby="trip-info-title">
+          <h2 id="trip-info-title">Your departure</h2>
+          <dl class="detail-facts">
+            <div><dt>Departure</dt><dd>{% if bus.scheduled_departure_display %}{{ bus.scheduled_departure_display }}{% else %}{{ bus.scheduled_departure_at|date:"D j M Y, g:i A" }}{% endif %}</dd></div>
+            <div><dt>Boarding point</dt><dd>{{ bus.boarding_point }}</dd></div>
+            <div><dt>Destination</dt><dd>{{ bus.destination_point }}</dd></div>
+            <div><dt>Vehicle type</dt><dd>{{ bus.vehicle_type_display }}</dd></div>
+            <div><dt>Plate</dt><dd>{{ bus.plate_display }}</dd></div>
+            <div><dt>Available seats</dt><dd>{% if bus.is_full %}Bus is full{% elif bus.is_open %}{{ bus.available_seats }} remaining{% else %}Bookings closed{% endif %}</dd></div>
+          </dl>
+        </article>
+        <article class="detail-card driver-profile" aria-labelledby="driver-profile-title">
+          <div class="driver-profile__heading"><span class="driver-avatar" aria-hidden="true">{{ bus.driver_initials|default:"DR" }}</span>
+            <div><h2 id="driver-profile-title">Your driver</h2><p>{{ bus.driver_public_name }}</p></div>
+          </div>
+          {% if bus.driver_approved %}{% include "ui/status_badge.html" with badge_text="Profile approved" badge_variant="positive" only %}
+          {% else %}{% include "ui/status_badge.html" with badge_text="Approval unavailable" badge_variant="neutral" only %}{% endif %}
+          <p class="driver-privacy">We show only the driver's public profile and approval status. Private documents and personal contact details are not displayed.</p>
+        </article>
+        {% if route_notices %}
+          <section class="detail-card" aria-labelledby="detail-route-notices">
+            <h2 id="detail-route-notices">Route updates</h2>
+            <ul class="detail-notices">
+              {% for notice in route_notices %}
+                <li><strong>{{ notice.title }}</strong><span>{{ notice.message }}</span><small>{{ notice.published_at|date:"j M, g:i A" }}</small></li>
+              {% endfor %}
+            </ul>
+          </section>
+        {% endif %}
+      </div>
+      <aside class="detail-sidebar" aria-labelledby="booking-title">
+        <div class="detail-booking">
+          <span class="detail-booking__eyebrow">Reserve your seat</span>
+          <h2 id="booking-title">Travel with clarity.</h2>
+          <p class="detail-booking__terms"><strong>Reserve one seat; arrive and check in within 10 minutes or the reservation expires. You may cancel.</strong></p>
+          <div class="detail-booking__status">
+            {% if bus.is_full %}<strong>All seats are taken</strong><p>Join the fair waitlist when you are eligible.</p>
+            {% elif not bus.is_open %}<strong>Bookings are closed</strong><p>This departure isn't accepting reservations.</p>
+            {% else %}<strong>{{ bus.available_seats }} seats available</strong><p>Your reservation is only confirmed after the server accepts it.</p>{% endif %}
+          </div>
+          {% if bus.is_open and not bus.is_full and can_reserve and reserve_action %}
+            <form method="post" action="{{ reserve_action }}">{% csrf_token %}<button class="button button--primary detail-submit" type="submit">Reserve one seat <span aria-hidden="true">→</span></button></form>
+          {% elif bus.is_full and can_join_waitlist and waitlist_action %}
+            <form method="post" action="{{ waitlist_action }}">{% csrf_token %}<button class="button button--primary detail-submit" type="submit">Join waitlist <span aria-hidden="true">→</span></button></form>
+          {% elif verification_url %}
+            <a class="button button--outline detail-submit" href="{{ verification_url }}">View verification status <span aria-hidden="true">→</span></a>
+          {% elif action_message %}
+            <p class="detail-booking__explanation" role="status">{{ action_message }}</p>
+          {% else %}
+            <p class="detail-booking__explanation">Booking and waitlist actions become available when your profile and this departure are eligible.</p>
+          {% endif %}
+          <p class="detail-booking__fineprint">Seat availability may change. Booking and queue limits are enforced by SafeRide, not the timer shown in your browser.</p>
+        </div>
+        {% include "ui/demo_notice.html" %}
+      </aside>
+    </div>
+  {% else %}
+    <div class="detail-empty" role="status"><h1 id="bus-detail-title">This bus isn't available.</h1><p>It may have departed, changed status or been removed from the route.</p>{% if search_url %}<a class="button button--primary" href="{{ search_url }}">Return to buses <span aria-hidden="true">→</span></a>{% endif %}</div>
+  {% endif %}
+</section>
+{% endblock %}
