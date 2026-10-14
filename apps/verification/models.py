@@ -1,52 +1,45 @@
-from typing import ClassVar
+"""Simulated demo verification status (KYC placeholder).
+
+This is NOT real identity verification. No documents, licence numbers, addresses
+or phone numbers are ever stored. Only a status transition record is kept.
+"""
+
+import uuid
 
 from django.conf import settings
 from django.db import models
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 
 
-class VerificationStatus(models.Model):
-    class Status(models.TextChoices):
-        NOT_SUBMITTED = "NOT_SUBMITTED", "Not Submitted"
-        PENDING = "PENDING", "Pending"
-        VERIFIED = "VERIFIED", "Verified"
-        REJECTED = "REJECTED", "Rejected"
-        SUSPENDED = "SUSPENDED", "Suspended"
+class VerificationStatus(models.TextChoices):
+    NOT_SUBMITTED = "NOT_SUBMITTED", "Not submitted"
+    PENDING = "PENDING", "Pending review"
+    VERIFIED = "VERIFIED", "Verified (demo)"
+    REJECTED = "REJECTED", "Rejected"
+    SUSPENDED = "SUSPENDED", "Suspended"
 
+
+class Verification(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.OneToOneField(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name="verification_status",
-        primary_key=True,
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="verification"
     )
     status = models.CharField(
-        max_length=20,
-        choices=Status.choices,
-        default=Status.NOT_SUBMITTED,
+        max_length=16, choices=VerificationStatus.choices, default=VerificationStatus.NOT_SUBMITTED
     )
+    submitted_at = models.DateTimeField(null=True, blank=True)
     reviewed_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name="reviews_conducted",
+        on_delete=models.SET_NULL,
+        related_name="verification_reviews",
     )
     reviewed_at = models.DateTimeField(null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    note = models.CharField(max_length=280, blank=True)
 
     class Meta:
-        indexes: ClassVar[list[models.Index]] = [
-            models.Index(fields=["status"]),
-        ]
+        ordering = ["-submitted_at", "user__display_name"]
+        indexes = [models.Index(fields=["status"])]
 
     def __str__(self):
-        return f"{self.user.email} - {self.status}"
-
-
-# Automatic trigger: Whenever a new User is created, create their default verification record
-@receiver(post_save, sender=settings.AUTH_USER_MODEL)
-def create_user_verification_status(sender, instance, created, **kwargs):
-    if created:
-        VerificationStatus.objects.create(user=instance)
+        return f"{self.user} — {self.get_status_display()}"

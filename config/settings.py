@@ -33,11 +33,16 @@ INSTALLED_APPS = [
     "apps.vehicles.apps.VehiclesConfig",
     "apps.routes.apps.RoutesConfig",
     "apps.departures.apps.DeparturesConfig",
+    "apps.bookings.apps.BookingsConfig",
+    "apps.safety.apps.SafetyConfig",
+    "apps.audit.apps.AuditConfig",
 ]
 
 # Custom User Model configuration (Required before running initial migrations)
 AUTH_USER_MODEL = "accounts.User"
-
+LOGIN_URL = "accounts:login"
+LOGIN_REDIRECT_URL = "core:dashboard"
+LOGOUT_REDIRECT_URL = "core:home"
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -88,6 +93,10 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# SafeRide domain timing (seconds). Server UTC is the only source of truth.
+SAFERIDE_HOLD_SECONDS = 600
+SAFERIDE_OFFER_SECONDS = 120
+SAFERIDE_WALK_IN_DEFAULT = 0
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = "Lax"

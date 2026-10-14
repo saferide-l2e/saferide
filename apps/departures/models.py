@@ -1,94 +1,85 @@
+"""Scheduled departures and their lifecycle.
+
+A departure snapshots the vehicle capacity so later edits to the vehicle cannot
+retroactively change how many seats were promised on an already-published trip.
+"""
+
 import uuid
-from typing import ClassVar
 
-from django.core.exceptions import ValidationError
+from django.conf import settings
 from django.db import models
-from django.db.models import Q
 
-from apps.routes.models import Route
-from apps.vehicles.models import DriverProfile, Vehicle
+
+class DepartureStatus(models.TextChoices):
+    DRAFT = "DRAFT", "Draft"
+    BOARDING_OPEN = "BOARDING_OPEN", "Boarding open"
+    BOARDING_CLOSED = "BOARDING_CLOSED", "Boarding closed"
+    EN_ROUTE = "EN_ROUTE", "En route"
+    ARRIVED = "ARRIVED", "Arrived"
+    CANCELLED = "CANCELLED", "Cancelled"
+
+
+# Allowed forward transitions for the driver lifecycle.
+ALLOWED_TRANSITIONS = {
+    DepartureStatus.DRAFT: {DepartureStatus.BOARDING_OPEN, DepartureStatus.CANCELLED},
+    DepartureStatus.BOARDING_OPEN: {DepartureStatus.BOARDING_CLOSED, DepartureStatus.CANCELLED},
+    DepartureStatus.BOARDING_CLOSED: {DepartureStatus.EN_ROUTE, DepartureStatus.CANCELLED},
+    DepartureStatus.EN_ROUTE: {DepartureStatus.ARRIVED, DepartureStatus.CANCELLED},
+    DepartureStatus.ARRIVED: set(),
+    DepartureStatus.CANCELLED: set(),
+}
+
+ACTIVE_STATUSES = (
+    DepartureStatus.BOARDING_OPEN,
+    DepartureStatus.BOARDING_CLOSED,
+    DepartureStatus.EN_ROUTE,
+)
 
 
 class Departure(models.Model):
-    class Status(models.TextChoices):
-        DRAFT = "DRAFT", "Draft"
-        BOARDING_OPEN = "BOARDING_OPEN", "Boarding open"
-        BOARDING_CLOSED = "BOARDING_CLOSED", "Boarding closed"
-        EN_ROUTE = "EN_ROUTE", "En route"
-        ARRIVED = "ARRIVED", "Arrived"
-        CANCELLED = "CANCELLED", "Cancelled"
-
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     route = models.ForeignKey(
-        Route,
-        on_delete=models.PROTECT,
-        related_name="departures",
-        db_index=False,
+        "routes.Route", on_delete=models.PROTECT, related_name="departures"
     )
     driver = models.ForeignKey(
-        DriverProfile,
-        on_delete=models.PROTECT,
-        related_name="departures",
-        db_index=False,
+        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="departures"
     )
     vehicle = models.ForeignKey(
-        Vehicle,
-        on_delete=models.PROTECT,
-        related_name="departures",
+        "vehicles.Vehicle", on_delete=models.PROTECT, related_name="departures"
     )
     scheduled_departure_at = models.DateTimeField()
+    snapshot_capacity = models.PositiveSmallIntegerField()
+    walk_in_count = models.PositiveIntegerField(default=0)
     status = models.CharField(
-        max_length=20,
-        choices=Status.choices,
-        default=Status.DRAFT,
+        max_length=16, choices=DepartureStatus.choices, default=DepartureStatus.DRAFT
     )
-    capacity_snapshot = models.PositiveIntegerField()
-    walk_in_count = models.IntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        constraints: ClassVar[list] = [
+        ordering = ["scheduled_departure_at"]
+        constraints = [
             models.CheckConstraint(
-                condition=Q(
-                    status__in=[
-                        "DRAFT",
-                        "BOARDING_OPEN",
-                        "BOARDING_CLOSED",
-                        "EN_ROUTE",
-                        "ARRIVED",
-                        "CANCELLED",
-                    ]
-                ),
-                name="departure_status_valid",
+                condition=models.Q(snapshot_capacity__gt=0), name="departure_capacity_positive"
             ),
             models.CheckConstraint(
-                condition=Q(capacity_snapshot__gt=0),
-                name="departure_capacity_positive",
-            ),
-            models.CheckConstraint(
-                condition=Q(walk_in_count__gte=0),
-                name="departure_walk_ins_nonnegative",
+                condition=models.Q(walk_in_count__gte=0), name="departure_walkins_non_negative"
             ),
         ]
-        indexes: ClassVar[list] = [
+        indexes = [
             models.Index(
                 fields=["route", "status", "scheduled_departure_at"],
                 name="departure_route_status_idx",
             ),
-            models.Index(fields=["driver", "status"], name="departure_driver_status_idx"),
+            models.Index(fields=["driver", "status"]),
         ]
 
-    def save(self, *args, **kwargs):
-        if self.pk and type(self).objects.filter(pk=self.pk).exists():
-            old_capacity = type(self).objects.values_list(
-                "capacity_snapshot", flat=True
-            ).get(pk=self.pk)
-            if self.capacity_snapshot != old_capacity:
-                raise ValidationError("A departure capacity snapshot cannot be changed.")
-        super().save(*args, **kwargs)
+    def __str__(self):
+        return f"{self.route} @ {self.scheduled_departure_at:%Y-%m-%d %H:%M} UTC"
 
     @property
-    def safe_display(self):
-        return f"{self.route.display_label} · {self.scheduled_departure_at.isoformat()}"
+    def is_active(self):
+        return self.status in ACTIVE_STATUSES
 
-    def __str__(self):
-        return self.safe_display
+    def can_transition_to(self, new_status):
+        return new_status in ALLOWED_TRANSITIONS.get(self.status, set())

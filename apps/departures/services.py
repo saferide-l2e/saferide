@@ -1,81 +1,188 @@
-from datetime import UTC
+"""Departure publishing and lifecycle transitions (BE-03, BE-09).
 
-from django.core.exceptions import ValidationError
+Only the assigned driver (or staff) may advance a departure. Transitions are
+guarded so a bus cannot enter EN_ROUTE while valid seat holds are outstanding,
+and inventory is reconciled under row lock whenever it changes.
+"""
+
+from django.conf import settings
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
 from django.utils import timezone
 
-from apps.departures.models import Departure
-from apps.vehicles.models import Vehicle
+from apps.accounts.models import Role
+from apps.audit.services import record
+from apps.core.exceptions import StateError
 
-ALLOWED_TRANSITIONS = {
-    Departure.Status.DRAFT: {Departure.Status.BOARDING_OPEN, Departure.Status.CANCELLED},
-    Departure.Status.BOARDING_OPEN: {
-        Departure.Status.BOARDING_CLOSED,
-        Departure.Status.CANCELLED,
-    },
-    Departure.Status.BOARDING_CLOSED: {
-        Departure.Status.EN_ROUTE,
-        Departure.Status.CANCELLED,
-    },
-    Departure.Status.EN_ROUTE: {Departure.Status.ARRIVED},
-    Departure.Status.ARRIVED: set(),
-    Departure.Status.CANCELLED: set(),
-}
+from .models import Departure, DepartureStatus
 
 
-def _ensure_vehicle_owner(departure):
-    if departure.vehicle.driver_id != departure.driver_id:
-        raise ValidationError("The vehicle must belong to the departure's driver.")
+def _require_owner(departure, actor):
+    if actor is None or not getattr(actor, "is_authenticated", False):
+        raise PermissionDenied("Sign in first.")
+    if departure.driver_id != actor.id and not actor.is_staff:
+        raise PermissionDenied("Only the assigned driver may manage this departure.")
 
 
-def _ensure_publishable(departure):
-    _ensure_vehicle_owner(departure)
-    if departure.vehicle.approval_status != Vehicle.ApprovalStatus.APPROVED:
-        raise ValidationError("Only an approved vehicle can be published.")
+def _require_driver_eligible(user):
+    if user.role != Role.DRIVER:
+        raise PermissionDenied("Only drivers can publish departures.")
+    if not user.is_verified:
+        raise PermissionDenied("Your driver verification must be approved first.")
 
 
-def create_departure(*, route, driver, vehicle, scheduled_departure_at, walk_in_count=0):
-    """Create a draft and snapshot vehicle capacity at creation time."""
-    if vehicle.driver_id != driver.id:
-        raise ValidationError("The vehicle must belong to the departure's driver.")
-    if walk_in_count < 0:
-        raise ValidationError({"walk_in_count": "Walk-in count cannot be negative."})
-    if not timezone.is_aware(scheduled_departure_at):
+@transaction.atomic
+def create_departure(user, *, vehicle, route, scheduled_departure_at):
+    """Create a DRAFT departure with a capacity snapshot.
+
+    Rejects departures that leave less than the hold window, because no seat may
+    be promised inside the 600-second boarding window.
+    """
+    _require_driver_eligible(user)
+    if vehicle.driver.user_id != user.id:
+        raise PermissionDenied("You can only publish your own approved vehicle.")
+    if vehicle.approval_status != "APPROVED":
+        raise ValidationError("Your vehicle must be approved before publishing.")
+    if not route.is_active:
+        raise ValidationError("That route is not active.")
+
+    now = timezone.now()
+    if scheduled_departure_at is None:
+        raise ValidationError("Choose a departure time.")
+    if scheduled_departure_at <= now + timezone.timedelta(seconds=settings.SAFERIDE_HOLD_SECONDS):
         raise ValidationError(
-            {"scheduled_departure_at": "A timezone-aware departure time is required."}
+            "Departure must be at least 10 minutes away so a hold can be honoured."
         )
 
     departure = Departure.objects.create(
         route=route,
-        driver=driver,
+        driver=user,
         vehicle=vehicle,
-        scheduled_departure_at=scheduled_departure_at.astimezone(UTC),
-        capacity_snapshot=vehicle.seat_capacity,
-        walk_in_count=walk_in_count,
+        scheduled_departure_at=scheduled_departure_at,
+        snapshot_capacity=vehicle.capacity,
+        status=DepartureStatus.DRAFT,
     )
+    record(user, "departure.created", departure, {"route": str(route.id), "capacity": vehicle.capacity})
     return departure
 
 
 @transaction.atomic
-def transition_departure(departure, new_status):
-    """Apply one valid lifecycle transition, checking publication guards."""
-    try:
-        target = Departure.Status(new_status)
-    except ValueError as exc:
-        raise ValidationError({"status": "Unknown departure status."}) from exc
+def publish(departure, actor):
+    departure = Departure.objects.select_for_update().get(pk=departure.pk)
+    _require_owner(departure, actor)
+    if not departure.can_transition_to(DepartureStatus.BOARDING_OPEN):
+        raise StateError("This departure cannot be opened for boarding now.")
+    departure.status = DepartureStatus.BOARDING_OPEN
+    departure.save(update_fields=["status", "updated_at"])
+    record(actor, "departure.published", departure)
+    return departure
 
-    current = (
-        Departure.objects.select_for_update()
-        .select_related("driver", "vehicle")
-        .get(pk=departure.pk)
+
+@transaction.atomic
+def close_boarding(departure, actor):
+    from apps.bookings.services import reconcile
+
+    departure = Departure.objects.select_for_update().get(pk=departure.pk)
+    _require_owner(departure, actor)
+    if not departure.can_transition_to(DepartureStatus.BOARDING_CLOSED):
+        raise StateError("Boarding cannot be closed from the current status.")
+    reconcile(departure, timezone.now())
+    departure.status = DepartureStatus.BOARDING_CLOSED
+    departure.save(update_fields=["status", "updated_at"])
+    record(actor, "departure.boarding_closed", departure)
+    return departure
+
+
+@transaction.atomic
+def start_trip(departure, actor):
+    """Advance to EN_ROUTE. Blocked while valid holds remain."""
+    from apps.bookings.models import Booking, BookingStatus
+    from apps.bookings.services import reconcile
+
+    departure = Departure.objects.select_for_update().get(pk=departure.pk)
+    _require_owner(departure, actor)
+    if not departure.can_transition_to(DepartureStatus.EN_ROUTE):
+        raise StateError("The trip cannot start from the current status.")
+
+    now = timezone.now()
+    reconcile(departure, now)
+    if Booking.objects.filter(
+        departure=departure, status=BookingStatus.HELD, expires_at__gt=now
+    ).exists():
+        raise StateError("Wait for outstanding seat holds to resolve before departing.")
+
+    departure.status = DepartureStatus.EN_ROUTE
+    departure.save(update_fields=["status", "updated_at"])
+    record(actor, "departure.started", departure)
+    return departure
+
+
+@transaction.atomic
+def mark_arrived(departure, actor):
+    from apps.bookings.models import Booking, BookingStatus
+
+    departure = Departure.objects.select_for_update().get(pk=departure.pk)
+    _require_owner(departure, actor)
+    if not departure.can_transition_to(DepartureStatus.ARRIVED):
+        raise StateError("Arrival can only be recorded once the trip is underway.")
+
+    now = timezone.now()
+    departure.status = DepartureStatus.ARRIVED
+    departure.save(update_fields=["status", "updated_at"])
+    Booking.objects.filter(departure=departure, status=BookingStatus.BOARDED).update(
+        driver_arrived_at=now
     )
-    if target not in ALLOWED_TRANSITIONS[current.status]:
-        raise ValidationError(f"Cannot move a departure from {current.status} to {target}.")
-    if target == Departure.Status.BOARDING_OPEN:
-        _ensure_publishable(current)
-    else:
-        _ensure_vehicle_owner(current)
+    record(actor, "departure.arrived", departure)
+    return departure
 
-    current.status = target
-    current.save(update_fields=["status"])
-    return current
+
+@transaction.atomic
+def cancel_departure(departure, actor):
+    from apps.bookings.models import Booking, BookingStatus, WaitlistEntry, WaitlistStatus
+
+    departure = Departure.objects.select_for_update().get(pk=departure.pk)
+    _require_owner(departure, actor)
+    if departure.status == DepartureStatus.ARRIVED:
+        raise StateError("An arrived trip cannot be cancelled.")
+    if departure.status == DepartureStatus.CANCELLED:
+        raise StateError("This departure is already cancelled.")
+
+    departure.status = DepartureStatus.CANCELLED
+    departure.save(update_fields=["status", "updated_at"])
+    Booking.objects.filter(
+        departure=departure, status__in=[BookingStatus.HELD, BookingStatus.BOARDED]
+    ).update(status=BookingStatus.CANCELLED)
+    WaitlistEntry.objects.filter(
+        departure=departure, status__in=[WaitlistStatus.WAITING, WaitlistStatus.OFFERED]
+    ).update(status=WaitlistStatus.CANCELLED, offer_expires_at=None)
+    record(actor, "departure.cancelled", departure)
+    return departure
+
+
+TRANSITIONS = {
+    "publish": publish,
+    "close_boarding": close_boarding,
+    "start_trip": start_trip,
+    "mark_arrived": mark_arrived,
+    "cancel": cancel_departure,
+}
+
+
+def apply_transition(departure, actor, action):
+    handler = TRANSITIONS.get(action)
+    if handler is None:
+        raise StateError("Unknown departure action.")
+    return handler(departure, actor)
+
+
+__all__ = [
+    "Departure",
+    "DepartureStatus",
+    "apply_transition",
+    "cancel_departure",
+    "close_boarding",
+    "create_departure",
+    "mark_arrived",
+    "publish",
+    "start_trip",
+]

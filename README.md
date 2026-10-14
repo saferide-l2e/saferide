@@ -31,6 +31,27 @@ Single **Django 5.2 LTS** app, Django templates, HTML/CSS/JavaScript, PostgreSQL
 7. `python manage.py runserver` then open http://127.0.0.1:8000/
 8. `pytest` after installing dependencies and preparing PostgreSQL test database.
 
+## Backend (apps/)
+The backend implements the MVP scope in `docs/MVP_SCOPE.md` and the model contract in `docs/DATA_MODEL.md` across eight apps: `accounts`, `verification`, `vehicles`, `routes`, `departures`, `bookings`, `safety` and `audit`.
+
+```bash
+python manage.py migrate            # apply schema
+python manage.py seed_demo         # fictional demo users, route, vehicle, departure
+python manage.py reconcile_departures   # expire stale holds/offers (run on a schedule)
+python manage.py runserver
+```
+
+Seeded demo accounts (password `saferide-demo-123`): `admin@example.test` (staff), `passenger@example.test`, `driver@example.test`.
+
+Business rules live in service functions, not views:
+- `apps/bookings/services.py` — `reserve`, `cancel`, `join_waitlist`, `accept_offer`, `check_in`, `confirm_arrival`, `reconcile`. Holds last exactly 600s; offers 120s; capacity is enforced under `select_for_update` on the departure row.
+- `apps/departures/services.py` — publish and lifecycle transitions (a trip cannot start while valid holds exist).
+- `apps/verification`, `apps/vehicles`, `apps/safety` — status transitions and moderation, all audited via `apps/audit/services.py`.
+
+Every inventory change and its audit event commit together. Unverified/suspended users cannot book or publish, and cross-user access returns 403/404. Tests include PostgreSQL-only concurrency coverage (`tests/test_concurrency.py`); it is skipped on SQLite, which does not support row locks.
+
+**Team interfaces:** see [`docs/BACKEND_INTERFACE.md`](docs/BACKEND_INTERFACE.md) for the URL → view → template contract the frontend team builds against, the JSON polling endpoints, and the models the services depend on. The backend renders template *names*; the frontend team owns the files in `templates/` and `static/`.
+
 ## Teams
 - **Frontend**: `templates/`, `static/`, usability and accessibility.
 - **Backend**: `apps/` business services/views, permissions and transactional logic.
