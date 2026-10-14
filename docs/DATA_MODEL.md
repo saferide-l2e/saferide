@@ -9,9 +9,9 @@ Use UUID IDs for public records, UTC aware datetimes, PostgreSQL in the booking 
 | Vehicle | driver, plate_normalized unique for pilot, plate_display, vehicle_type, capacity > 0, approval_status |
 | Route | origin_name, destination_name, boarding_point, destination_point |
 | Departure | route, driver, vehicle, scheduled_departure_at, capacity_snapshot, walk_in_count >= 0, DRAFT/BOARDING_OPEN/BOARDING_CLOSED/EN_ROUTE/ARRIVED/CANCELLED |
-| Booking | departure, passenger, HELD/BOARDED/COMPLETED/CANCELLED/EXPIRED/DISPUTED, created_at, expires_at, checked_in_at, driver_arrived_at, passenger_confirmed_at |
+| Booking | UUID; departure, passenger, HELD/BOARDED/COMPLETED/CANCELLED/EXPIRED/DISPUTED, created_at, expires_at, checked_in_at, driver_arrived_at, passenger_confirmed_at; partial unique (departure, passenger) while HELD/BOARDED |
 | WaitlistEntry | departure, passenger, WAITING/OFFERED/ACCEPTED/EXPIRED/CANCELLED/INELIGIBLE, joined_at, offered_at, offer_expires_at |
-| BoardingCredential | booking one-to-one, salted single-use code hash, issued_at, consumed_at, revoked_at |
+| BoardingCredential | booking one-to-one, unique salted `code_digest` (never raw code), issued_at, consumed_at, revoked_at |
 | Review | booking unique, author=passenger, stars 1–5, comment, created_at |
 | IncidentReport | booking nullable for route reports, reporter, subject optional, category, description, PENDING/REVIEWED/RESOLVED/DISMISSED |
 | RouteUpdate | route, reporter, type TRAFFIC/SAFETY, note, occurred_at, PENDING/APPROVED/REJECTED |
