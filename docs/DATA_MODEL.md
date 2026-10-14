@@ -8,7 +8,7 @@ Use UUID IDs for public records, UTC aware datetimes, PostgreSQL in the booking 
 | DriverProfile | user one-to-one, approved display fields; licence review STATUS only |
 | Vehicle | driver, plate_normalized unique for pilot, plate_display, vehicle_type, capacity > 0, approval_status |
 | Route | origin_name, destination_name, boarding_point, destination_point |
-| Departure | route, driver, vehicle, scheduled_departure_at, snapshot_capacity, walk_in_count >= 0, DRAFT/BOARDING_OPEN/BOARDING_CLOSED/EN_ROUTE/ARRIVED/CANCELLED |
+| Departure | route, driver, vehicle, scheduled_departure_at, capacity_snapshot, walk_in_count >= 0, DRAFT/BOARDING_OPEN/BOARDING_CLOSED/EN_ROUTE/ARRIVED/CANCELLED |
 | Booking | departure, passenger, HELD/BOARDED/COMPLETED/CANCELLED/EXPIRED/DISPUTED, created_at, expires_at, checked_in_at, driver_arrived_at, passenger_confirmed_at |
 | WaitlistEntry | departure, passenger, WAITING/OFFERED/ACCEPTED/EXPIRED/CANCELLED/INELIGIBLE, joined_at, offered_at, offer_expires_at |
 | BoardingCredential | booking one-to-one, salted single-use code hash, issued_at, consumed_at, revoked_at |
