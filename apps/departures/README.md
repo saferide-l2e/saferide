@@ -1,6 +1,10 @@
 # Departures module
-This directory is reserved for the **departures** SafeRide Django app. No departures feature has been implemented yet.
 
-The team responsible for the relevant [GitHub issue](../../docs/ISSUE_INDEX.md) must create `apps.py`, `models.py`, `views.py`, `urls.py`, `services/`, `migrations/` and tests as required by that issue. Coordinate models/migrations with the Database team. Register this app in `INSTALLED_APPS` **only after** implementing `AppConfig` and confirming migrations/checks.
+Departures store UTC-aware scheduled times and a lifecycle from draft through
+arrival or cancellation. The domain service snapshots vehicle capacity when a
+draft is created, checks driver and vehicle ownership, and only opens boarding
+for an approved vehicle. PostgreSQL guards preserve those ownership and
+capacity-snapshot invariants against direct writes.
 
-Never upload real identity documents or store unverified complaints publicly.
+Seat inventory, booking holds, and boarding credentials belong to their
+separate database and backend issues.

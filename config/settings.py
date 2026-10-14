@@ -31,6 +31,8 @@ INSTALLED_APPS = [
     "apps.accounts",
     "apps.verification",
     "apps.vehicles.apps.VehiclesConfig",
+    "apps.routes.apps.RoutesConfig",
+    "apps.departures.apps.DeparturesConfig",
 ]
 
 # Custom User Model configuration (Required before running initial migrations)

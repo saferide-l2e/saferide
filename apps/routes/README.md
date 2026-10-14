@@ -1,6 +1,8 @@
 # Routes module
-This directory is reserved for the **routes** SafeRide Django app. No routes feature has been implemented yet.
 
-The team responsible for the relevant [GitHub issue](../../docs/ISSUE_INDEX.md) must create `apps.py`, `models.py`, `views.py`, `urls.py`, `services/`, `migrations/` and tests as required by that issue. Coordinate models/migrations with the Database team. Register this app in `INSTALLED_APPS` **only after** implementing `AppConfig` and confirming migrations/checks.
+Routes store origin and destination names, boarding and destination points, and
+a display label for departures. The initial migration seeds a fictional route
+labelled `DEMO: Jibowu → Mile 2`; it is sample data, not live service data.
 
-Never upload real identity documents or store unverified complaints publicly.
+Do not store identity documents, personal phone numbers, or unmoderated safety
+reports in this app.
