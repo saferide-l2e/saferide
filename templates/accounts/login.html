@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Sign in | SafeRide{% endblock %}
+{% block description %}Sign in securely to your SafeRide account.{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/auth.css' %}">{% endblock %}
+{% block content %}
+<section class="auth-layout container" aria-labelledby="login-heading">
+  <div class="auth-main">
+    <span class="eyebrow">Welcome back</span>
+    <h1 id="login-heading">Your journey awaits.</h1>
+    <p class="auth-intro">Sign in with your email address and password to continue.</p>
+    <form method="post" action="{{ form_action|default:request.path }}" class="auth-form" novalidate>
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+        <div class="form-alert" role="alert" id="login-form-errors">
+          <strong>We couldn't sign you in.</strong>
+          <ul>{% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}</ul>
+        </div>
+      {% endif %}
+      {% include "includes/form_fields.html" with form=form only %}
+      {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+      <button class="button button--primary auth-submit" type="submit">Sign in securely <span aria-hidden="true">→</span></button>
+      <p class="auth-switch">New to SafeRide?
+        {% url 'register' as named_register_url %}
+        {% if register_url or named_register_url %}
+          <a href="{{ register_url|default:named_register_url }}">Create an account</a>
+        {% else %}
+          <span>Registration opens soon.</span>
+        {% endif %}
+      </p>
+    </form>
+    <p class="auth-security-note">Never share your password or boarding code. SafeRide will not ask for either in an unsolicited message.</p>
+  </div>
+  <aside class="auth-art" aria-label="About SafeRide">
+    <div class="auth-art-glow" aria-hidden="true"></div>
+    <span class="auth-art-kicker">Welcome to the journey</span>
+    <h2>Your route.<br>Your seat.<br><span>Your peace of mind.</span></h2>
+    <div class="auth-journey" aria-hidden="true"><span class="auth-journey-stop"></span><span class="auth-journey-track"></span><span class="auth-journey-stop"></span></div>
+    <div class="auth-art-summary">
+      <p><strong>Discover</strong><span>See stops, departures and bus information.</span></p>
+      <p><strong>Journey</strong><span>Keep track of your place from booking to arrival.</span></p>
+    </div>
+  </aside>
+</section>
+{% endblock %}

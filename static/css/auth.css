@@ -1,0 +1,39 @@
+/* FE-02: SafeRide account UI. No client-side authentication or token storage. */
+.auth-layout{display:grid;grid-template-columns:minmax(0,1fr);gap:26px;padding-block:46px 80px;align-items:stretch}
+.auth-main{padding:12px 0 25px;min-width:0}
+.auth-main h1{font-size:clamp(2.5rem,6vw,3.85rem);letter-spacing:-.065em;line-height:1.13;margin:24px 0 10px}
+.auth-intro{color:var(--muted);max-width:470px;line-height:1.7}
+.auth-form{margin-top:32px;max-width:490px}
+.form-field{margin-bottom:20px}
+.form-field>label{display:block;font-weight:750;color:var(--ink);font-size:.9rem;margin-bottom:7px}
+.form-field input:not([type=checkbox]),.form-field select,.form-field textarea{display:block;width:100%;max-width:100%;min-height:52px;border:1px solid #afc6bb;color:var(--ink);background:#fff;border-radius:12px;padding:13px 16px;appearance:auto}
+.form-field input:not([type=checkbox]):focus,.form-field select:focus,.form-field textarea:focus{outline:3px solid #b4dfd0;outline-offset:2px;border-color:var(--green)}
+.form-field--error input,.form-field--error select,.form-field--error textarea{border-color:#a83929!important}
+.form-field--checkbox{margin:21px 0}
+.checkbox-row{display:flex;gap:12px;align-items:flex-start}
+.checkbox-row>input{width:22px;height:22px;margin:1px 0 0;accent-color:var(--green);flex:none}
+.checkbox-row>label{font-size:.9rem;line-height:1.6;max-width:450px;cursor:pointer}
+.form-field--role select{font-weight:700;color:var(--forest);background:var(--mint)}
+.field-help{font-size:.8rem;color:var(--muted);margin:6px 0}
+.field-errors{font-size:.85rem;color:#a53725;margin:8px 0;padding-left:20px}
+.form-alert{border-radius:12px;background:#fff0ed;border:1px solid #dba59c;padding:15px 17px;margin-bottom:22px;color:#702c21}
+.form-alert ul{margin:6px 0 0;padding-left:21px}
+.form-privacy,.auth-security-note{font-size:.78rem;line-height:1.7;color:var(--muted)}
+.auth-submit{width:100%;cursor:pointer;border:0;margin-top:15px}
+.auth-switch{margin:22px 0 0;text-align:center;font-size:.91rem;color:var(--muted)}
+.auth-switch a{color:var(--green);font-weight:800;text-decoration:underline;text-underline-offset:3px}
+.auth-security-note{max-width:490px;margin-top:25px}
+.auth-art{position:relative;overflow:hidden;background:var(--forest);border-radius:23px;min-height:360px;padding:36px;color:#fff;isolation:isolate}
+.auth-art-glow{position:absolute;z-index:-1;border-radius:50%;background:#137f5e;width:340px;height:340px;right:-120px;top:-100px;opacity:.65}
+.auth-art-kicker{text-transform:uppercase;letter-spacing:.11em;color:#d4f1df;font-size:.75rem;font-weight:850}
+.auth-art h2{font-size:clamp(2.25rem,4.8vw,4.1rem);line-height:1.15;letter-spacing:-.065em;margin:35px 0}
+.auth-art h2 span{color:var(--lime)}
+.auth-journey{display:flex;align-items:center;gap:0;max-width:320px;margin:35px 0 38px}
+.auth-journey-track{height:3px;flex:1;background:linear-gradient(90deg,var(--lime),#77cfa4)}
+.auth-journey-stop{width:22px;height:22px;background:var(--lime);border:6px solid #3d7d60;border-radius:50%;flex:none}
+.auth-art-summary{display:grid;gap:12px}
+.auth-art-summary p{display:flex;flex-direction:column;gap:3px;padding:15px 17px;border:1px solid #4e9476;background:#135c48;border-radius:14px;margin:0}
+.auth-art-summary strong{font-size:1rem}
+.auth-art-summary span{font-size:.85rem;color:#e0f2e6}
+@media(min-width:840px){.auth-layout{grid-template-columns:minmax(0,1fr) minmax(0,.95fr);gap:clamp(40px,6vw,100px);padding-block:70px 105px;min-height:770px}.auth-main{padding-block:28px}.auth-art{padding:48px;min-height:650px}.auth-art-summary{margin-top:35px}}
+@media(max-width:420px){.auth-main h1{font-size:2.45rem}.auth-art{padding:27px}.auth-art h2{font-size:2.45rem}}
