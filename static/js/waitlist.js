@@ -96,6 +96,7 @@
         if (Number.isFinite(actualExpiry)) expiresAt = actualExpiry;
         if (status !== "OFFERED") {
           if (readout) readout.textContent = "--:--";
+          document.querySelectorAll(".offer-actions button").forEach(function (button) { button.disabled = true; });
           tell("The offer is now " + status.toLowerCase().replaceAll("_", " ") + ". Refresh for the next step.");
         }
       } else if (status !== "WAITING") {
