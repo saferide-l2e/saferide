@@ -6,11 +6,12 @@ or form submissions. Data is deliberately fictional. Never import into productio
 """
 
 # ruff: noqa: I001  # Review-only view imports; no application runtime effect.
-from datetime import UTC, datetime, timedelta
+from datetime import timedelta
 
 from django import forms
 from django.http import Http404
 from django.shortcuts import render
+from django.utils import timezone
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_GET
 
@@ -107,9 +108,6 @@ class CommunityForm(forms.Form):
     note = forms.CharField(label="Route update", widget=forms.Textarea)
 
 
-NOW = datetime(2026, 10, 14, 20, 0, tzinfo=UTC)
-
-
 def uri(slug):
     """Static visual-review URL; never a booking or approval endpoint."""
     return f"/preview/{slug}/"
@@ -117,9 +115,10 @@ def uri(slug):
 
 def _sample():
     """Only safe, fictional public fields. No model instances or private credentials."""
+    now = timezone.now()
     departure = {
         "route_label": "Jibowu → Mile 2",
-        "scheduled_departure_at": NOW + timedelta(hours=4),
+        "scheduled_departure_at": now + timedelta(hours=4),
         "boarding_point": "Jibowu Park",
         "destination_point": "Mile 2",
         "vehicle_type_display": "Minibus",
@@ -144,7 +143,7 @@ def _sample():
         "route_label": departure["route_label"],
         "boarding_point": departure["boarding_point"],
         "plate_display": departure["plate_display"],
-        "expires_at": NOW + timedelta(seconds=600),
+        "expires_at": now + timedelta(seconds=600),
         "boarding_code": "482913",
     }
     trip = {
@@ -152,16 +151,16 @@ def _sample():
         "plate_display": departure["plate_display"],
         "display_status": "On the way",
         "booking_status": "BOARDED",
-        "booking_held_at": NOW - timedelta(minutes=35),
-        "boarded_at": NOW - timedelta(minutes=25),
-        "en_route_at": NOW - timedelta(minutes=18),
+        "booking_held_at": now - timedelta(minutes=35),
+        "boarded_at": now - timedelta(minutes=25),
+        "en_route_at": now - timedelta(minutes=18),
         "driver_arrived_at": None,
         "passenger_confirmed_at": None,
     }
     passenger = {
         "initials": "TA", "public_display_name": "Tomi A.",
         "short_reference": "SR-1024", "status": "HELD", "verified": True,
-        "expires_at": NOW + timedelta(seconds=600),
+        "expires_at": now + timedelta(seconds=600),
     }
     vehicle = {
         "vehicle_type_display": "Minibus", "plate_display": "SRD-204",
@@ -177,13 +176,13 @@ def _sample():
                                "available_seats": 0, "is_full": True,
                                "driver_name": "Tunde K.", "detail_url": uri("bus-detail")}],
         "bus": departure, "route_notices": [],
-        "booking": hold, "server_now": NOW,
+        "booking": hold, "server_now": now,
         "entry": {"status": "WAITING", "route_label": departure["route_label"],
                   "position": 4, "people_ahead": 3},
         "offer": {"status": "OFFERED", "route_label": departure["route_label"],
-                  "expires_at": NOW + timedelta(seconds=120)},
+                  "expires_at": now + timedelta(seconds=120)},
         "trip": trip,
-        "trips": [{**trip, "departed_at": NOW - timedelta(days=2),
+        "trips": [{**trip, "departed_at": now - timedelta(days=2),
                    "display_status": "Completed", "detail_url": uri("trip")}],
         "departure": {**departure, "vehicle_plate": departure["plate_display"],
                       "detail_url": uri("departure-detail")},
@@ -198,7 +197,7 @@ def _sample():
         "updates": [{"status": "APPROVED", "type_label": "Boarding point",
                      "route_label": departure["route_label"],
                      "note": "Boarding point information posted for staff review.",
-                     "published_at": NOW}],
+                     "published_at": now}],
         "route_label": departure["route_label"],
         "profile": {"initials": "AO", "public_display_name": "Amina O.", "is_approved": True},
         "status": "PENDING", "can_submit": True,
@@ -350,6 +349,14 @@ def page(request, slug):
         context["search_url"] = uri("results")
         context["origin"] = request.GET.get("origin", "Jibowu")[:120]
         context["destination"] = request.GET.get("destination", "Mile 2")[:120]
+        start_point = " ".join(context["origin"].casefold().split())
+        end_point = " ".join(context["destination"].casefold().split())
+        if start_point != "jibowu" or end_point not in {"mile 2", "mile2"}:
+            context["buses"] = []
+            context["error_message"] = (
+                "This route isn't in the current pilot listing. "
+                "Explore Jibowu to Mile 2 while more routes are being prepared."
+            )
     elif slug == "bus-detail":
         context["search_url"] = uri("results")
     if slug == "register":
