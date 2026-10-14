@@ -1,0 +1,40 @@
+{% extends "base.html" %}{% load static %}
+{% block title %}My vehicles | SafeRide{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/vehicles.css' %}">{% endblock %}
+{% block content %}
+<section class="vehicle-page container" aria-labelledby="vehicles-title">
+<div class="vehicle-page-heading">
+ <div><span class="eyebrow">Driver space</span><h1 id="vehicles-title">My vehicles.</h1><p class="vehicle-lead">Manage your bus details and see which vehicles have been approved.</p></div>
+ {% if can_register and register_url %}<a class="button button--primary" href="{{ register_url }}">+ Add a vehicle</a>{% endif %}
+</div>
+{% if error_message %}<p class="vehicle-error" role="alert">{{ error_message }}</p>{% endif %}
+{% if vehicles %}
+<div class="vehicle-list">
+{% for vehicle in vehicles %}
+ <article class="vehicle-row">
+  <span class="vehicle-row__icon" aria-hidden="true">▰</span>
+  <div class="vehicle-row__body">
+   <div class="vehicle-row__heading"><h2>{{ vehicle.vehicle_type_display }}</h2>
+   {% if vehicle.approval_status == "APPROVED" %}{% include "ui/status_badge.html" with badge_text="Approved" badge_variant="positive" only %}
+   {% elif vehicle.approval_status == "PENDING" %}{% include "ui/status_badge.html" with badge_text="Awaiting review" badge_variant="neutral" only %}
+   {% elif vehicle.approval_status == "REJECTED" %}{% include "ui/status_badge.html" with badge_text="Not approved" badge_variant="neutral" only %}
+   {% elif vehicle.approval_status == "SUSPENDED" %}{% include "ui/status_badge.html" with badge_text="Suspended" badge_variant="neutral" only %}
+   {% else %}{% include "ui/status_badge.html" with badge_text="Status unavailable" badge_variant="neutral" only %}{% endif %}
+   </div>
+   <dl class="vehicle-facts"><div><dt>Plate</dt><dd>{{ vehicle.plate_display }}</dd></div><div><dt>Seats</dt><dd>{{ vehicle.seat_capacity }}</dd></div></dl>
+   {% if vehicle.approval_status == "APPROVED" %}
+     <p>Approved for this pilot. A published departure still requires an eligible driver and departure time.</p>
+     {% if vehicle.can_publish and vehicle.publish_url %}<a class="vehicle-publish" href="{{ vehicle.publish_url }}">Publish a departure <span aria-hidden="true">→</span></a>{% endif %}
+   {% elif vehicle.approval_status == "PENDING" %}<p>Staff review is pending. Passengers won't see this vehicle until it is approved.</p>
+   {% elif vehicle.approval_status == "REJECTED" %}<p>Approval was not granted. Check the review instructions before trying again.</p>{% if vehicle.review_note %}<p class="vehicle-review-note">{{ vehicle.review_note }}</p>{% endif %}
+   {% elif vehicle.approval_status == "SUSPENDED" %}<p>Departure publishing is unavailable for this vehicle.</p>{% else %}<p>Contact support to check the vehicle's review status.</p>{% endif %}
+  </div>
+ </article>
+{% endfor %}
+</div>
+{% else %}
+ <div class="vehicle-empty" role="status"><h2>No vehicles yet.</h2><p>Register a vehicle to begin the review process.</p>{% if can_register and register_url %}<a class="button button--primary" href="{{ register_url }}">Register vehicle <span aria-hidden="true">→</span></a>{% endif %}</div>
+{% endif %}
+{% include "ui/demo_notice.html" %}
+</section>
+{% endblock %}

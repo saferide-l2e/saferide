@@ -1,0 +1,39 @@
+/* SafeRide FE-04, shared UI tokens from base.css */
+.vehicle-page{padding-block:52px 95px}
+.vehicle-back{display:inline-block;color:var(--green);font-weight:850;text-decoration:underline;text-underline-offset:4px;font-size:.87rem;margin-bottom:24px}
+.vehicle-page h1{font-size:clamp(2.2rem,5vw,4rem);line-height:1.12;letter-spacing:-.06em;margin:22px 0 12px}
+.vehicle-lead{font-size:1rem;color:var(--muted);line-height:1.75;max-width:760px}
+.vehicle-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:22px;margin-block:31px 25px}
+.vehicle-surface{background:#fff;border:1px solid var(--line);border-radius:20px;padding:25px;min-width:0}
+.vehicle-surface h2{font-size:clamp(1.5rem,3vw,2rem);letter-spacing:-.05em;margin:0 0 24px}
+.vehicle-surface>p{color:var(--muted);line-height:1.7}
+.vehicle-field{margin:0 0 21px}
+.vehicle-field label{display:block;font-weight:850;font-size:.9rem;margin-bottom:9px}
+.vehicle-field input,.vehicle-field select{display:block;width:100%;min-height:52px;max-width:100%;background:var(--cream);border:1px solid #a4c0b3;border-radius:11px;padding:12px;color:var(--ink)}
+.vehicle-field--error input,.vehicle-field--error select{border-color:#b34031}
+.vehicle-help{font-size:.8rem;color:var(--muted);line-height:1.65}
+.vehicle-error,.vehicle-success{padding:13px 15px;margin:15px 0;background:#fff0ea;border:1px solid #dca99e;color:#792e25;border-radius:12px}
+.vehicle-success{color:var(--forest);border-color:#b4d9bf;background:var(--mint)}
+.vehicle-submit{width:100%;cursor:pointer;border:0}
+.vehicle-side{position:relative;overflow:hidden;background:var(--forest);border-radius:20px;padding:28px;color:#fff;align-self:start}
+.vehicle-side>span{color:var(--lime);font-size:.75rem;letter-spacing:.065em;font-weight:900}
+.vehicle-side h2{font-size:clamp(1.7rem,3vw,2.5rem);line-height:1.2;letter-spacing:-.055em;margin:22px 0}
+.vehicle-side p{color:#e0f2e5;font-size:.9rem;line-height:1.75}
+.vehicle-side ol{padding-left:22px;display:grid;gap:12px}
+.vehicle-side svg{display:block;max-width:85%;margin:28px auto 8px}
+.vehicle-page>.data-notice{margin-top:24px}
+.vehicle-page-heading{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:23px;margin-bottom:32px}
+.vehicle-list{display:grid;gap:16px}
+.vehicle-row{background:#fff;border:1px solid var(--line);border-radius:19px;padding:23px;display:grid;grid-template-columns:minmax(0,1fr);gap:20px}
+.vehicle-row__icon{display:grid;place-items:center;width:74px;height:74px;background:var(--mint);color:var(--forest);font-size:2rem;border-radius:14px}
+.vehicle-row__body{min-width:0}
+.vehicle-row__heading{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}
+.vehicle-row h2{font-size:1.45rem;letter-spacing:-.05em;margin:0}
+.vehicle-facts{display:flex;gap:27px;flex-wrap:wrap;margin:17px 0}.vehicle-facts dt{font-size:.73rem;color:var(--muted);text-transform:uppercase;font-weight:850}.vehicle-facts dd{margin:3px 0 0;font-weight:800}
+.vehicle-row__body p{font-size:.88rem;color:var(--muted);line-height:1.7}
+.vehicle-publish{font-size:.91rem;font-weight:850;color:var(--green);text-decoration:underline;text-underline-offset:4px}
+.vehicle-review-note{padding:12px;background:#fff1df;border-radius:9px}
+.vehicle-empty{max-width:750px;background:#fff;border:1px dashed #9dc3ae;border-radius:19px;padding:45px 25px;text-align:center}
+.vehicle-empty h2{margin:0;font-size:1.7rem}.vehicle-empty p{color:var(--muted);margin-bottom:25px}
+@media(min-width:720px){.vehicle-grid{grid-template-columns:minmax(0,1fr) minmax(270px,.85fr)}.vehicle-row{grid-template-columns:90px minmax(0,1fr)}.vehicle-surface{padding:37px}.vehicle-side{padding:35px}}
+@media(min-width:980px){.vehicle-page{padding-top:75px}.vehicle-grid{gap:43px}}
