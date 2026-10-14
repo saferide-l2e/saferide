@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Driver profile | SafeRide{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/verification.css' %}">{% endblock %}
+{% block content %}
+<section class="public-profile container" aria-labelledby="driver-profile-title">
+  <span class="eyebrow">SafeRide driver</span>
+  <div class="public-profile__card">
+    {% if profile %}
+      <span class="public-profile__avatar" aria-hidden="true">{{ profile.initials|default:"SR" }}</span>
+      <h1 id="driver-profile-title">{{ profile.public_display_name }}</h1>
+      <p>Driver profile</p>
+      {% if profile.is_approved %}{% include "ui/status_badge.html" with badge_text="Simulated profile approved" badge_variant="positive" only %}
+      {% else %}{% include "ui/status_badge.html" with badge_text="Approval unavailable" badge_variant="neutral" only %}{% endif %}
+      <p class="public-profile__privacy">This card contains approved public profile information only. No licence scan, private incident report, phone number or legal ID is displayed.</p>
+    {% else %}
+      <h1 id="driver-profile-title">Profile unavailable</h1><p>This driver's public profile can't be displayed.</p>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

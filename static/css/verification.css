@@ -1,0 +1,32 @@
+/* FE-03 responsive account eligibility and limited public profiles */
+.verify-page,.public-profile{padding-block:54px 100px}
+.verify-page h1{font-size:clamp(2.25rem,5vw,4rem);line-height:1.12;letter-spacing:-.065em;margin:21px 0 12px}
+.verify-intro{max-width:695px;color:var(--muted);line-height:1.75}
+.verify-page>.data-notice{max-width:980px;margin-block:24px}
+.verify-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:23px}
+.verify-card{background:#fff;border:1px solid var(--line);border-radius:21px;padding:25px}
+.verify-card__top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:14px}
+.verify-kicker{text-transform:uppercase;font-size:.72rem;letter-spacing:.06em;color:var(--green);font-weight:900}
+.verify-card h2{font-size:clamp(1.55rem,3vw,2.3rem);letter-spacing:-.055em;line-height:1.2;margin:28px 0 12px}
+.verify-card>p{color:var(--muted);line-height:1.75}.verify-card .button{margin-top:21px}
+.verify-reason{background:#fff1dd;padding:14px;border-radius:11px}
+.verify-alert{padding:14px 17px;border:1px solid #b1ddc5;border-radius:12px;background:var(--mint);color:var(--forest);margin:19px 0}
+.verify-alert--error{border-color:#dfb7ab;background:#fff0ed;color:#853321}
+.verify-form{margin-top:26px;padding-top:23px;border-top:1px solid var(--line)}
+.verify-form .form-field{margin-bottom:20px}
+.verify-form .form-field>label{display:block;font-weight:780;margin-bottom:8px}
+.verify-form input:not([type=checkbox]),.verify-form select,.verify-form textarea{width:100%;min-height:51px;border:1px solid #abcbbb;border-radius:11px;padding:12px;background:white}
+.verify-form input[type=checkbox]{width:21px;height:21px;accent-color:var(--green)}
+.verify-form .checkbox-row{display:flex;align-items:flex-start;gap:12px}
+.verify-form .field-errors{color:#9a2f21}
+.verify-link{color:var(--green);text-decoration:underline;text-underline-offset:4px;font-weight:850}
+.verify-side{background:var(--forest);color:#fff;border-radius:21px;padding:28px;align-self:start;overflow:hidden}
+.verify-side__icon{display:grid;place-items:center;height:56px;width:56px;background:var(--lime);color:var(--forest);border-radius:50%;font-weight:900;font-size:1.5rem}
+.verify-side h2{font-size:clamp(1.7rem,3vw,2.5rem);line-height:1.17;letter-spacing:-.055em;margin:25px 0 13px}
+.verify-side>p{color:#dcf2e3;line-height:1.75}.verify-side ol{padding-left:24px;display:grid;gap:11px}
+.verify-side__note{border-top:1px solid #509473;padding-top:18px;font-size:.8rem}
+.public-profile__card{margin-top:23px;padding:30px;background:#fff;border:1px solid var(--line);border-radius:21px;max-width:660px}
+.public-profile__avatar{display:grid;place-items:center;width:80px;height:80px;border-radius:50%;background:var(--mint);font-size:1.6rem;color:var(--forest);font-weight:900}
+.public-profile__card h1{font-size:clamp(2rem,4vw,3rem);letter-spacing:-.055em;margin:23px 0 5px}
+.public-profile__card>p{color:var(--muted)}.public-profile__privacy{margin:25px 0 0;padding-top:17px;border-top:1px solid var(--line);line-height:1.75;font-size:.84rem}
+@media(min-width:840px){.verify-grid{grid-template-columns:minmax(0,1.55fr) minmax(300px,.95fr);gap:26px}.verify-card{padding:37px}.verify-side{padding:39px}.verify-page{padding-top:72px}}
