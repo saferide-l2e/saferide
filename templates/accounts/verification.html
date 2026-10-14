@@ -41,7 +41,17 @@
       <form method="post" action="{{ submit_action }}" class="verify-form">
         {% csrf_token %}
         {% if form.non_field_errors %}<div role="alert" class="verify-alert verify-alert--error">{{ form.non_field_errors }}</div>{% endif %}
-        {% include "includes/form_fields.html" with form=form only %}
+        {% for field in form %}
+          <div class="form-field{% if field.errors %} form-field--error{% endif %}">
+            {% if field.field.widget.input_type == 'checkbox' %}
+              <div class="checkbox-row">{{ field }}{{ field.label_tag }}</div>
+            {% else %}
+              {{ field.label_tag }}{{ field }}
+            {% endif %}
+            {% if field.help_text %}<p class="field-help">{{ field.help_text }}</p>{% endif %}
+            {% include "ui/field_errors.html" with field=field only %}
+          </div>
+        {% endfor %}
         <button class="button button--primary" type="submit">Submit for staff review <span aria-hidden="true">→</span></button>
       </form>
       {% endif %}
