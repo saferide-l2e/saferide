@@ -1,0 +1,33 @@
+{% extends "base.html" %}{% load static %}
+{% block title %}Share route update | SafeRide{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/safety_ui.css' %}">{% endblock %}
+{% block content %}
+<section class="safety-page container" aria-labelledby="route-update-title">
+ {% if feed_url %}<a href="{{ feed_url }}" class="safety-back">← Route notices</a>{% endif %}
+ <span class="eyebrow">Community contributions</span><h1 id="route-update-title">Something useful to share?</h1>
+ <p class="safety-page__lead">Report a fictional route condition, traffic observation or boarding notice for staff review.</p>
+ <div class="safety-page__layout">
+  <article class="safety-panel">
+    {% if error_message %}<div class="safety-alert safety-alert--error" role="alert">{{ error_message }}</div>{% endif %}
+    {% if submitted %}<div class="safety-alert" role="status"><strong>Update submitted for review.</strong><p>Your post remains pending until authorised staff approve it. It won't appear publicly until then.</p></div>
+    {% elif can_submit and form and form_action %}
+      <h2>Your update</h2>
+      <form method="post" action="{{ form_action }}" novalidate>
+      {% csrf_token %}
+      {% if form.non_field_errors %}<div class="safety-alert safety-alert--error" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+      {% for field in form %}<div class="safety-field">{{ field.label_tag }}{{ field }}
+        {% if field.help_text %}<p class="safety-field__hint">{{ field.help_text }}</p>{% endif %}
+        {% include "ui/field_errors.html" with field=field only %}
+      </div>{% endfor %}
+      <button class="button button--primary safety-submit" type="submit">Submit for review <span aria-hidden="true">→</span></button>
+      </form>
+    {% else %}<h2>Contributions are unavailable.</h2><p>{{ action_message|default:"An eligible account is needed before a route update can be submitted." }}</p>{% endif %}
+  </article>
+  <aside class="safety-side"><span class="safety-side__eyebrow">Community guidelines</span><h2>Useful information, responsibly shared.</h2>
+   <p>Describe the route and the observed condition. Avoid names, private phone numbers or claims about an individual passenger or driver.</p>
+   <p>Staff moderation is required before any report is visible in the public feed.</p>
+  </aside>
+ </div>
+ {% include "ui/demo_notice.html" %}
+</section>
+{% endblock %}
