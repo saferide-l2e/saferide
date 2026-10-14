@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Check in a passenger | SafeRide Driver{% endblock %}
+{% block description %}Confirm boarding for a passenger with a one-time SafeRide code.{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/driver_boarding.css' %}"><script defer src="{% static 'js/roster.js' %}"></script>{% endblock %}
+{% block content %}
+<section class="checkin-page container" aria-labelledby="checkin-title">
+  <span class="eyebrow">Driver boarding desk</span><h1 id="checkin-title">One code. One check-in.</h1>
+  <p class="checkin-intro">Enter the private boarding code from a passenger assigned to your bus. A code can only be used once before its seat hold expires.</p>
+  {% if error_message %}<div class="boarding-error" role="alert"><strong>We couldn't check in this passenger.</strong><p>{{ error_message }}</p></div>{% endif %}
+  {% if success_message %}<div class="boarding-success" role="status"><strong>Check-in confirmed.</strong><p>{{ success_message }}</p></div>{% endif %}
+  <div class="checkin-grid">
+    <div class="checkin-form-card">
+      {% if can_check_in and checkin_action %}
+        <span class="checkin-eyebrow">Boarding verification</span><h2>Enter a six-digit code</h2>
+        <form method="post" action="{{ checkin_action }}" data-boarding-submit>
+          {% csrf_token %}
+          <label for="boarding-code">Passenger boarding code</label>
+          <input id="boarding-code" type="text" name="boarding_code" required minlength="6" maxlength="6" inputmode="numeric" pattern="[0-9]{6}" autocomplete="off" placeholder="000000" aria-describedby="boarding-help">
+          <p class="checkin-help" id="boarding-help">Ask the passenger to show the code privately. Never record or repeat it aloud in public.</p>
+          <button class="button button--primary" type="submit">Confirm boarding <span aria-hidden="true">→</span></button>
+        </form>
+      {% else %}
+        <h2>Boarding isn't available</h2><p>{{ action_message|default:"Only the assigned driver can check in an eligible passenger while boarding is open." }}</p>
+      {% endif %}
+      {% if roster_url %}<a class="checkin-roster-link" href="{{ roster_url }}">← Return to passenger list</a>{% endif %}
+    </div>
+    <aside class="checkin-tip"><span class="checkin-tip__icon" aria-hidden="true">✓</span><h2>Check the right passenger.</h2>
+      <p>Make sure the passenger is assigned to your departure, the reservation hasn't expired and the code has not been used before.</p>
+      <div class="checkin-trip"><span>Assigned route</span><strong>{{ departure.route_label }}</strong><small>{{ departure.vehicle_plate }}</small></div>
+      <p class="checkin-privacy">Only an authorised driver can complete check-in. The server enforces these rules for every request.</p>
+    </aside>
+  </div>
+  {% include "ui/demo_notice.html" %}
+</section>
+{% endblock %}
