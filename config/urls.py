@@ -13,9 +13,10 @@ urlpatterns = [
 from django.conf import settings
 
 if settings.PREVIEW_MODE:
-    from apps.core.preview_views import gallery, page
+    from apps.core.preview_views import app_home, gallery, page
 
     urlpatterns += [
-        path("preview/", gallery, name="preview-gallery"),
+        path("preview/", app_home, name="preview-home"),
+        path("preview/screens/", gallery, name="preview-gallery"),
         path("preview/<slug:slug>/", page, name="preview-page"),
     ]

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}SafeRide | Every Journey Matters{% endblock %}
+{% block description %}Explore the SafeRide web experience — routes, bookings, journeys and safety.{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/preview.css' %}">{% endblock %}
+{% block content %}
+<section class="app-entry container" aria-labelledby="app-entry-title">
+  <div class="app-entry__copy">
+    <span class="eyebrow">Move with confidence</span>
+    <h1 id="app-entry-title">Your city.<br><span>Your journey.</span></h1>
+    <p>Find a bus, plan your route and follow your journey with more clarity from boarding to arrival.</p>
+    <div class="app-entry__actions">
+      <a class="button button--primary" href="/preview/search/">Find a bus <span aria-hidden="true">→</span></a>
+      <a class="button button--outline" href="/preview/driver-dashboard/">I'm a driver <span aria-hidden="true">↗</span></a>
+    </div>
+    <div class="app-entry__trust" aria-label="What matters to SafeRide">
+      <span><span aria-hidden="true">✓</span> Clear route information</span>
+      <span><span aria-hidden="true">✓</span> Verified-status visibility</span>
+      <span><span aria-hidden="true">✓</span> Privacy-first reporting</span>
+    </div>
+  </div>
+  <div class="app-entry__visual" aria-label="Illustrated route between Jibowu and Mile 2">
+    <div class="app-entry__eyebrow">Find your way around Lagos</div>
+    <div class="app-entry__map">
+      <div class="app-entry__grid" aria-hidden="true"></div>
+      <svg role="img" aria-label="Illustrated journey from Jibowu to Mile 2, not a live map" viewBox="0 0 440 340" fill="none">
+        <path d="M34 287 C111 282 148 178 213 191 S326 116 401 52" stroke="#D6F86C" stroke-width="9" stroke-linecap="round" stroke-dasharray="5 18"/>
+        <circle cx="34" cy="287" r="17" fill="#fff"/><circle cx="401" cy="52" r="17" fill="#fff"/>
+        <circle cx="34" cy="287" r="8" fill="#087D5B"/><circle cx="401" cy="52" r="8" fill="#087D5B"/>
+        <g class="app-entry__bus"><rect x="190" y="150" width="77" height="43" rx="10" fill="#fff"/><rect x="199" y="157" width="58" height="19" rx="4" fill="#A6E7C5"/><circle cx="206" cy="194" r="7" fill="#123D32"/><circle cx="249" cy="194" r="7" fill="#123D32"/></g>
+      </svg>
+      <span class="app-entry__start">Jibowu</span><span class="app-entry__end">Mile 2</span>
+    </div>
+    <div class="app-entry__ticket"><strong>Jibowu <span aria-hidden="true">→</span> Mile 2</strong><small>Explore routes and boarding points</small><a href="/preview/results/">See available buses ↗</a></div>
+  </div>
+</section>
+<section class="app-pathways container" aria-labelledby="pathways-title">
+  <div class="app-pathways__header"><span class="eyebrow">Explore SafeRide</span><h2 id="pathways-title">One connected journey.</h2><p>Choose where you want to go. Every section opens its own pages.</p></div>
+  <div class="app-pathways__grid">
+    <a class="app-pathway" href="/preview/search/"><span class="app-pathway__number">01 / Discover</span><span class="app-pathway__icon" aria-hidden="true">⌖</span><strong>Find your next bus</strong><span>Routes, stops, available buses and driver profiles.</span><span class="app-pathway__arrow" aria-hidden="true">↗</span></a>
+    <a class="app-pathway" href="/preview/trip/"><span class="app-pathway__number">02 / Journey</span><span class="app-pathway__icon" aria-hidden="true">↝</span><strong>Follow every step</strong><span>Reservations, virtual queues, boarding and arrival.</span><span class="app-pathway__arrow" aria-hidden="true">↗</span></a>
+    <a class="app-pathway" href="/preview/route-updates/"><span class="app-pathway__number">03 / Safety</span><span class="app-pathway__icon" aria-hidden="true">✧</span><strong>Travel with clarity</strong><span>Privacy-safe profiles, updates and concerns.</span><span class="app-pathway__arrow" aria-hidden="true">↗</span></a>
+    <a class="app-pathway" href="/preview/driver-dashboard/"><span class="app-pathway__number">04 / Driver Space</span><span class="app-pathway__icon" aria-hidden="true">▣</span><strong>Run your routes</strong><span>Vehicles, scheduled departures and boarding tools.</span><span class="app-pathway__arrow" aria-hidden="true">↗</span></a>
+  </div>
+</section>
+<section class="app-review-hint container"><p>You're exploring a design preview using fictional journeys. Form submissions and real seat reservations aren't active here.</p><a href="/preview/screens/">See every screen in the design library <span aria-hidden="true">→</span></a></section>
+{% endblock %}

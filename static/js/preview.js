@@ -2,6 +2,9 @@
 /* Internal review only: these forms do not submit or mutate bookings. */
 document.addEventListener("DOMContentLoaded", function () {
   document.querySelectorAll("main form").forEach(function (form) {
+    // Route searches are safe GET links between screens. Only simulated
+    // state-changing POSTs are intercepted.
+    if (form.method.toLowerCase() !== "post") return;
     form.addEventListener("submit", function (event) {
       event.preventDefault();
       let notice = document.getElementById("preview-action-notice");

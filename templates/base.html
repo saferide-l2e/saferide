@@ -18,9 +18,18 @@
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <header class="site-header" data-site-header>
   <div class="container header-inner">
-    <a href="{% url 'home' %}" class="brand" aria-label="SafeRide homepage"><span>Safe<strong>Ride</strong></span><svg aria-hidden="true" class="brand-pin" width="16" height="20" viewBox="0 0 16 20" fill="none"><path d="M8 1a7 7 0 0 0-7 7c0 4.5 7 11 7 11s7-6.5 7-11a7 7 0 0 0-7-7Z" fill="currentColor"/><circle cx="8" cy="8" r="2.4" fill="white"/></svg></a>
+    <a href="{% if preview_gallery_url %}/preview/{% else %}{% url 'home' %}{% endif %}" class="brand" aria-label="SafeRide homepage"><span>Safe<strong>Ride</strong></span><svg aria-hidden="true" class="brand-pin" width="16" height="20" viewBox="0 0 16 20" fill="none"><path d="M8 1a7 7 0 0 0-7 7c0 4.5 7 11 7 11s7-6.5 7-11a7 7 0 0 0-7-7Z" fill="currentColor"/><circle cx="8" cy="8" r="2.4" fill="white"/></svg></a>
     <button type="button" class="menu-toggle" data-nav-toggle aria-controls="primary-navigation" aria-expanded="false" aria-label="Open navigation"><span></span><span></span><span></span></button>
     <nav class="primary-navigation" id="primary-navigation" aria-label="Main navigation" data-primary-nav>
+      {% if preview_gallery_url %}
+        <a data-nav-link href="/preview/"{% if preview_area == "home" %} aria-current="page"{% endif %}>Home</a>
+        <a data-nav-link href="/preview/search/"{% if preview_area == "discover" %} aria-current="page"{% endif %}>Discover</a>
+        <a data-nav-link href="/preview/trip/"{% if preview_area == "journey" %} aria-current="page"{% endif %}>Journey</a>
+        <a data-nav-link href="/preview/route-updates/"{% if preview_area == "safety" %} aria-current="page"{% endif %}>Safety</a>
+        <a data-nav-link href="/preview/driver-dashboard/"{% if preview_area == "driver" %} aria-current="page"{% endif %}>Driver Space</a>
+        <a data-nav-link href="/preview/login/">Sign in</a>
+        <a data-nav-link class="nav-cta" href="/preview/register/">Get started <span aria-hidden="true">↗</span></a>
+      {% else %}
       <a data-nav-link href="{% url 'home' %}#discover">Discover</a>
       <a data-nav-link href="{% url 'home' %}#journey">Journey</a>
       <a data-nav-link href="{% url 'home' %}#safety">Safety</a>
@@ -35,6 +44,7 @@
       {% if register_href %}<a data-nav-link class="nav-cta" href="{{ register_href }}">Join SafeRide <span aria-hidden="true">↗</span></a>
       {% else %}<a data-nav-link class="nav-cta" href="{% url 'home' %}#how-it-works">How it works <span aria-hidden="true">↗</span></a>{% endif %}
       {% endif %}
+      {% endif %}
     </nav>
   </div>
 </header>
@@ -42,7 +52,7 @@
   <aside class="preview-review-bar" aria-label="Internal design review">
     <div class="container preview-review-bar__inner">
       <span>Design review · Sample content · No live bookings</span>
-      <a href="{{ preview_gallery_url }}">← All screens</a>
+      <a href="/preview/screens/">View all 25 screens ↗</a>
     </div>
   </aside>
 {% endif %}
@@ -50,10 +60,26 @@
   {% for message in messages %}{% include "ui/notice.html" with notice_text=message notice_level=message.tags only %}{% endfor %}
 </div>{% endif %}
 <main id="main-content" tabindex="-1">{% block content %}{% endblock %}</main>
+{% if preview_next_url or preview_previous_url %}
+<nav class="preview-journey-nav container" aria-label="Move between journey screens">
+  <span class="preview-journey-nav__intro">Explore another page</span>
+  <div class="preview-journey-nav__links">
+    {% if preview_previous_url %}<a href="{{ preview_previous_url }}"><span aria-hidden="true">←</span> {{ preview_previous_text }}</a>{% endif %}
+    {% if preview_next_url %}<a class="preview-journey-nav__next" href="{{ preview_next_url }}">{{ preview_next_text }} <span aria-hidden="true">→</span></a>{% endif %}
+  </div>
+</nav>
+{% endif %}
 <footer class="site-footer">
   <div class="container footer-inner">
-    <div><a href="{% url 'home' %}" class="brand brand--footer"><span>Safe<strong>Ride</strong></span></a><p>Every journey matters.</p></div>
-    <nav aria-label="Footer navigation"><a href="{% url 'home' %}#discover">Discover</a><a href="{% url 'home' %}#journey">Journey</a><a href="{% url 'home' %}#safety">Safety</a></nav>
+    <div><a href="{% if preview_gallery_url %}/preview/{% else %}{% url 'home' %}{% endif %}" class="brand brand--footer"><span>Safe<strong>Ride</strong></span></a><p>Every journey matters.</p></div>
+    {% if preview_gallery_url %}
+      <nav aria-label="Footer navigation">
+        <a href="/preview/search/">Discover</a><a href="/preview/trip/">Journey</a><a href="/preview/route-updates/">Safety</a>
+        <a href="/preview/driver-dashboard/">Driver Space</a>
+      </nav>
+      {% else %}
+      <nav aria-label="Footer navigation"><a href="{% url 'home' %}#discover">Discover</a><a href="{% url 'home' %}#journey">Journey</a><a href="{% url 'home' %}#safety">Safety</a></nav>
+      {% endif %}
   </div>
   <p class="container footer-note">SafeRide is in development. Route illustrations and sample journeys are not live tracking or identity-screening services.</p>
 </footer>
