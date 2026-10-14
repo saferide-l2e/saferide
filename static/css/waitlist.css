@@ -1,0 +1,46 @@
+/* FE-09 queue and timed offer. Server owns allocations and expiry. */
+.queue-page,.offer-page{padding-block:52px 95px}
+.queue-page h1,.offer-page h1{font-size:clamp(2.35rem,5.4vw,4.1rem);line-height:1.14;letter-spacing:-.065em;margin:22px 0 10px}
+.queue-intro{color:var(--muted);max-width:710px;line-height:1.75}
+.queue-error,.queue-info,.queue-offline{margin:20px 0;border:1px solid #dfada0;padding:15px 16px;border-radius:12px;background:#fff1ed;color:#6c2f20}
+.queue-error p{margin:5px 0}.queue-info{background:var(--mint);border-color:#b7ddc6;color:var(--forest)}.queue-offline{background:#fff1d5;border-color:#e4c278;color:#674a1f;font-size:.84rem}
+.queue-grid,.offer-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:24px;margin-top:32px}
+.queue-main{min-width:0;display:grid;gap:20px}
+.queue-number-card,.offer-focus{position:relative;isolation:isolate;overflow:hidden;background:var(--forest);border-radius:22px;padding:25px;color:white}
+.queue-number-card::before,.offer-focus::before{content:"";position:absolute;border-radius:50%;width:330px;height:330px;background:#127e5d;opacity:.44;right:-150px;top:-190px;z-index:-1}
+.queue-number-card__eyebrow,.offer-focus__eyebrow{font-size:.74rem;text-transform:uppercase;font-weight:900;letter-spacing:.065em;color:var(--lime)}
+.queue-number-card h2,.offer-focus h2{font-size:clamp(1.7rem,3.4vw,2.4rem);letter-spacing:-.05em;margin:20px 0 11px}
+.queue-number-card>p,.offer-focus p{color:#e1f2e7;line-height:1.7;font-size:.9rem}
+.queue-position{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;margin:14px 0 9px}
+.queue-position strong{font-size:clamp(5rem,13vw,8.5rem);letter-spacing:-.1em;color:var(--lime);line-height:1.12;font-variant-numeric:tabular-nums}
+.queue-position>span{font-size:1.01rem;font-weight:750;padding-bottom:18px}
+.queue-number-card__route{padding-top:18px;margin-top:23px;border-top:1px solid #429273;font-size:.95rem;font-weight:800}
+.queue-number-card .button{margin-top:17px}
+.queue-explainer,.queue-trip-card,.offer-trip-card{background:white;border:1px solid var(--line);border-radius:19px;padding:25px}
+.queue-explainer h2{font-size:1.5rem;letter-spacing:-.04em;margin:0 0 21px}
+.queue-explainer ol{margin:0;padding:0;list-style:none;display:grid;gap:17px}
+.queue-explainer li{display:flex;align-items:flex-start;gap:14px}
+.queue-explainer li>span{display:grid;place-items:center;flex:0 0 37px;height:37px;background:var(--mint);border-radius:50%;color:var(--forest);font-weight:900;font-size:.78rem}
+.queue-explainer li p{margin:5px 0;color:#38564d;line-height:1.6;font-size:.87rem}
+.queue-aside,.offer-aside{align-self:start;display:grid;gap:15px}
+.queue-trip-card__label{display:block;color:var(--muted);font-size:.73rem;font-weight:850;text-transform:uppercase;letter-spacing:.05em}
+.queue-trip-card>strong{display:block;font-size:1.55rem;letter-spacing:-.05em;margin:13px 0}
+.queue-trip-card p{font-size:.88rem;color:var(--muted);line-height:1.8}
+.queue-leave{width:100%;cursor:pointer}
+.queue-search-back{display:inline-block;margin-top:21px;color:var(--green);font-size:.85rem;font-weight:850;text-decoration:underline;text-underline-offset:3px}
+.queue-aside .data-notice,.offer-aside .data-notice{font-size:.78rem}
+.offer-focus{padding:29px}
+.offer-clock{display:block;font-size:clamp(4.5rem,13vw,8rem);font-variant-numeric:tabular-nums;color:var(--lime);letter-spacing:-.08em;line-height:1.2;margin:25px 0}
+.offer-track{height:10px;border-radius:99px;background:#3b7c62;overflow:hidden}.offer-track span{display:block;height:100%;width:0;background:var(--lime);transition:width .35s}
+.offer-actions{display:grid;gap:12px;margin-top:30px}
+.offer-actions form{margin:0}.offer-actions form .button{min-width:100%;border:none;cursor:pointer}
+.offer-actions form .button--outline{border:1px solid var(--line)}
+.offer-actions button:disabled,.queue-page button:disabled{cursor:wait;opacity:.65}
+.offer-focus__refresh a{color:var(--lime);font-weight:850;text-decoration:underline;text-underline-offset:4px}
+.offer-trip-card{background:#e7f7e9}
+.offer-trip-card>span{font-size:.72rem;font-weight:900;color:var(--forest);text-transform:uppercase;letter-spacing:.06em}
+.offer-trip-card h2{font-size:1.65rem;letter-spacing:-.05em}
+.offer-trip-card p{font-size:.88rem;color:#31594b;line-height:1.75}
+.offer-trip-card a{display:inline-block;margin-top:10px;color:var(--green);font-weight:850;font-size:.85rem;text-decoration:underline}
+@media(min-width:850px){.queue-page,.offer-page{padding-top:72px}.queue-grid,.offer-grid{grid-template-columns:minmax(0,1.55fr) minmax(290px,.92fr);gap:30px}.queue-aside,.offer-aside{position:sticky;top:95px}.queue-number-card,.offer-focus{padding:38px}.queue-explainer,.queue-trip-card{padding:30px}}
+@media(prefers-reduced-motion:reduce){.offer-track span{transition:none}}
