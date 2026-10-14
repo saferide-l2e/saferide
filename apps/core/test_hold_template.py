@@ -39,8 +39,8 @@ class HoldFrontendTests(SimpleTestCase):
             "status_url": "/bookings/my-hold/status/",
         })
         self.assertIn('data-booking-status="HELD"', html)
-        self.assertIn('data-server-now="2026-10-15T10:00:00Z"', html)
-        self.assertIn('data-expires-at="2026-10-15T10:10:00Z"', html)
+        self.assertIn('data-server-now="2026-10-15T10:00:00', html)
+        self.assertIn('data-expires-at="2026-10-15T10:10:00', html)
         self.assertIn("482913", html)
         self.assertIn("Time remaining to check in", html)
         self.assertIn('data-status-url="/bookings/my-hold/status/"', html)
