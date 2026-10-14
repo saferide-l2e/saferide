@@ -1,1 +1,5 @@
-{% if field.errors %}<ul class="field-errors" id="{{ field.auto_id }}_errors">{% for error in field.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+{% if field.errors %}
+<ul class="field-errors" role="alert" id="{{ field.auto_id }}_errors">
+  {% for error in field.errors %}<li>{{ error }}</li>{% endfor %}
+</ul>
+{% endif %}
