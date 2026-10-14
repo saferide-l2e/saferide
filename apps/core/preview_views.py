@@ -5,6 +5,7 @@ No database reads, account creation, seat holds, code acceptance, SOS dispatch,
 or form submissions. Data is deliberately fictional. Never import into production.
 """
 
+# ruff: noqa: I001  # Review-only view imports; no application runtime effect.
 from datetime import UTC, datetime, timedelta
 
 from django import forms
@@ -206,10 +207,10 @@ def _sample():
         "can_report": True, "can_contribute": True,
         "can_register": True, "can_publish": True, "can_check_in": True,
         "review_action": uri("review"), "report_action": uri("report"),
-        "form_action": uri("register"), "submit_action": uri("verification"),
+        "submit_action": uri("verification"),
         "join_action": uri("queue"), "can_advance": False,
         "verification_url": uri("verification"), "vehicle_list_url": uri("vehicles"),
-        "register_url": uri("register-vehicle"), "publish_url": uri("publish-departure"),
+        "publish_url": uri("publish-departure"),
         "dashboard_url": uri("driver-dashboard"),
         "history_url": uri("history"), "reporting_url": uri("report"),
         "rating_url": uri("review"), "feed_url": uri("route-updates"),
