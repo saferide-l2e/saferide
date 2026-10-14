@@ -3,7 +3,14 @@ from django.contrib.auth.models import AnonymousUser
 from django.middleware.csrf import get_token
 from django.test import RequestFactory, SimpleTestCase
 
-from apps.core.preview_views import PAGE_GROUPS, PAGES, app_home, gallery, page, public_page
+from apps.core.preview_views import (
+    PAGE_GROUPS,
+    PAGES,
+    app_home,
+    gallery,
+    page,
+    public_page,
+)
 
 
 class PreviewPagesTests(SimpleTestCase):
