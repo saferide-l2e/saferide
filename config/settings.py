@@ -10,6 +10,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
 
 DEBUG = os.getenv("DEBUG", "false").lower() == "true"
+# Explicitly scoped to a separate Git branch, never the production application.
+PREVIEW_MODE = (
+    os.getenv("SAFERIDE_VISUAL_PREVIEW", "false").lower() == "true"
+    or os.getenv("VERCEL_GIT_COMMIT_REF") == "preview/saferide-screen-review"
+)
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "")
 if not SECRET_KEY:
     if not DEBUG:
@@ -18,6 +23,11 @@ if not SECRET_KEY:
 
 ALLOWED_HOSTS = [x.strip() for x in os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",") if x.strip()]
 CSRF_TRUSTED_ORIGINS = [x.strip() for x in os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",") if x.strip()]
+if PREVIEW_MODE:
+    # Public visual review runs on generated *.vercel.app preview hostnames.
+    # No real data, authentication or state-changing POST routes are enabled.
+    ALLOWED_HOSTS.append(".vercel.app")
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -71,6 +81,11 @@ DATABASES = {"default": dj_database_url.config(
     conn_max_age=60,
 )}
 
+if PREVIEW_MODE:
+    # Preview routes never access the database; use in-memory SQLite to avoid
+    # needing production Postgres credentials on temporary review deployments.
+    DATABASES = {"default": {"ENGINE": "django.db.backends.sqlite3", "NAME": ":memory:"}}
+
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
@@ -83,7 +98,7 @@ TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
 
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 

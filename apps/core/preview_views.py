@@ -223,7 +223,7 @@ def _sample():
 @never_cache
 @require_GET
 def gallery(request):
-    response = render(request, "preview/gallery.html", {"groups": PAGE_GROUPS})
+    response = render(request, "preview/gallery.html", {"groups": PAGE_GROUPS, "preview_gallery_url": "/preview/"})
     response["X-Robots-Tag"] = "noindex, nofollow"
     return response
 
@@ -235,6 +235,7 @@ def page(request, slug):
     if not template:
         raise Http404("Unknown review page")
     context = _sample()
+    context["preview_gallery_url"] = "/preview/"
     if slug == "register":
         context["form"] = RegistrationForm()
         context["form_action"] = uri("register")
