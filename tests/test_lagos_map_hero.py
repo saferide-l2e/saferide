@@ -14,8 +14,7 @@ def test_home_map_and_real_directions_link(client):
         "data-route-hero",
         "Jibowu", "Mile 2",
         "maps/dir/?api=1",
-        "Not live vehicle tracking",
-        "img/danfo-top.svg",
+        "Road preview for planning your journey.",
         "site_route.css",
         "hero_route.js",
         'method="get" action="/departures/search/"',
@@ -69,7 +68,9 @@ def test_route_card_is_product_focused_and_has_search_metadata(client):
     html = client.get(reverse("core:home")).content.decode()
     assert "YOUR LAGOS ROUTE" in html
     assert "data-map-provider" not in html
-    assert "danfo_motion.js" in html
+    assert "danfo_motion.js" not in html
+    assert "data-map-motion" not in html
+    assert "data-map-provider" not in html
     assert 'rel="canonical"' in html
     assert 'property="og:title"' in html
     assert 'application/ld+json' in html
