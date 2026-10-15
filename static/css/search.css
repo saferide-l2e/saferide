@@ -80,3 +80,21 @@
  .bus-card__icon{min-height:92px}
  .route-search{padding:15px}
 }
+
+
+/* Read-only simulated availability is visually and semantically separate. */
+.demo-results-notice{margin:14px 0 18px;padding:16px 19px;background:#fff8e8;border:1px solid #e1c687;border-radius:13px;color:#513e16}
+.demo-results-notice strong{font-size:1rem}
+.demo-results-notice p{margin:6px 0 0;line-height:1.55}
+.demo-search-note,.demo-help{color:var(--muted);line-height:1.65}
+.demo-review-link{color:var(--forest);font-weight:850;text-decoration:underline;text-underline-offset:3px}
+.demo-bus-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.demo-bus-card{min-width:0}
+.demo-bus-card__kicker{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:.73rem;color:var(--muted);font-weight:850}
+.demo-pill{display:inline-flex;padding:6px 10px;border-radius:20px;background:#fff0be;color:#513e16;border:1px solid #e2c770}
+.demo-bus-card h3{margin:15px 0 5px;font-size:1.3rem;overflow-wrap:anywhere}
+.demo-bus-details{margin-top:15px;padding:11px 13px;border-radius:11px;background:var(--cream);border:1px solid var(--line)}
+.demo-bus-details summary{cursor:pointer;color:var(--forest);font-weight:850;list-style:revert}
+.demo-bus-details summary:focus-visible{outline:3px solid #a55d00;outline-offset:3px}
+.demo-bus-details p{margin:10px 0 0;color:var(--muted);line-height:1.5;font-size:.89rem}
+@media(max-width:760px){.demo-bus-grid{grid-template-columns:minmax(0,1fr)}}
