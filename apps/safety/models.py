@@ -1,7 +1,7 @@
-"""Post-trip reviews, private misconduct reports and moderated route updates.
+"""Private incident reports, post-trip reviews and community route observations.
 
-Allegations are never published automatically. Only APPROVED route updates are
-shown publicly, and they carry timestamps and a demo-data badge.
+Route posts can be published by the configured timed approval policy or staff.
+Incident reports stay private and require actual follow-up.
 """
 
 import uuid

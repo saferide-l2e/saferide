@@ -1,0 +1,5 @@
+{% load static %}{% if automatic_approval and review_pending %}
+<p class="review-progress" role="status" data-review-progress data-review-url="{% url 'core:review_progress' %}" data-review-version="{{ review_version }}">Processing your submission. Approval runs automatically after five seconds.</p>
+<noscript><p>Refresh this page after five seconds to see your approval status.</p></noscript>
+<script defer src="{% static 'js/review_progress.js' %}"></script>
+{% endif %}

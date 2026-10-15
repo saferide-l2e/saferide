@@ -1,6 +1,6 @@
 """Verification status transition service (BE-02).
 
-Only authorized staff may move a record to VERIFIED/REJECTED/SUSPENDED.
+Staff decisions and the separately audited timed-approval policy manage eligibility.
 Users may only submit their own record for review. Every transition is audited.
 """
 
@@ -41,6 +41,10 @@ def submit(user, *, profile_name="", home_area="", preferred_stop=""):
         "status", "submitted_at", "reviewed_by", "reviewed_at", "note",
         "profile_name", "home_area", "preferred_stop",
     ])
+    if user.role == "DRIVER":
+        from apps.vehicles.services import get_or_create_driver_profile
+
+        get_or_create_driver_profile(user)
     record(user, "verification.submitted", verification)
     return verification
 

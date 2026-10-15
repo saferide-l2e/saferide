@@ -7,6 +7,7 @@
  <div><span class="eyebrow">Driver space</span><h1 id="vehicles-title">My vehicles.</h1><p class="vehicle-lead">Manage your bus details and see which vehicles have been approved.</p></div>
  {% if can_register and register_url %}<a class="button button--primary" href="{{ register_url }}">+ Add a vehicle</a>{% endif %}
 </div>
+{% include "components/review_progress.html" %}
 {% if error_message %}<p class="vehicle-error" role="alert">{{ error_message }}</p>{% endif %}
 {% if vehicles %}
 <div class="vehicle-list">
@@ -25,7 +26,7 @@
    {% if vehicle.approval_status == "APPROVED" %}
      <p>Approved for this pilot. A published departure still requires an eligible driver and departure time.</p>
      {% if vehicle.can_publish and vehicle.publish_url %}<a class="vehicle-publish" href="{{ vehicle.publish_url }}">Publish a departure <span aria-hidden="true">→</span></a>{% endif %}
-   {% elif vehicle.approval_status == "PENDING" %}<p>Staff review is pending. Passengers won't see this vehicle until it is approved.</p>
+   {% elif vehicle.approval_status == "PENDING" %}<p>{% if automatic_approval %}Approval runs automatically five seconds after submission. Passengers can only find your bus after you publish an eligible departure.{% else %}Staff review is pending. Passengers won't see this vehicle until it is approved.{% endif %}</p>
    {% elif vehicle.approval_status == "REJECTED" %}<p>Approval was not granted. Check the review instructions before trying again.</p>{% if vehicle.review_note %}<p class="vehicle-review-note">{{ vehicle.review_note }}</p>{% endif %}
    {% elif vehicle.approval_status == "SUSPENDED" %}<p>Departure publishing is unavailable for this vehicle.</p>{% else %}<p>Contact support to check the vehicle's review status.</p>{% endif %}
   </div>

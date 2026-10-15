@@ -1,9 +1,17 @@
 """Account details and consent for staff-reviewed booking eligibility."""
 
 from django import forms
+from django.conf import settings
 
 
 class VerificationDeclarationForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if settings.SAFERIDE_AUTO_APPROVAL:
+            self.fields["simulated_review"].label = "I understand account approval is automatic and is not an identity or safety check."
+            self.fields["simulated_review"].help_text = "Approval runs five seconds after submission. It does not guarantee travel safety."
+            self.fields["simulated_review"].error_messages["required"] = "Confirm that you understand the automatic account approval process."
+
     profile_name = forms.CharField(
         label="Your full display name", required=False, max_length=80,
         help_text="The name you would like your SafeRide team to recognise.",

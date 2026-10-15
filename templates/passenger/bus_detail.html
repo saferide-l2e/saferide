@@ -59,9 +59,9 @@
           {% else %}{% include "ui/status_badge.html" with badge_text="Approval unavailable" badge_variant="neutral" only %}{% endif %}
           {% if bus.driver_public_bio %}<p>{{ bus.driver_public_bio }}</p>{% endif %}
           <dl class="detail-facts">
-            <div><dt>Account review</dt><dd>{% if bus.driver_account_approved %}Approved{% else %}Not approved{% endif %}</dd></div>
-            <div><dt>Driver eligibility review</dt><dd>{% if bus.driver_licence_approved %}Approved{% else %}Not approved{% endif %}</dd></div>
-            <div><dt>Assigned vehicle review</dt><dd>{% if bus.vehicle_approved %}Approved{% else %}Not approved{% endif %}</dd></div>
+            <div><dt>Account access</dt><dd>{% if bus.driver_account_approved %}Approved{% else %}Not approved{% endif %}</dd></div>
+            <div><dt>Driver profile access</dt><dd>{% if bus.driver_licence_approved %}Approved{% else %}Not approved{% endif %}</dd></div>
+            <div><dt>Vehicle listing access</dt><dd>{% if bus.vehicle_approved %}Approved{% else %}Not approved{% endif %}</dd></div>
           </dl>
           <p class="driver-privacy">We show only the driver's public profile and approval status. Private documents and personal contact details are not displayed.</p>
         </article>
@@ -101,7 +101,7 @@
           {% endif %}
           <p class="detail-booking__fineprint">Seat availability may change. Booking and queue limits are enforced by SafeRide, not the timer shown in your browser.</p>
         </div>
-        <aside class="data-notice" role="note"><strong>About profile reviews</strong><p>Eligibility reviews are currently simulated. They are not government identity checks, background checks or a guarantee of travel safety.</p></aside>
+        <aside class="data-notice" role="note"><strong>About profile reviews</strong><p>{% if automatic_approval %}Access approvals are automatic. They are not government identity checks, licence checks, vehicle inspections or a guarantee of travel safety.{% else %}Account access reviews are not government identity checks, background checks or a guarantee of travel safety.{% endif %}</p></aside>
       </aside>
     </div>
   {% else %}

@@ -66,7 +66,7 @@ def search(request):
 
     if has_searched and not eligible:
         eligibility_message = (
-            "Only staff-approved passengers can reserve a seat. You can still browse "
+            "Only approved passenger accounts can reserve a seat. You can still browse "
             "published journeys and review driver and vehicle information."
         )
     else:

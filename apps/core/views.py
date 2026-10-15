@@ -5,6 +5,7 @@ from django.contrib.staticfiles import finders
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.templatetags.static import static
+from django.views.decorators.cache import never_cache
 
 from apps.accounts.models import Role
 
@@ -62,3 +63,11 @@ def dashboard(request):
         context["reward_points"] = completed * 10
         context["reward_progress"] = (completed % 5) * 20
     return render(request, "dashboard.html", context)
+
+
+@never_cache
+@login_required
+def review_progress(request):
+    from .automatic_reviews import review_snapshot
+
+    return JsonResponse(review_snapshot(request.user))

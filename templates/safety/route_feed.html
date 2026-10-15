@@ -3,10 +3,11 @@
 {% block extra_head %}<link rel="stylesheet" href="{% static 'css/safety_ui.css' %}">{% endblock %}
 {% block content %}
 <section class="safety-page container" aria-labelledby="route-feed-title">
- <div class="safety-page__heading"><div><span class="eyebrow">SafeRide Discover</span><h1 id="route-feed-title">Know the route, not rumours.</h1><p class="safety-page__lead">Useful information from our community, reviewed before it appears here.</p></div>
+ <div class="safety-page__heading"><div><span class="eyebrow">SafeRide Discover</span><h1 id="route-feed-title">Community route updates.</h1><p class="safety-page__lead">{% if automatic_approval %}Posts from the community, published automatically after five seconds. These observations are not independently verified.{% else %}Useful information from our community, reviewed before it appears here.{% endif %}</p></div>
  {% if can_contribute and contribute_url %}<a class="button button--primary" href="{{ contribute_url }}">+ Share an update</a>{% endif %}
  </div>
  {% if error_message %}<div class="safety-alert safety-alert--error" role="alert">{{ error_message }}</div>{% endif %}
+ {% include "components/review_progress.html" %}
  <div class="safety-feed-grid">
   <div class="safety-feed">
    <div class="safety-feed__heading"><h2>Route notices</h2><p>Approved posts only · not a live traffic service</p></div>
@@ -18,16 +19,16 @@
          <span class="safety-feed-item__type">{{ update.type_label }}</span>
          <time datetime="{{ update.published_at|date:'c' }}">{{ update.published_at|date:"D j M, g:i A" }}</time>
          </div><h3>{{ update.route_label }}</h3><p>{{ update.note }}</p>
-         <span class="safety-feed-item__status">Reviewed community notice</span>
+         <span class="safety-feed-item__status">Community observation</span>
         </article>
        {% endif %}
       {% endfor %}
     </div>
    {% else %}
-    <div class="safety-feed__empty" role="status"><h3>No approved updates yet.</h3><p>We show route updates only after staff review. Check with local operators before relying on travel information.</p></div>
+    <div class="safety-feed__empty" role="status"><h3>No approved updates yet.</h3><p>{% if automatic_approval %}Route updates appear automatically after five seconds.{% else %}We show route updates only after staff review.{% endif %} Check with local operators before relying on travel information.</p></div>
    {% endif %}
   </div>
-  <aside class="safety-side"><span class="safety-side__eyebrow">From the community</span><h2>Make the next journey clearer.</h2><p>Share useful traffic or boarding information for staff review. Pending submissions stay private until approved.</p>
+  <aside class="safety-side"><span class="safety-side__eyebrow">From the community</span><h2>Make the next journey clearer.</h2><p>{% if automatic_approval %}Share traffic or boarding observations. Eligible posts publish automatically after five seconds.{% else %}Share useful traffic or boarding information for staff review. Pending submissions stay private until approved.{% endif %}</p>
    {% if can_contribute and contribute_url %}<a class="safety-side__link" href="{{ contribute_url }}">Submit route update <span aria-hidden="true">→</span></a>{% endif %}
    <p class="safety-side__muted">No live maps, automatic emergency response or verified real-world coverage is claimed here.</p>
   </aside>

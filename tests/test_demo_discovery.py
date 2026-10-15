@@ -69,7 +69,7 @@ def test_unverified_user_can_browse_but_cannot_reserve(client, unverified_passen
     assert search.status_code == 200
     assert str(departure.pk) in search.content.decode()
     assert not search.context["sample_buses"]
-    assert "Only staff-approved passengers can reserve" in search.content.decode()
+    assert "Only approved passenger accounts can reserve" in search.content.decode()
     denied = client.post(reverse("bookings:reserve", args=[departure.pk]))
     assert denied.status_code == 302
     assert not departure.bookings.exists()

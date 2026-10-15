@@ -4,6 +4,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_http_methods
 
+from apps.core.automatic_reviews import review_snapshot
 from apps.core.permissions import driver_required
 from apps.core.presentation import vehicle_card
 
@@ -18,6 +19,8 @@ def vehicle_list(request):
         request,
         "driver/vehicles.html",
         {
+            "review_pending": profile.vehicles.filter(approval_status="PENDING").exists(),
+            "review_version": review_snapshot(request.user)["version"],
             "profile": profile,
             "vehicles": [vehicle_card(v) for v in profile.vehicles.all()],
             "can_register": True,
@@ -38,7 +41,7 @@ def vehicle_create(request):
                 vehicle_type=form.cleaned_data["vehicle_type"],
                 capacity=form.cleaned_data["capacity"],
             )
-            messages.success(request, "Vehicle submitted. An administrator must approve it.")
+            messages.success(request, "Vehicle submitted for approval.")
             return redirect("vehicles:list")
         except PermissionDenied as exc:
             form.add_error(None, str(exc))
@@ -48,7 +51,7 @@ def vehicle_create(request):
     profile = get_or_create_driver_profile(request.user)
     return render(request, "driver/vehicle_form.html", {
         "form": form, "profile": profile, "can_register": request.user.is_verified,
-        "action_message": "Your driver account must be approved by staff before you can submit a vehicle. Review your account status to complete your profile or check progress.",
+        "action_message": "Your driver account must be approved before you can submit a vehicle. Review your account status to complete your profile or check progress.",
         "form_action": reverse("vehicles:create"),
         "vehicle_list_url": reverse("vehicles:list"),
         "verification_url": reverse("verification:status"),
