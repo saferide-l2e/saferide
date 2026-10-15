@@ -1,7 +1,17 @@
-{% extends "base.html" %}{% block title %}My account | SafeRide{% endblock %}
+{% extends "base.html" %}{% load static %}{% block extra_head %}<link rel="stylesheet" href="{% static 'css/ride_experience.css' %}">{% endblock %}{% block title %}My account | SafeRide{% endblock %}
 {% block content %}<section class="container site-section">
 <span class="eyebrow">Your SafeRide account</span><h1>Welcome{% if user.display_name %}, {{ user.display_name }}{% endif %}.</h1>
 <p>Choose where to go next. Some features require staff-approved eligibility.</p>
+{% if panel == "passenger" %}
+<section class="ride-rewards" aria-labelledby="ride-rewards-title">
+  <div class="ride-rewards__top"><span class="eyebrow">YOUR JOURNEY MILESTONES</span><span aria-hidden="true">★</span></div>
+  <h2 id="ride-rewards-title">{{ reward_points }} ride points</h2>
+  <p>{{ completed_ride_count }} completed trip{{ completed_ride_count|pluralize }} · Every five completed rides earns a new milestone.</p>
+  <div class="ride-rewards__track" role="progressbar" aria-label="Progress to next ride milestone" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ reward_progress }}"><span style="width:{{ reward_progress }}%"></span></div>
+  <div class="ride-rewards__actions"><a href="{% url 'departures:search' %}">Find your next bus ↗</a><a href="{% url 'bookings:index' %}">Recent trip history ↗</a></div>
+  <small>Points show completed-ride progress only. They cannot currently be exchanged for money or fares.</small>
+</section>
+{% endif %}
 <div class="site-benefits">
   <a class="site-benefit" href="{% url 'verification:status' %}"><small>ACCOUNT</small><h3>My verification</h3><p>View your eligibility review and submit your request.</p><span class="site-benefit__link">Open status ↗</span></a>
   {% if panel == "driver" %}
