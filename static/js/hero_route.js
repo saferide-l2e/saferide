@@ -184,6 +184,14 @@
       observer = new ResizeObserver(() => map.resize());
       observer.observe(mapNode);
       markReady(session, road.distance);
+    } catch (error) {
+      if (isCurrent(session)) {
+        root.dataset.mapState = "stops-only";
+        mapNode.setAttribute("aria-busy", "false");
+        distanceLabel.textContent = "Road route unavailable. View directions to continue.";
+        observer = new ResizeObserver(() => map.resize());
+        observer.observe(mapNode);
+      }
     } finally {
       clearTimeout(timer);
       session.abort.signal.removeEventListener("abort", onAbort);
