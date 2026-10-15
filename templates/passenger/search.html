@@ -11,6 +11,29 @@
   </div>
   {% if error_message %}<p class="route-error" role="alert">{{ error_message }}</p>{% endif %}
   {% include "includes/route_search_form.html" %}
+  {% if has_searched %}
+  <section class="results-main" aria-labelledby="live-results-title" style="margin-top:30px">
+    <h2 id="live-results-title">Matching departures</h2>
+    {% if eligibility_message %}<div class="eligibility-note" role="status">{{ eligibility_message }}</div>{% endif %}
+    {% for bus in buses %}
+      <article class="bus-card" style="margin-top:14px">
+        <div class="bus-card__body">
+          <h3>{{ bus.route_label }}</h3>
+          <p class="bus-card__date">{{ bus.scheduled_departure_at|date:"D j M, g:i A" }}</p>
+          <dl class="bus-facts">
+            <div><dt>Boarding</dt><dd>{{ bus.boarding_point }}</dd></div>
+            <div><dt>Vehicle</dt><dd>{{ bus.vehicle_type_display }} · {{ bus.plate_display }}</dd></div>
+            <div><dt>Driver</dt><dd>{{ bus.driver_public_name }}</dd></div>
+            <div><dt>Seats</dt><dd>{{ bus.available_seats }} available</dd></div>
+          </dl>
+        </div>
+        <div class="bus-card__actions"><a class="button button--primary" href="{{ bus.detail_url }}">View bus →</a></div>
+      </article>
+    {% empty %}
+    <div class="results-empty" role="status"><h3>No matching departures</h3><p>Try a different route or check back when another bus is published.</p></div>
+    {% endfor %}
+  </section>
+  {% endif %}
   <div class="explore-grid">
     <div class="explore-explainer">
       <span class="eyebrow">A better way to travel</span>
