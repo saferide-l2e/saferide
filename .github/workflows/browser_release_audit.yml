@@ -1,0 +1,74 @@
+name: Browser release audit
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  chromium:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: saferide
+          POSTGRES_USER: saferide
+          POSTGRES_PASSWORD: saferide
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U saferide -d saferide"
+          --health-interval 10s --health-timeout 5s --health-retries 5
+    env:
+      DEBUG: "true"
+      DJANGO_SECRET_KEY: "CI-browser-only-not-for-production"
+      ALLOWED_HOSTS: "localhost,127.0.0.1,testserver"
+      DATABASE_URL: "postgresql://saferide:saferide@localhost:5432/saferide"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - run: pip install "playwright==1.56.0"
+      - run: python -m playwright install --with-deps chromium
+      - run: python manage.py migrate --noinput
+      - run: python manage.py seed_demo --reset-safe-demo
+      - name: Create time-valid synthetic departure in CI
+        run: |
+          python manage.py shell -c '
+          from datetime import timedelta
+          from django.utils import timezone
+          from apps.accounts.models import User
+          from apps.routes.models import Route
+          from apps.vehicles.models import Vehicle
+          from apps.departures.models import Departure, DepartureStatus
+          driver = User.objects.get(email="driver@example.test")
+          route = Route.objects.get(origin_name="Jibowu", destination_name="Mile 2")
+          vehicle = Vehicle.objects.get(plate_normalized="DEMO001")
+          Departure.objects.create(driver=driver,route=route,vehicle=vehicle,
+              scheduled_departure_at=timezone.now()+timedelta(hours=3),
+              snapshot_capacity=vehicle.capacity,status=DepartureStatus.BOARDING_OPEN)
+          '
+      - name: Launch localhost Django app
+        run: |
+          python manage.py runserver 127.0.0.1:8000 --noreload > /tmp/saferide-browser-server.log 2>&1 &
+          for attempt in $(seq 1 40); do
+            if curl -fsS http://127.0.0.1:8000/health/ >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/saferide-browser-server.log
+          exit 1
+      - name: Chromium screenshots and interactive journeys
+        run: python scripts/browser_release_check.py
+      - name: Attach screenshot and QA evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: saferide-chromium-release-audit
+          path: |
+            artifacts/browser/
+            /tmp/saferide-browser-server.log
+          if-no-files-found: warn
