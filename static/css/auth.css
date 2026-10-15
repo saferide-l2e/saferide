@@ -6,8 +6,8 @@
 .auth-form{margin-top:32px;max-width:490px}
 .form-field{margin-bottom:20px}
 .form-field>label{display:block;font-weight:750;color:var(--ink);font-size:.9rem;margin-bottom:7px}
-.form-field input:not([type=checkbox]):not([type=radio]),.form-field select,.form-field textarea{display:block;width:100%;max-width:100%;min-height:52px;border:1px solid #afc6bb;color:var(--ink);background:#fff;border-radius:12px;padding:13px 16px;appearance:auto}
-.form-field input:not([type=checkbox]):not([type=radio]):focus,.form-field select:focus,.form-field textarea:focus{outline:3px solid #b4dfd0;outline-offset:2px;border-color:var(--green)}
+.form-field input:not([type=checkbox],[type=radio]),.form-field select,.form-field textarea{display:block;width:100%;max-width:100%;min-height:52px;border:1px solid #afc6bb;color:var(--ink);background:#fff;border-radius:12px;padding:13px 16px;appearance:auto}
+.form-field input:not([type=checkbox],[type=radio]):focus,.form-field select:focus,.form-field textarea:focus{outline:3px solid #b4dfd0;outline-offset:2px;border-color:var(--green)}
 .form-field--error input,.form-field--error select,.form-field--error textarea{border-color:#a83929!important}
 .form-field--checkbox{margin:21px 0}
 .checkbox-row{display:flex;gap:12px;align-items:flex-start}

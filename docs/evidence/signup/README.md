@@ -31,3 +31,8 @@ Actual local Chromium evidence, 15 October 2026:
 Screenshots contain blank account fields, not the personal information from the
 user's reference screenshot. The corrected interface is on the feature branch;
 this evidence does not claim a production deployment.
+
+The final text-field selector excludes both checkbox and radio types in a single
+:not() list, preserving dark-theme selector priority. Actual computed text/input
+background contrast was checked at all five widths in both themes (see
+text-contrast.json); the release browser check now enforces at least 4.5:1.

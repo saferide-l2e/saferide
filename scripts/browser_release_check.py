@@ -87,6 +87,21 @@ with sync_playwright() as playwright:
                 bounds = radio.bounding_box()
                 assert bounds and 16 <= bounds["width"] <= 24 and 16 <= bounds["height"] <= 24
             assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
+            # Empty fields can escape an automated text-contrast audit. Verify
+            # actual input foreground/background colours, including dark mode.
+            for theme in ("light", "dark"):
+                page.evaluate("theme => document.documentElement.dataset.theme = theme", theme)
+                contrast = page.locator('[name="display_name"]').evaluate("""input => {
+                    const style = getComputedStyle(input);
+                    const luminance = colour => colour.match(/[\\d.]+/g).slice(0, 3)
+                        .map(Number).map(v => v / 255)
+                        .map(v => v <= .04045 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4)
+                        .reduce((sum, v, i) => sum + v * [.2126, .7152, .0722][i], 0);
+                    const a = luminance(style.color), b = luminance(style.backgroundColor);
+                    return (Math.max(a, b) + .05) / (Math.min(a, b) + .05);
+                }""")
+                assert contrast >= 4.5, (width, theme, contrast)
+            page.evaluate("document.documentElement.dataset.theme = 'light'")
             page.screenshot(path=str(OUT / f"signup-role-{width}.png"))
         role_group.get_by_role("radio", name=re.compile("Passenger")).focus()
         page.keyboard.press("ArrowRight")
