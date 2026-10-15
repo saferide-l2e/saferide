@@ -10,9 +10,9 @@
  <div class="safety-feed-grid">
   <div class="safety-feed">
    <div class="safety-feed__heading"><h2>Route notices</h2><p>Approved posts only · not a live traffic service</p></div>
-   {% if updates %}
+   {% if updates_cards %}
     <div class="safety-feed__items">
-      {% for update in updates %}
+      {% for update in updates_cards %}
        {% if update.status == "APPROVED" %}
         <article class="safety-feed-item"><div class="safety-feed-item__head">
          <span class="safety-feed-item__type">{{ update.type_label }}</span>
