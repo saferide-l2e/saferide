@@ -2,6 +2,8 @@ from datetime import timedelta
 
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied, ValidationError
+from django.db.models import Value
+from django.db.models.functions import Replace
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -15,52 +17,80 @@ from apps.core.permissions import driver_required, passenger_required
 from apps.core.presentation import departure_card, driver_card, roster_card
 from apps.vehicles.services import get_or_create_driver_profile
 
+from .demo_discovery import clean_stop, sample_buses
 from .forms import DepartureForm
 from .models import Departure, DepartureStatus
 from .services import apply_transition, create_departure
 
 
-@passenger_required
+@require_http_methods(["GET"])
 def search(request):
-    origin = (request.GET.get("origin") or "").strip()
-    destination = (request.GET.get("destination") or "").strip()
-    departures = []
+    """Browse published journeys publicly, with safe fictional examples for any route.
+
+    Only existing database departures can enter the booking flow; simulation
+    previews are read-only and do not claim real drivers, seats or live routes.
+    """
+    origin = clean_stop(request.GET.get("origin", ""))
+    destination = clean_stop(request.GET.get("destination", ""))
+    has_searched = bool(origin or destination)
+    valid_search = bool(
+        origin and destination and origin.casefold() != destination.casefold()
+    )
     eligible = passenger_eligible(request.user)
-    if eligible and (origin or destination):
-        query = Departure.objects.filter(
-            status=DepartureStatus.BOARDING_OPEN,
-            scheduled_departure_at__gt=timezone.now() + timedelta(seconds=600),
-        ).select_related(
-            "route", "driver", "vehicle"
+    departures = []
+    now = timezone.now()
+    if valid_search:
+        query = (
+            Departure.objects.filter(
+                status=DepartureStatus.BOARDING_OPEN,
+                scheduled_departure_at__gt=now + timedelta(seconds=600),
+            )
+            .annotate(
+                origin_compact=Replace("route__origin_name", Value(" "), Value("")),
+                destination_compact=Replace("route__destination_name", Value(" "), Value("")),
+            )
+            .filter(
+                origin_compact__icontains=origin.replace(" ", ""),
+                destination_compact__icontains=destination.replace(" ", ""),
+            )
+            .select_related("route", "driver", "vehicle")[:20]
         )
-        if origin:
-            query = query.filter(route__origin_name__icontains=origin)
-        if destination:
-            query = query.filter(route__destination_name__icontains=destination)
-        now = timezone.now()
         for departure in query:
             departure.available = available_seats(departure, now)
             departures.append(departure)
-    searching = bool(origin and destination)
+
     cards = [departure_card(d, d.available) for d in departures]
-    context = {
+    previews = sample_buses(origin, destination, now=now) if valid_search and not cards else []
+    if has_searched and not valid_search:
+        error_message = "Enter two different locations to see demo bus options."
+    else:
+        error_message = ""
+
+    if has_searched and not eligible:
+        eligibility_message = (
+            "Only staff-approved passengers can reserve a seat. You can still browse "
+            "published journeys and fictional demo examples."
+        )
+    else:
+        eligibility_message = ""
+
+    return render(request, "passenger/search.html", {
         "origin": origin,
         "destination": destination,
         "departures": departures,
         "buses": cards,
+        "sample_buses": previews,
         "eligible": eligible,
-        "has_searched": searching,
+        "has_searched": has_searched,
+        "valid_search": valid_search,
+        "is_pilot_route": (not valid_search or (
+            origin.casefold().replace(" ", "") == "jibowu"
+            and destination.casefold().replace(" ", "") == "mile2"
+        )),
         "search_url": reverse("departures:search"),
-        "eligibility_message": (
-            "Complete your account verification to view and reserve available departures."
-            if searching and not eligible else ""
-        ),
-    }
-    return render(
-        request,
-        "passenger/search.html",
-        context,
-    )
+        "eligibility_message": eligibility_message,
+        "error_message": error_message,
+    })
 
 
 @passenger_required
