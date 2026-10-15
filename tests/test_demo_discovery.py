@@ -4,7 +4,6 @@ from datetime import UTC, datetime, timedelta
 
 import pytest
 from django.urls import reverse
-from django.utils import timezone
 
 from apps.departures.demo_discovery import clean_stop, sample_buses
 from apps.departures.models import Departure
