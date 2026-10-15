@@ -45,6 +45,7 @@ LOGIN_REDIRECT_URL = "core:dashboard"
 LOGOUT_REDIRECT_URL = "core:home"
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -90,6 +91,7 @@ USE_TZ = True
 STATIC_URL = "static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
+STORAGES = {"staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"}}
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
@@ -104,3 +106,6 @@ CSRF_COOKIE_SAMESITE = "Lax"
 SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
 SECURE_SSL_REDIRECT = not DEBUG and os.getenv("ENABLE_HTTPS_REDIRECT", "true").lower() == "true"
+
+# Render terminates TLS at its proxy. Honour only the platform proxy header.
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
