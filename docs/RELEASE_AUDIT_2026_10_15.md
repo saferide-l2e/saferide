@@ -4,7 +4,7 @@
 
 - **Canonical application:** https://saferide-friday-web.onrender.com/
 - **Vercel entry:** https://saferide-eight.vercel.app/
-- **Temporary production Vercel behavior:** HTTP 307 redirect to the matching path on Render using `vercel.json`. This is a **single Django backend**, not two independently database-backed installations.
+- **Temporary production Vercel behavior:** HTTP 307 GET redirect to the matching path on Render via the Django canonical-host middleware. Existing `vercel.json` is retained as best-effort config, but the public probe showed that its redirect was not applied on Vercel's Django framework runtime. This is a **single Django backend**, not two independently database-backed installations.
 - **Why:** Vercel `DATABASE_URL` was not configured. Its registration page returned HTTP 500 while the static homepage rendered. Render PostgreSQL explicitly blocks external connections; do **not** open it to 0.0.0.0/0.
 - **Authentication:** Sessions and CSRF remain same-origin on Render after the redirect. Do not mirror session secrets, transmit passwords in query strings, or use live production PostgreSQL in CI.
 - **Longer term:** Provision Vercel-accessible, TLS-protected database access with narrowly scoped network rules, verify migrations and secrets, then remove the redirect and restore true independent Vercel Django runtime.
@@ -25,7 +25,7 @@
 
 ## Observed defects addressed by this branch
 
-1. Vercel Django 500 on /accounts/register/ due to missing production database settings: added temporary whole-site 307 redirect to Render.
+1. Vercel Django 500 on /accounts/register/ due to missing production database settings: temporary host-specific 307 redirect to Render is implemented in Django before auth/session/DB access. Stale POST submissions receive 303 and are NOT repeated across origins.
 2. Verification panel lacked a visually prominent declaration in live screenshot: simplified template guard and added in-page action/link plus visible form styling.
 3. Landing page repeats value strip, large benefits, safety, and final CTA: removed redundant strip and duplicate closing sections, reduced spacing.
 4. Driver CTA incorrectly linked to its own current section: link to driver-prefilled account creation.
