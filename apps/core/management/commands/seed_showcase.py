@@ -37,10 +37,12 @@ class Command(BaseCommand):
                 user = User.objects.create_user(
                     email=email, password=password, display_name=display, role=role,
                 )
-                Verification.objects.get_or_create(
-                    user=user, defaults={"status": VerificationStatus.VERIFIED,
-                                         "note": "Synthetic pilot identity; no actual identity check"},
-                )
+                verification, _ = Verification.objects.get_or_create(user=user)
+                # The signup flow may have already inserted NOT_SUBMITTED via a signal.
+                # This update is exclusively for a *newly created* synthetic account.
+                verification.status = VerificationStatus.VERIFIED
+                verification.note = "Synthetic pilot identity; no actual identity check"
+                verification.save(update_fields=["status", "note"])
             # Never overwrite the existing user's password or verification decisions.
             return user
 
