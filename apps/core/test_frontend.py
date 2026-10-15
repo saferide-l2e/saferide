@@ -6,10 +6,10 @@ from django.urls import reverse
 
 
 class FrontendShellTests(SimpleTestCase):
-    def test_homepage_shows_routes_driver_and_safety_sections(self):
+    def test_homepage_keeps_route_driver_sections_and_safety_navigation(self):
         response = self.client.get(reverse("core:home"))
         self.assertEqual(response.status_code, 200)
-        for label in ('id="how-it-works"', 'id="for-drivers"', 'id="site-safety-title"'):
+        for label in ('id="how-it-works"', 'id="for-drivers"', 'href="/safety/route-updates/"'):
             with self.subTest(section=label):
                 self.assertContains(response, label)
         self.assertContains(response, "Move smarter.")
