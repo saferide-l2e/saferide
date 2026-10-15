@@ -48,6 +48,7 @@ LOGIN_REDIRECT_URL = "core:dashboard"
 LOGOUT_REDIRECT_URL = "core:home"
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "config.canonical_redirect.VercelDemoCanonicalRedirectMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
