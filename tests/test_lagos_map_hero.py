@@ -35,8 +35,9 @@ def test_without_google_key_map_has_fallback(client, monkeypatch):
     assert 'data-google-key=""' in html
     assert "Open in Google Maps" in html
     assert "unpkg.com/maplibre-gl@5.6.0" in html
-    from django.conf import settings
     from pathlib import Path
+
+    from django.conf import settings
 
     route_js = (Path(settings.BASE_DIR) / "static/js/hero_route.js").read_text()
     assert "tiles.openfreemap.org/styles/liberty" in route_js
