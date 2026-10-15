@@ -1,0 +1,29 @@
+{% extends "base.html" %}{% load static %}
+{% block title %}Manage departure | SafeRide{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/driver_dashboard.css' %}"><link rel="stylesheet" href="{% static 'css/driver_boarding.css' %}">{% endblock %}
+{% block content %}
+<section class="container driver-home">
+<a class="driver-back" href="{{ dashboard_url }}">← Driver dashboard</a>
+<span class="eyebrow">Driver operations</span><h1>{{ departure.route_label }}</h1>
+<p>{{ departure.scheduled_departure_at|date:"D j M, g:i A" }} · {{ departure.plate_display }}</p>
+<div class="driver-stats"><article class="driver-stat"><span>Confirmed aboard</span><strong>{{ departure.boarded_count }}</strong></article><article class="driver-stat"><span>Seats held</span><strong>{{ departure.held_count }}</strong></article><article class="driver-stat"><span>Bus capacity</span><strong>{{ departure.capacity }}</strong></article></div>
+<div class="driver-home__grid"><article class="departure-form-card"><h2>Manage departure</h2>
+<p>Current status: <strong>{{ departure.status_label }}</strong></p>
+{% if can_close or can_start or can_arrive or can_cancel %}
+<form method="post" action="{{ transition_action }}">{% csrf_token %}
+{% if can_close %}<button class="button button--primary" name="action" value="close_boarding">Close boarding</button>{% endif %}
+{% if can_start %}<button class="button button--primary" name="action" value="start_trip">Start trip</button>{% endif %}
+{% if can_arrive %}<button class="button button--primary" name="action" value="arrive">Mark driver arrival</button>{% endif %}
+{% if can_cancel %}<button class="button button--outline" name="action" value="cancel">Cancel departure</button>{% endif %}
+</form>{% endif %}
+<h2>Private passenger roster</h2>
+{% for passenger in roster %}
+<div class="roster-row"><div class="roster-row__main"><strong>{{ passenger.public_display_name }}</strong><p>Ref: {{ passenger.short_reference }} · {{ passenger.status }}</p></div>
+{% if passenger.status == "HELD" %}
+<form method="post" action="{{ checkin_action }}">{% csrf_token %}
+<input type="hidden" name="booking_id" value="{{ passenger.id }}"><label for="boarding-{{ forloop.counter }}">Boarding code</label><input id="boarding-{{ forloop.counter }}" name="code" autocomplete="off" required>
+<button type="submit" class="button button--primary">Check in</button></form>
+{% endif %}</div>
+{% empty %}<p>No current reservations for this departure.</p>{% endfor %}
+</article><aside class="driver-home__side"><h2>Boarding and arrival</h2><p>Only the assigned driver can manage check-in. Check-in codes work once and are never published in the roster.</p><p>Driver arrival and passenger confirmation are recorded separately.</p></aside></div>
+</section>{% endblock %}

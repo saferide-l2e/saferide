@@ -1,2 +1,59 @@
-{% extends "base.html" %}{% block title %}SafeRide — Demo foundation{% endblock %}
-{% block content %}<h1>SafeRide MVP</h1><p>The Django project foundation is ready. Passenger and driver workflows are being built by the team.</p><p><strong>Demo only:</strong> no real identity or driver background checks.</p>{% endblock %}
+{% extends "base.html" %}
+{% load static %}
+{% block title %}SafeRide — Move around Lagos with more confidence{% endblock %}
+{% block description %}Explore Lagos bus routes, find boarding points and plan your next journey with SafeRide.{% endblock %}
+{% block content %}
+<section class="site-hero" aria-labelledby="site-hero-title">
+ <div class="container site-hero__grid">
+  <div class="site-hero__copy">
+    <span class="site-eyebrow"><span class="site-eyebrow__line"></span> A better way to move around Lagos</span>
+    <h1 id="site-hero-title">Move smarter.<br><em>Arrive with</em><br>confidence.</h1>
+    <p class="site-hero__lead">Less guessing. More going. Find your route, know your boarding point and stay informed at every step of your journey.</p>
+    <div class="site-hero__actions"><a class="site-button site-button--lime" href="{% url 'departures:search' %}">Find your ride <span aria-hidden="true">↗</span></a><a class="site-button site-button--ghost" href="{% url 'core:home' %}#how-it-works">See how it works <span aria-hidden="true">→</span></a></div>
+    <div class="site-hero__proof"><span class="site-hero__proof-dot" aria-hidden="true">✳</span><span>Designed around Lagos commuters and drivers</span></div>
+  </div>
+  <div class="site-hero__scene" aria-label="Illustrated Lagos transit route from Jibowu to Mile 2">
+    <div class="site-hero__scene-top"><span class="site-mini-label">THE NEXT MOVE</span><span class="site-hero__pin">LAGOS, NIGERIA <span aria-hidden="true">↗</span></span></div>
+    <div class="site-hero__route">
+       <div class="site-hero__map-lines" aria-hidden="true"></div>
+       <svg viewBox="0 0 530 450" role="img" aria-label="Stylised route illustration. Not real-time GPS." fill="none">
+         <path d="M45 350C120 358 162 265 215 270C290 275 310 194 376 191C436 189 455 121 475 83" stroke="#2C886D" stroke-width="35" stroke-linecap="round" opacity=".35"/>
+         <path d="M45 350C120 358 162 265 215 270C290 275 310 194 376 191C436 189 455 121 475 83" stroke="#D6F86C" stroke-width="7" stroke-dasharray="4 14" stroke-linecap="round"/>
+         <circle cx="45" cy="350" r="25" fill="#D6F86C"/><circle cx="45" cy="350" r="10" fill="#064F40"/>
+         <circle cx="475" cy="83" r="25" fill="#fff"/><circle cx="475" cy="83" r="10" fill="#064F40"/>
+         <g class="site-hero__moving-bus"><rect x="212" y="235" width="104" height="58" rx="14" fill="#fff"/><rect x="224" y="244" width="80" height="29" rx="7" fill="#B7ECD7"/><path d="M264 244V273" stroke="#2A9270" stroke-width="4"/><rect x="218" y="281" width="90" height="5" rx="2" fill="#D6F86C"/><circle cx="237" cy="294" r="9" fill="#102F2C"/><circle cx="290" cy="294" r="9" fill="#102F2C"/></g>
+       </svg>
+       <div class="site-hero__route-origin"><span class="site-hero__route-dot"></span><strong>Jibowu</strong><small>Starting point</small></div>
+       <div class="site-hero__route-destination"><span class="site-hero__route-dot site-hero__route-dot--light"></span><strong>Mile 2</strong><small>Destination</small></div>
+    </div>
+    <div class="site-hero__route-card"><span class="site-hero__route-card-icon" aria-hidden="true">↗</span><div><strong>It's your journey.</strong><small>Know the route before you move.</small></div><a href="{% url 'departures:search' %}?origin=Jibowu&amp;destination=Mile+2" aria-label="View Jibowu to Mile 2 route">→</a></div>
+  </div>
+ </div>
+ <div class="container site-hero__search-wrap">
+  <form class="site-ride-search" method="get" action="{% url 'departures:search' %}?origin=Jibowu&amp;destination=Mile+2" role="search" aria-label="Find a bus route">
+   <div class="site-ride-search__title"><span class="site-ride-search__icon" aria-hidden="true">⌕</span><div><strong>Where are you going?</strong><span>Plan your next journey</span></div></div>
+   <div class="site-ride-search__field"><label for="site-from">From</label><input id="site-from" name="origin" placeholder="Enter starting point" value="Jibowu" required maxlength="120" autocomplete="off"></div>
+   <div class="site-ride-search__swap" aria-hidden="true">→</div>
+   <div class="site-ride-search__field"><label for="site-to">To</label><input id="site-to" name="destination" placeholder="Enter destination" value="Mile 2" required maxlength="120" autocomplete="off"></div>
+   <button class="site-button site-button--dark" type="submit">Search buses <span aria-hidden="true">↗</span></button>
+  </form>
+ </div>
+</section>
+<section class="site-value-strip" aria-label="SafeRide values"><div class="container site-value-strip__inner"><span><i aria-hidden="true">01</i> Know your route</span><span><i aria-hidden="true">02</i> Get seat information</span><span><i aria-hidden="true">03</i> Check in clearly</span><span><i aria-hidden="true">04</i> Follow your journey</span></div></section>
+<section class="site-section container" id="how-it-works" aria-labelledby="site-value-title">
+ <div class="site-section__intro"><div><span class="site-kicker">MADE FOR REAL JOURNEYS</span><h2 id="site-value-title">A better journey<br><em>starts before boarding.</em></h2></div><p>Public transport should feel less uncertain. SafeRide brings essential route, vehicle and trip information into one clear experience.</p></div>
+ <div class="site-benefits">
+  <a href="{% url 'departures:search' %}" class="site-benefit"><span class="site-benefit__icon" aria-hidden="true">⌖</span><small>01 / FIND</small><h3>Know exactly where to go.</h3><p>Find routes, buses and boarding points with the details you need to plan ahead.</p><span class="site-benefit__link">Explore routes <span aria-hidden="true">↗</span></span></a>
+  <a href="{% url 'bookings:index' %}" class="site-benefit"><span class="site-benefit__icon" aria-hidden="true">▤</span><small>02 / BOARD</small><h3>Make every seat count.</h3><p>See how timed holds, fair queues and boarding codes shape a more organised trip.</p><span class="site-benefit__link">Explore reservations <span aria-hidden="true">↗</span></span></a>
+  <a href="{% url 'bookings:index' %}" class="site-benefit"><span class="site-benefit__icon" aria-hidden="true">↗</span><small>03 / ARRIVE</small><h3>Stay in the know.</h3><p>Follow journey milestones, confirm your arrival and keep track of your rides.</p><span class="site-benefit__link">My journeys <span aria-hidden="true">↗</span></span></a>
+ </div>
+</section>
+<section class="site-driver-promo" id="for-drivers" aria-labelledby="site-driver-promo-title"><div class="container site-driver-promo__grid">
+ <div class="site-driver-promo__visual"><span>SAFERIDE FOR DRIVERS</span><div class="site-driver-promo__visual-card"><small>YOUR OPERATION</small><strong>Every route.<br>Under control.</strong><div class="site-driver-promo__roads" aria-hidden="true"><span>▱</span><span>↗</span></div></div></div>
+ <div class="site-driver-promo__copy"><span class="site-kicker">FOR THE PEOPLE WHO KEEP LAGOS MOVING</span><h2 id="site-driver-promo-title">Drive with more clarity.<br><em>Manage with ease.</em></h2><p>One place to organise approved vehicles, scheduled departures and boarding—designed with professional drivers in mind.</p><a class="site-button site-button--dark" href="{% url 'core:home' %}#for-drivers">Explore driver benefits <span aria-hidden="true">→</span></a></div>
+</div></section>
+<section class="site-section container site-safety-intro" aria-labelledby="site-safety-title">
+ <span class="site-kicker">CONFIDENCE IS IN THE DETAILS</span><h2 id="site-safety-title">A journey is more<br>than getting there.</h2><div class="site-safety-intro__body"><p>Good decisions start with clear information. Review limited profile statuses, see route notices and raise concerns privately when something doesn't feel right.</p><a class="site-button site-button--outline" href="{% url 'safety:route_updates' %}">Explore safety &amp; support <span aria-hidden="true">↗</span></a></div>
+</section>
+<section class="site-final-cta"><div class="container site-final-cta__inner"><div><span>READY WHEN YOU ARE</span><h2>Where will you go next?</h2></div><a class="site-button site-button--lime" href="{% url 'departures:search' %}">Find a ride <span aria-hidden="true">↗</span></a></div></section>
+{% endblock %}

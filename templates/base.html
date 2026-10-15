@@ -1,7 +1,51 @@
-{% load static %}<!DOCTYPE html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>{% block title %}SafeRide{% endblock %}</title><link rel="stylesheet" href="{% static 'css/base.css' %}"></head>
-<body><a class="skip" href="#content">Skip to content</a><header><strong>SafeRide</strong></header>
-<main id="content">{% block content %}{% endblock %}</main>
-<footer>SafeRide demonstration — fictional identities and availability only. Verification cannot guarantee safety.</footer>
-</body></html>
+{% load static %}<!doctype html>
+<html lang="en" class="has-js"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{% block title %}SafeRide — Every journey matters{% endblock %}</title>
+<meta name="description" content="{% block description %}Move smarter. Explore routes, book your seat and follow your journey with SafeRide.{% endblock %}">
+<link rel="stylesheet" href="{% static 'css/base.css' %}">
+<link rel="stylesheet" href="{% static 'css/site_public.css' %}">
+{% block extra_head %}{% endblock %}
+<script defer src="{% static 'js/navigation.js' %}"></script>
+</head><body>
+<a class="skip-link" href="#main-content">Skip to content</a>
+<header class="site-header"><div class="container header-inner">
+  <a class="brand" href="{% url 'core:home' %}" aria-label="SafeRide home"><span>Safe<strong>Ride</strong></span><svg class="brand-pin" width="16" height="20" viewBox="0 0 16 20" fill="none" aria-hidden="true"><path d="M8 1a7 7 0 0 0-7 7c0 4.5 7 11 7 11s7-6.5 7-11a7 7 0 0 0-7-7Z" fill="currentColor"/><circle cx="8" cy="8" r="2.4" fill="white"/></svg></a>
+  <button type="button" class="menu-toggle" aria-label="Open navigation" aria-controls="primary-navigation" aria-expanded="false" data-menu-toggle><span></span><span></span><span></span></button>
+  <nav class="primary-navigation" id="primary-navigation" aria-label="Main navigation" data-primary-nav>
+    {% if user.is_authenticated and user.role == "DRIVER" %}
+      <a data-nav-link href="{% url 'departures:dashboard' %}">Dashboard</a>
+      <a data-nav-link href="{% url 'vehicles:list' %}">My Vehicles</a>
+      <a data-nav-link href="{% url 'departures:create' %}">Departures</a>
+      <a data-nav-link href="{% url 'verification:status' %}">Account</a>
+    {% elif user.is_authenticated %}
+      <a data-nav-link href="{% url 'departures:search' %}">Find a Ride</a>
+      <a data-nav-link href="{% url 'bookings:index' %}">My Trips</a>
+      <a data-nav-link href="{% url 'safety:route_updates' %}">Route Updates</a>
+      <a data-nav-link href="{% url 'verification:status' %}">Account</a>
+    {% else %}
+      <a data-nav-link href="{% url 'departures:search' %}">Find a Ride</a>
+      <a data-nav-link href="{% url 'core:home' %}#how-it-works">How It Works</a>
+      <a data-nav-link href="{% url 'core:home' %}#for-drivers">For Drivers</a>
+      <a data-nav-link href="{% url 'safety:route_updates' %}">Safety &amp; Support</a>
+      <a data-nav-link href="{% url 'accounts:login' %}">Sign In</a>
+      <a data-nav-link class="nav-cta" href="{% url 'accounts:register' %}">Get Started <span aria-hidden="true">↗</span></a>
+    {% endif %}
+    {% if user.is_authenticated %}
+      <form method="post" action="{% url 'accounts:logout' %}" class="nav-logout-form">{% csrf_token %}<button type="submit" class="nav-logout">Sign out</button></form>
+    {% endif %}
+  </nav>
+</div></header>
+{% if messages %}<div class="container site-messages" aria-live="polite">
+  {% for message in messages %}<div class="notice{% if message.tags == 'error' %} notice--error{% endif %}" role="status"><span class="notice-symbol" aria-hidden="true">i</span>{{ message }}</div>{% endfor %}
+</div>{% endif %}
+<main id="main-content" tabindex="-1">{% block content %}{% endblock %}</main>
+<footer class="site-footer"><div class="container site-footer__premium">
+  <div class="site-footer__identity"><a href="{% url 'core:home' %}" class="brand brand--footer">Safe<strong>Ride</strong></a><p>Every journey matters.</p><small>Made for clearer journeys around Lagos.</small></div>
+  <nav class="site-footer__columns" aria-label="Footer navigation">
+    <div><strong>Ride</strong><a href="{% url 'departures:search' %}">Find a Ride</a><a href="{% url 'bookings:index' %}">My Trips</a></div>
+    <div><strong>Drive</strong><a href="{% url 'accounts:register' %}">Join as a Driver</a><a href="{% url 'departures:dashboard' %}">Driver Dashboard</a></div>
+    <div><strong>Help</strong><a href="{% url 'safety:route_updates' %}">Route Updates</a><a href="{% url 'safety:report' %}">Report a Concern</a></div>
+  </nav>
+</div><div class="container site-footer__bottom"><span>© 2026 SafeRide.</span><span>Sample routes and verification data are simulated; no live GPS or emergency dispatch</span></div>
+</footer>{% block extra_scripts %}{% endblock %}</body></html>

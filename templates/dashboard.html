@@ -1,0 +1,16 @@
+{% extends "base.html" %}{% block title %}My account | SafeRide{% endblock %}
+{% block content %}<section class="container site-section">
+<span class="eyebrow">Your SafeRide account</span><h1>Welcome{% if user.display_name %}, {{ user.display_name }}{% endif %}.</h1>
+<p>Choose where to go next. Some features require staff-approved eligibility.</p>
+<div class="site-benefits">
+  <a class="site-benefit" href="{% url 'verification:status' %}"><small>ACCOUNT</small><h3>My verification</h3><p>View your eligibility review and submit your request.</p><span class="site-benefit__link">Open status ↗</span></a>
+  {% if panel == "driver" %}
+  <a class="site-benefit" href="{% url 'vehicles:list' %}"><small>DRIVER</small><h3>My vehicles</h3><p>Manage the buses you've registered for approval.</p><span class="site-benefit__link">View vehicles ↗</span></a>
+  <a class="site-benefit" href="{% url 'departures:dashboard' %}"><small>DEPARTURES</small><h3>Driver dashboard</h3><p>See schedules and manage boarding.</p><span class="site-benefit__link">Open dashboard ↗</span></a>
+  {% elif panel == "staff" %}
+  <a class="site-benefit" href="/admin/"><small>STAFF</small><h3>Moderation</h3><p>Review eligibility, vehicles and private reports.</p><span class="site-benefit__link">Open admin ↗</span></a>
+  {% else %}
+  <a class="site-benefit" href="{% url 'departures:search' %}"><small>PASSENGER</small><h3>Find a ride</h3><p>Search departures and review assigned vehicles.</p><span class="site-benefit__link">Search buses ↗</span></a>
+  <a class="site-benefit" href="{% url 'bookings:index' %}"><small>JOURNEY</small><h3>My trips</h3><p>Seat holds, boarding codes and history.</p><span class="site-benefit__link">Open journeys ↗</span></a>
+  {% endif %}
+</div></section>{% endblock %}

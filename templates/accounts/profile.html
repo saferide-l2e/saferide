@@ -1,0 +1,2 @@
+{% extends "base.html" %}{% block title %}My Profile | SafeRide{% endblock %}
+{% block content %}<section class="container site-section"><span class="eyebrow">Profile</span><h1>Your account</h1><p><strong>Name:</strong> {{ profile_user.display_name }}</p><p><strong>Role:</strong> {{ profile_user.get_role_display }}</p><a class="button button--primary" href="{% url 'verification:status' %}">Review eligibility status →</a></section>{% endblock %}
