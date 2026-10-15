@@ -4,7 +4,8 @@ Never import real users, scan identity documents or bypass approval of signups.
 This management command must be explicitly enabled by the service operator.
 """
 import os
-from datetime import timedelta
+from datetime import date, datetime, time, timedelta
+from zoneinfo import ZoneInfo
 
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
@@ -64,16 +65,28 @@ class Command(BaseCommand):
             boarding_point="Jibowu Park (fictional)",
             defaults={"destination_point": "Mile 2 Stop (fictional)"},
         )
-        if not Departure.objects.filter(
-            driver=driver, route=route, vehicle=vehicle,
-            status=DepartureStatus.BOARDING_OPEN,
-            scheduled_departure_at__gt=timezone.now() + timedelta(minutes=20),
-        ).exists():
-            # Standalone walk-through journey; opening occurs via the seed command
-            # rather than the driver's normal create->staff approval->publish route.
+        # Keep a practice departure available today and several explicitly
+        # scheduled for the Friday presentation. Repeated deploys are idempotent.
+        lagos = ZoneInfo("Africa/Lagos")
+        friday = date(2026, 10, 16)
+        times = [
+            timezone.now() + timedelta(hours=4),
+            *(datetime.combine(friday, time(hour, minute), tzinfo=lagos)
+              for hour, minute in ((10, 30), (13, 30), (17, 30), (21, 30))),
+        ]
+        for scheduled in times:
+            if scheduled <= timezone.now() + timedelta(minutes=20):
+                continue
+            if Departure.objects.filter(
+                driver=driver, route=route, vehicle=vehicle,
+                scheduled_departure_at=scheduled,
+            ).exists():
+                continue
+            # Sample data only; the ordinary real-driver approval and publish
+            # workflow is NOT bypassed for accounts created through signup.
             Departure.objects.create(
                 driver=driver, route=route, vehicle=vehicle,
-                scheduled_departure_at=timezone.now() + timedelta(hours=4),
+                scheduled_departure_at=scheduled,
                 status=DepartureStatus.BOARDING_OPEN, snapshot_capacity=vehicle.capacity,
             )
         self.stdout.write(self.style.SUCCESS(
