@@ -61,7 +61,7 @@ with sync_playwright() as playwright:
         assert page.locator(".demo-bus-card").count() == 4
         assert page.locator(".demo-bus-card form").count() == 0
         page.locator(".demo-bus-details summary").first.click()
-        expect(page.get_by_text("Preview only. Not a published route")).to_be_visible()
+        expect(page.locator(".demo-bus-card").first.get_by_text("Preview only. Not a published route")).to_be_visible()
         page.screenshot(path=str(OUT / "arbitrary-route-suggestions.png"), full_page=True)
         evidence["journeys"].append("Arbitrary locations produce four fictional, non-bookable bus options")
 
