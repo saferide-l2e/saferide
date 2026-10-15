@@ -1,3 +1,5 @@
+import os
+
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -6,7 +8,9 @@ from apps.accounts.models import Role
 
 
 def home(request):
-    return render(request, "home.html")
+    return render(request, "home.html", {
+        "google_maps_browser_key": os.getenv("GOOGLE_MAPS_BROWSER_KEY", "").strip(),
+    })
 
 
 def health(request):

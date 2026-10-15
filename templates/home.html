@@ -2,6 +2,8 @@
 {% load static %}
 {% block title %}SafeRide — Move around Lagos with more confidence{% endblock %}
 {% block description %}Explore Lagos bus routes, find boarding points and plan your next journey with SafeRide.{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"><link rel="stylesheet" href="{% static 'css/site_route.css' %}">{% endblock %}
+{% block extra_scripts %}<script defer src="{% static 'js/hero_route.js' %}"></script>{% endblock %}
 {% block content %}
 <section class="site-hero" aria-labelledby="site-hero-title">
  <div class="container site-hero__grid">
@@ -12,25 +14,31 @@
     <div class="site-hero__actions"><a class="site-button site-button--lime" href="{% url 'departures:search' %}">Find your ride <span aria-hidden="true">↗</span></a><a class="site-button site-button--ghost" href="{% url 'core:home' %}#how-it-works">See how it works <span aria-hidden="true">→</span></a></div>
     <div class="site-hero__proof"><span class="site-hero__proof-dot" aria-hidden="true">✳</span><span>Designed around Lagos commuters and drivers</span></div>
   </div>
-  <div class="site-hero__scene" aria-label="Illustrated Lagos transit route from Jibowu to Mile 2">
-    <div class="site-hero__scene-top"><span class="site-mini-label">THE NEXT MOVE</span><span class="site-hero__pin">LAGOS, NIGERIA <span aria-hidden="true">↗</span></span></div>
-    <div class="site-hero__route">
-       <div class="site-hero__map-lines" aria-hidden="true"></div>
-       <svg viewBox="0 0 530 450" role="img" aria-label="Stylised route illustration. Not real-time GPS." fill="none">
-         <path d="M45 350C120 358 162 265 215 270C290 275 310 194 376 191C436 189 455 121 475 83" stroke="#2C886D" stroke-width="35" stroke-linecap="round" opacity=".35"/>
-         <path d="M45 350C120 358 162 265 215 270C290 275 310 194 376 191C436 189 455 121 475 83" stroke="#D6F86C" stroke-width="7" stroke-dasharray="4 14" stroke-linecap="round"/>
-         <circle cx="45" cy="350" r="25" fill="#D6F86C"/><circle cx="45" cy="350" r="10" fill="#064F40"/>
-         <circle cx="475" cy="83" r="25" fill="#fff"/><circle cx="475" cy="83" r="10" fill="#064F40"/>
-         <g class="site-hero__moving-bus"><rect x="212" y="235" width="104" height="58" rx="14" fill="#fff"/><rect x="224" y="244" width="80" height="29" rx="7" fill="#B7ECD7"/><path d="M264 244V273" stroke="#2A9270" stroke-width="4"/><rect x="218" y="281" width="90" height="5" rx="2" fill="#D6F86C"/><circle cx="237" cy="294" r="9" fill="#102F2C"/><circle cx="290" cy="294" r="9" fill="#102F2C"/></g>
-       </svg>
-       <div class="site-hero__route-origin"><span class="site-hero__route-dot"></span><strong>Jibowu</strong><small>Starting point</small></div>
-       <div class="site-hero__route-destination"><span class="site-hero__route-dot site-hero__route-dot--light"></span><strong>Mile 2</strong><small>Destination</small></div>
+  <div class="site-hero__scene site-hero__scene--map" data-route-hero data-google-key="{{ google_maps_browser_key }}" data-danfo-icon="{% static 'img/danfo-3d.webp' %}">
+    <div class="site-hero__scene-top">
+      <span class="site-mini-label"><span class="site-map-dot" aria-hidden="true"></span> LAGOS ROUTE EXPLORER</span>
+      <span class="site-map-provider" data-map-provider>Finding route…</span>
     </div>
-    <div class="site-hero__route-card"><span class="site-hero__route-card-icon" aria-hidden="true">↗</span><div><strong>It's your journey.</strong><small>Know the route before you move.</small></div><a href="{% url 'departures:search' %}?origin=Jibowu&amp;destination=Mile+2" aria-label="View Jibowu to Mile 2 route">→</a></div>
+    <div class="site-route-map" id="hero-route-map" role="region" aria-label="Interactive Lagos road map from Jibowu Bus Stop to Mile 2" tabindex="0">
+      <div class="site-map-loading" data-map-loading><span class="site-map-loading__spinner" aria-hidden="true"></span><strong>Getting the road route ready</strong><small>Jibowu → Mile 2, Lagos</small></div>
+    </div>
+    <div class="site-map-summary">
+      <div class="site-map-summary__places">
+        <span class="site-map-summary__place"><span class="site-map-summary__pin" aria-hidden="true"></span><span><small>FROM</small><strong>Jibowu</strong></span></span>
+        <span class="site-map-summary__connector" aria-hidden="true"></span>
+        <span class="site-map-summary__place"><span class="site-map-summary__pin site-map-summary__pin--end" aria-hidden="true"></span><span><small>TO</small><strong>Mile 2</strong></span></span>
+      </div>
+      <p class="site-map-summary__meta" data-map-distance aria-live="polite">Calculating road route…</p>
+      <p class="site-map-summary__disclaimer">Animated journey illustration · Not live vehicle tracking</p>
+      <div class="site-map-summary__actions">
+        <button class="site-map-pause" type="button" data-map-motion aria-pressed="false" disabled>Pause animation <span aria-hidden="true">Ⅱ</span></button>
+        <a class="site-map-open" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/dir/?api=1&amp;origin=Jibowu%20Bus%20Stop%2C%20Lagos%2C%20Nigeria&amp;destination=Mile%202%20Bus%20Stop%2C%20Lagos%2C%20Nigeria&amp;travelmode=driving">Open in Google Maps <span aria-hidden="true">↗</span></a>
+      </div>
+    </div>
   </div>
  </div>
  <div class="container site-hero__search-wrap">
-  <form class="site-ride-search" method="get" action="{% url 'departures:search' %}?origin=Jibowu&amp;destination=Mile+2" role="search" aria-label="Find a bus route">
+  <form class="site-ride-search" method="get" action="{% url 'departures:search' %}" role="search" aria-label="Find a bus route">
    <div class="site-ride-search__title"><span class="site-ride-search__icon" aria-hidden="true">⌕</span><div><strong>Where are you going?</strong><span>Plan your next journey</span></div></div>
    <div class="site-ride-search__field"><label for="site-from">From</label><input id="site-from" name="origin" placeholder="Enter starting point" value="Jibowu" required maxlength="120" autocomplete="off"></div>
    <div class="site-ride-search__swap" aria-hidden="true">→</div>
