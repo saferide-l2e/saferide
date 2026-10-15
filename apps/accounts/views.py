@@ -7,13 +7,16 @@ from django.views.decorators.http import require_http_methods
 from apps.audit.services import record
 
 from .forms import EmailAuthenticationForm, RegistrationForm
+from .models import Role
 
 
 @require_http_methods(["GET", "POST"])
 def register(request):
     if request.user.is_authenticated:
         return redirect("core:dashboard")
-    form = RegistrationForm(request.POST or None)
+    requested_role = request.GET.get("role", "")
+    initial_role = requested_role if requested_role in Role.values else Role.PASSENGER
+    form = RegistrationForm(request.POST or None, initial={"role": initial_role})
     if request.method == "POST" and form.is_valid():
         user = form.save()
         # Eligibility always begins at NOT_SUBMITTED (never self-approved).
@@ -23,7 +26,7 @@ def register(request):
         record(user, "account.registered", user, {"role": user.role})
         login(request, user)
         messages.success(request, "Account created. Submit your demo verification to continue.")
-        return redirect("core:dashboard")
+        return redirect("verification:status")
     return render(request, "accounts/register.html", {"form": form})
 
 
