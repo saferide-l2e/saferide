@@ -1,0 +1,29 @@
+name: Public runtime probe (read-only)
+on:
+  pull_request:
+    paths:
+      - 'scripts/public_runtime_probe.py'
+      - '.github/workflows/public_runtime_probe.yml'
+      - 'vercel.json'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/public_runtime_probe.py'
+      - '.github/workflows/public_runtime_probe.yml'
+      - 'vercel.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  production-get-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Inspect safe GET endpoints with verified HTTPS
+        run: python scripts/public_runtime_probe.py
