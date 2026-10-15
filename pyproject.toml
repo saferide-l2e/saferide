@@ -1,3 +1,15 @@
+[project]
+name = "saferide"
+version = "0.1.0"
+description = "SafeRide passenger and driver web application"
+requires-python = ">=3.11,<3.14"
+dependencies = [
+    "Django>=5.2,<5.3",
+    "psycopg[binary]>=3.2,<4",
+    "dj-database-url>=2.2,<4",
+    "python-dotenv>=1.0,<2",
+]
+
 # SafeRide project configuration.
 
 [tool.ruff]
