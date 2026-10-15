@@ -118,7 +118,8 @@ def route_updates(request):
         "published_at": update.occurred_at,
     } for update in updates]
     return render(request, "safety/route_updates.html", {
-        "updates": cards,
+        "updates": updates,
+        "updates_cards": cards,
         "can_contribute": request.user.is_authenticated,
         "contribute_url": reverse("safety:route_update_new"),
     })
