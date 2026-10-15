@@ -47,7 +47,6 @@
   </form>
  </div>
 </section>
-<section class="site-value-strip" aria-label="SafeRide values"><div class="container site-value-strip__inner"><span><i aria-hidden="true">01</i> Know your route</span><span><i aria-hidden="true">02</i> Get seat information</span><span><i aria-hidden="true">03</i> Check in clearly</span><span><i aria-hidden="true">04</i> Follow your journey</span></div></section>
 <section class="site-section container" id="how-it-works" aria-labelledby="site-value-title">
  <div class="site-section__intro"><div><span class="site-kicker">MADE FOR REAL JOURNEYS</span><h2 id="site-value-title">A better journey<br><em>starts before boarding.</em></h2></div><p>Public transport should feel less uncertain. SafeRide brings essential route, vehicle and trip information into one clear experience.</p></div>
  <div class="site-benefits">
@@ -58,10 +57,6 @@
 </section>
 <section class="site-driver-promo" id="for-drivers" aria-labelledby="site-driver-promo-title"><div class="container site-driver-promo__grid">
  <div class="site-driver-promo__visual"><span>SAFERIDE FOR DRIVERS</span><div class="site-driver-promo__visual-card"><small>YOUR OPERATION</small><strong>Every route.<br>Under control.</strong><div class="site-driver-promo__roads" aria-hidden="true"><span>▱</span><span>↗</span></div></div></div>
- <div class="site-driver-promo__copy"><span class="site-kicker">FOR THE PEOPLE WHO KEEP LAGOS MOVING</span><h2 id="site-driver-promo-title">Drive with more clarity.<br><em>Manage with ease.</em></h2><p>One place to organise approved vehicles, scheduled departures and boarding—designed with professional drivers in mind.</p><a class="site-button site-button--dark" href="{% url 'core:home' %}#for-drivers">Explore driver benefits <span aria-hidden="true">→</span></a></div>
+ <div class="site-driver-promo__copy"><span class="site-kicker">FOR THE PEOPLE WHO KEEP LAGOS MOVING</span><h2 id="site-driver-promo-title">Drive with more clarity.<br><em>Manage with ease.</em></h2><p>One place to organise approved vehicles, scheduled departures and boarding—designed with professional drivers in mind.</p><a class="site-button site-button--dark" href="{% url 'accounts:register' %}?role=DRIVER">Join as a driver <span aria-hidden="true">→</span></a></div>
 </div></section>
-<section class="site-section container site-safety-intro" aria-labelledby="site-safety-title">
- <span class="site-kicker">CONFIDENCE IS IN THE DETAILS</span><h2 id="site-safety-title">A journey is more<br>than getting there.</h2><div class="site-safety-intro__body"><p>Good decisions start with clear information. Review limited profile statuses, see route notices and raise concerns privately when something doesn't feel right.</p><a class="site-button site-button--outline" href="{% url 'safety:route_updates' %}">Explore safety &amp; support <span aria-hidden="true">↗</span></a></div>
-</section>
-<section class="site-final-cta"><div class="container site-final-cta__inner"><div><span>READY WHEN YOU ARE</span><h2>Where will you go next?</h2></div><a class="site-button site-button--lime" href="{% url 'departures:search' %}">Find a ride <span aria-hidden="true">↗</span></a></div></section>
 {% endblock %}
