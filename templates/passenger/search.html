@@ -76,7 +76,7 @@
       <ul class="check-list"><li>Find an eligible departure</li><li>Review bus and boarding information</li><li>Reserve your seat when booking opens</li></ul>
       {% include "ui/action_link.html" with link_href="/#how-it-works" link_text="How reservations work" link_variant="outline" only %}
     </div>
-    {% if is_pilot_route %}
+    {% if is_pilot_route or not has_searched %}
     <aside class="route-map-panel" aria-label="Illustrative Jibowu to Mile 2 route">
       {% include "includes/route_map.html" %}
       <div class="route-map-panel__footer"><strong>Jibowu <span aria-hidden="true">→</span> Mile 2</strong><span>Route illustration, not live tracking</span></div>
