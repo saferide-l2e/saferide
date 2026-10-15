@@ -11,7 +11,7 @@ class DriverProfileAdmin(admin.ModelAdmin):
     list_filter = ("licence_review_status",)
     search_fields = ("user__email", "user__display_name", "approved_display_name")
 
-    @admin.action(description="Approve driver profile (demo)")
+    @admin.action(description="Approve driver profile")
     def approve_drivers(self, request, queryset):
         from .models import ApprovalStatus
 

@@ -13,7 +13,7 @@ from django.db import models
 class VerificationStatus(models.TextChoices):
     NOT_SUBMITTED = "NOT_SUBMITTED", "Not submitted"
     PENDING = "PENDING", "Pending review"
-    VERIFIED = "VERIFIED", "Verified (demo)"
+    VERIFIED = "VERIFIED", "Account approved"
     REJECTED = "REJECTED", "Rejected"
     SUSPENDED = "SUSPENDED", "Suspended"
 

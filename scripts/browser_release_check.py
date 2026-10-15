@@ -79,6 +79,19 @@ with sync_playwright() as playwright:
 
         visit(page, "/accounts/register/?role=DRIVER")
         assert page.locator('input[name="role"][value="DRIVER"]').is_checked()
+        role_group = page.get_by_role("group", name="How will you use SafeRide?")
+        for width, height in viewports:
+            page.set_viewport_size({"width": width, "height": height})
+            role_group.scroll_into_view_if_needed()
+            for radio in role_group.get_by_role("radio").all():
+                bounds = radio.bounding_box()
+                assert bounds and 16 <= bounds["width"] <= 24 and 16 <= bounds["height"] <= 24
+            assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
+            page.screenshot(path=str(OUT / f"signup-role-{width}.png"))
+        role_group.get_by_role("radio", name=re.compile("Passenger")).focus()
+        page.keyboard.press("ArrowRight")
+        assert role_group.get_by_role("radio", name=re.compile("Driver")).is_checked()
+        page.set_viewport_size({"width": 1440, "height": 900})
         evidence["journeys"].append("Driver signup CTA preselects driver")
 
         visit(page, "/accounts/register/")

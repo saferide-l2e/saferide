@@ -15,7 +15,7 @@
   <section class="results-main" aria-labelledby="live-results-title" style="margin-top:28px">
     <div class="results-count">
       <h2 id="live-results-title">{% if sample_buses %}Development examples{% else %}Published departures{% endif %}</h2>
-      <span>{% if sample_buses %}{{ sample_buses|length }} fictional examples{% else %}{{ buses|length }} published{% endif %}</span>
+      <span>{% if sample_buses %}{{ sample_buses|length }} example journeys{% else %}{{ buses|length }} published{% endif %}</span>
     </div>
     {% if eligibility_message %}<div class="eligibility-note" role="status">{{ eligibility_message }} <a href="{% url 'verification:status' %}" class="demo-review-link">Review account status →</a></div>{% endif %}
     {% if buses %}
@@ -37,12 +37,12 @@
       {% endfor %}
     {% elif sample_buses %}
       <div class="demo-results-notice" role="status">
-        <strong>Demo suggestions, not live bus availability.</strong>
-        <p>We made these four fictional examples for your chosen locations. The buses, drivers, times and seat counts are simulated; nobody has published or confirmed these services. They cannot be booked.</p>
+        <strong>Examples only, not live bus availability.</strong>
+        <p>These four examples illustrate your selected journey. The buses, drivers, times and seat counts are simulated; nobody has published or confirmed these services. They cannot be booked.</p>
       </div>
       <div class="demo-bus-grid">
         {% for bus in sample_buses %}
-        <article class="bus-card demo-bus-card" aria-label="Fictional example {{ forloop.counter }}">
+        <article class="bus-card demo-bus-card" aria-label="Example journey {{ forloop.counter }}">
           <div class="bus-card__body">
             <div class="demo-bus-card__kicker"><span class="demo-pill">Illustrative option</span><span>{{ bus.reference }}</span></div>
             <h3>{{ bus.ride_class }} · {{ bus.route_label }}</h3>
@@ -65,7 +65,7 @@
         </article>
         {% endfor %}
       </div>
-      <p class="demo-help">To make a real demo reservation, use a published SafeRide departure after your simulated staff approval.</p>
+      <p class="demo-help">To reserve a seat, choose a published SafeRide departure after your account is approved.</p>
     {% else %}
       <div class="results-empty" role="status"><h3>No matching departures</h3><p>Try a different route or check back when another bus is published.</p></div>
     {% endif %}

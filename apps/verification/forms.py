@@ -1,4 +1,4 @@
-"""Fictional eligibility declaration for the staff-reviewed demo workflow."""
+"""Account details and consent for staff-reviewed booking eligibility."""
 
 from django import forms
 
@@ -24,12 +24,12 @@ class VerificationDeclarationForm(forms.Form):
         help_text="Your preferred stop can be updated later.",
     )
     fictional_data = forms.BooleanField(
-        label="I am using a fictional demo profile.",
+        label="I will provide only the account details requested.",
         help_text="Do not upload identity documents, licence numbers or other personal information.",
-        error_messages={"required": "Confirm that you are using a fictional demo profile."},
+        error_messages={"required": "Confirm that you will provide only the requested account details."},
     )
     simulated_review = forms.BooleanField(
-        label="I understand this is a simulated review by SafeRide staff.",
+        label="I understand staff review is required for booking access.",
         help_text="Submitting a request does not approve your account or guarantee travel safety.",
-        error_messages={"required": "Confirm that you understand the simulated staff review."},
+        error_messages={"required": "Confirm that you understand the staff review requirement."},
     )

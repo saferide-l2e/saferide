@@ -79,7 +79,7 @@ def test_demo_signup_to_declaration_to_staff_approval(client, staff):
 
     approve(user.verification, staff, note="Fictional account for automated QA")
     approved = client.get(reverse("verification:status"))
-    assert b"Simulated approval complete" in approved.content
+    assert b"Account approved" in approved.content
     user.refresh_from_db()
     assert user.is_verified
 
