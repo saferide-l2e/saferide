@@ -1,9 +1,11 @@
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.shortcuts import redirect, render
+from django.urls import reverse
 from django.views.decorators.http import require_http_methods
 
 from apps.core.permissions import driver_required
+from apps.core.presentation import vehicle_card
 
 from .forms import VehicleForm
 from .services import get_or_create_driver_profile, register_vehicle
@@ -15,7 +17,12 @@ def vehicle_list(request):
     return render(
         request,
         "driver/vehicles.html",
-        {"profile": profile, "vehicles": profile.vehicles.all()},
+        {
+            "profile": profile,
+            "vehicles": [vehicle_card(v) for v in profile.vehicles.all()],
+            "can_register": True,
+            "register_url": reverse("vehicles:create"),
+        },
     )
 
 
@@ -39,7 +46,12 @@ def vehicle_create(request):
             for msg in exc.messages:
                 form.add_error(None, msg)
     profile = get_or_create_driver_profile(request.user)
-    return render(request, "driver/vehicle_form.html", {"form": form, "profile": profile})
+    return render(request, "driver/vehicle_form.html", {
+        "form": form, "profile": profile, "can_register": True,
+        "form_action": reverse("vehicles:create"),
+        "vehicle_list_url": reverse("vehicles:list"),
+        "verification_url": reverse("verification:status"),
+    })
 
 
 @driver_required

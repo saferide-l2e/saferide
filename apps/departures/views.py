@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_http_methods
 
@@ -9,6 +10,7 @@ from apps.bookings.models import Booking, BookingStatus, WaitlistEntry, Waitlist
 from apps.bookings.services import available_seats, check_in, passenger_eligible
 from apps.core.exceptions import SafeRideError
 from apps.core.permissions import driver_required, passenger_required
+from apps.core.presentation import departure_card, driver_card, roster_card, route_label
 from apps.vehicles.services import get_or_create_driver_profile
 
 from .forms import DepartureForm
@@ -34,15 +36,25 @@ def search(request):
         for departure in query:
             departure.available = available_seats(departure, now)
             departures.append(departure)
+    searching = bool(origin and destination)
+    cards = [departure_card(d, d.available) for d in departures]
+    context = {
+        "origin": origin,
+        "destination": destination,
+        "departures": departures,
+        "buses": cards,
+        "eligible": eligible,
+        "has_searched": searching,
+        "search_url": reverse("departures:search"),
+        "eligibility_message": (
+            "Complete your account verification to view and reserve available departures."
+            if searching and not eligible else ""
+        ),
+    }
     return render(
         request,
-        "passenger/search.html",
-        {
-            "origin": origin,
-            "destination": destination,
-            "departures": departures,
-            "eligible": eligible,
-        },
+        "passenger/results.html" if searching else "passenger/search.html",
+        context,
     )
 
 
@@ -70,6 +82,15 @@ def departure_detail(request, departure_id):
             "my_booking": my_booking,
             "my_entry": my_entry,
             "eligible": passenger_eligible(request.user),
+            "bus": departure_card(departure, departure.available),
+            "search_url": reverse("departures:search"),
+            "can_reserve": passenger_eligible(request.user) and not my_booking and not my_entry,
+            "reserve_action": reverse("bookings:reserve", args=[departure.pk]),
+            "can_join_waitlist": passenger_eligible(request.user) and not my_booking and not my_entry,
+            "waitlist_action": reverse("bookings:join_waitlist", args=[departure.pk]),
+            "verification_url": reverse("verification:status"),
+            "booking_url": reverse("bookings:detail", args=[my_booking.pk]) if my_booking else None,
+            "route_notices": [],
         },
     )
 
@@ -95,10 +116,26 @@ def driver_dashboard(request):
     now = timezone.now()
     for departure in departures:
         departure.available = available_seats(departure, now)
+    cards = [driver_card(d, d.available) for d in departures]
+    can_publish = request.user.is_verified and profile.vehicles.filter(
+        approval_status="APPROVED"
+    ).exists()
     return render(
         request,
         "driver/dashboard.html",
-        {"profile": profile, "departures": departures},
+        {
+            "profile": profile,
+            "departures": cards,
+            "can_publish": can_publish,
+            "publish_url": reverse("departures:create"),
+            "vehicle_list_url": reverse("vehicles:list"),
+            "verification_url": reverse("verification:status"),
+            "upcoming_count": len(cards),
+            "approved_vehicle_count": profile.vehicles.filter(
+                approval_status="APPROVED"
+            ).count(),
+            "boarded_today_count": sum(d["boarded_count"] for d in cards),
+        },
     )
 
 
@@ -121,7 +158,14 @@ def departure_create(request):
         except (ValidationError, SafeRideError) as exc:
             text = "; ".join(exc.messages) if hasattr(exc, "messages") else str(exc)
             messages.error(request, text)
-    return render(request, "driver/departure_form.html", {"form": form})
+    return render(request, "driver/departure_form.html", {
+        "form": form,
+        "form_action": reverse("departures:create"),
+        "can_publish": request.user.is_verified,
+        "dashboard_url": reverse("departures:dashboard"),
+        "vehicle_list_url": reverse("vehicles:list"),
+        "time_zone_label": "UTC (server time)",
+    })
 
 
 @driver_required
@@ -136,10 +180,24 @@ def departure_manage(request, departure_id):
         status__in=[BookingStatus.EXPIRED, BookingStatus.CANCELLED]
     )
     offers = departure.waitlist_entries.filter(status=WaitlistStatus.OFFERED)
+    card = driver_card(departure, departure.available)
+    card["scheduled_departure_at"] = departure.scheduled_departure_at
+    card["status"] = departure.status
     return render(
         request,
         "driver/departure_manage.html",
-        {"departure": departure, "roster": roster, "offers": offers},
+        {
+            "departure": card,
+            "roster": [roster_card(b) for b in roster],
+            "offers": offers,
+            "dashboard_url": reverse("departures:dashboard"),
+            "transition_action": reverse("departures:transition", args=[departure.pk]),
+            "checkin_action": reverse("departures:check_in", args=[departure.pk]),
+            "can_close": departure.status == "BOARDING_OPEN",
+            "can_start": departure.status == "BOARDING_CLOSED",
+            "can_arrive": departure.status == "EN_ROUTE",
+            "can_cancel": departure.status in {"DRAFT", "BOARDING_OPEN", "BOARDING_CLOSED"},
+        },
     )
 
 

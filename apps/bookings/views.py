@@ -2,11 +2,13 @@ from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_http_methods
 
 from apps.core.exceptions import SafeRideError
 from apps.core.permissions import passenger_required
+from apps.core.presentation import booking_card, route_label
 from apps.departures.models import Departure
 
 from .models import Booking, BookingStatus, WaitlistEntry, WaitlistStatus
@@ -27,7 +29,11 @@ def my_bookings(request):
     offers = WaitlistEntry.objects.filter(
         passenger=request.user, status=WaitlistStatus.OFFERED
     ).select_related("departure__route")
-    return render(request, "booking/my_bookings.html", {"bookings": bookings, "offers": offers})
+    return render(request, "booking/my_bookings.html", {
+        "bookings": bookings,
+        "offers": offers,
+        "search_url": reverse("departures:search"),
+    })
 
 
 @passenger_required
@@ -41,9 +47,19 @@ def booking_detail(request, booking_id):
         request,
         "booking/detail.html",
         {
-            "booking": booking,
+            "booking": booking_card(
+                booking, request.session.get(f"boarding_code_{booking.id}")
+            ),
             "boarding_code": request.session.get(f"boarding_code_{booking.id}"),
-            "now": timezone.now(),
+            "server_now": timezone.now(),
+            "cancel_action": reverse("bookings:cancel", args=[booking.pk]),
+            "status_url": reverse("bookings:status", args=[booking.pk]),
+            "search_url": reverse("departures:search"),
+            "confirm_action": reverse("bookings:confirm_arrival", args=[booking.pk])
+            if booking.driver_arrived_at and booking.status == BookingStatus.BOARDED
+            else None,
+            "review_url": reverse("safety:review", args=[booking.pk])
+            if booking.status == BookingStatus.COMPLETED else None,
         },
     )
 
