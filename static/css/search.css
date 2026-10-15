@@ -98,3 +98,10 @@
 .demo-bus-details summary:focus-visible{outline:3px solid #a55d00;outline-offset:3px}
 .demo-bus-details p{margin:10px 0 0;color:var(--muted);line-height:1.5;font-size:.89rem}
 @media(max-width:760px){.demo-bus-grid{grid-template-columns:minmax(0,1fr)}}
+
+
+.demo-any-route{padding:29px;display:flex;flex-direction:column;align-items:flex-start;gap:12px;background:linear-gradient(155deg,#e9f6ec,#fff)}
+.demo-any-route h3{color:var(--forest);font-size:clamp(1.3rem,2.4vw,1.8rem);overflow-wrap:anywhere;margin:4px 0}
+.demo-any-route p{margin:0;color:var(--muted);line-height:1.65}
+.demo-any-route small{display:block;color:var(--muted);line-height:1.45}
+.demo-any-route .button{white-space:normal;text-align:center}
