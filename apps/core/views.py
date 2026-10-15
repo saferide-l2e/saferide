@@ -27,4 +27,13 @@ def dashboard(request):
         context["panel"] = "driver"
     else:
         context["panel"] = "passenger"
+        from apps.bookings.models import Booking
+
+        completed = Booking.objects.filter(
+            passenger=request.user, status=Booking.Status.COMPLETED
+        ).count()
+        # Earned progress only, not transferable or redeemable currency.
+        context["completed_ride_count"] = completed
+        context["reward_points"] = completed * 10
+        context["reward_progress"] = (completed % 5) * 20
     return render(request, "dashboard.html", context)
