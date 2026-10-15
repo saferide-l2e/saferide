@@ -1,0 +1,49 @@
+/* FE-05 responsive driver operations. Shared tokens from base.css. */
+.driver-home{padding-block:54px 100px}
+.driver-home h1{font-size:clamp(2.3rem,5vw,4rem);line-height:1.13;letter-spacing:-.065em;margin:20px 0 12px}
+.driver-home__heading{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:29px}
+.driver-home__heading p,.driver-intro{color:var(--muted);line-height:1.7;max-width:760px}
+.driver-back{display:inline-block;color:var(--green);font-size:.87rem;font-weight:850;margin-bottom:24px;text-decoration:underline;text-underline-offset:4px}
+.driver-flash{border:1px solid #a6d4b9;background:var(--mint);color:var(--forest);border-radius:13px;padding:14px 17px;margin:20px 0}
+.driver-flash--error{border-color:#d9a69e;color:#792e22;background:#fff0ed}
+.driver-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-bottom:32px}
+.driver-stat{border:1px solid var(--line);border-radius:17px;background:#fff;padding:19px;min-width:0}
+.driver-stat span{display:block;font-size:.76rem;line-height:1.45;color:var(--muted);font-weight:850}
+.driver-stat strong{font-size:clamp(1.9rem,4.5vw,3.4rem);color:var(--forest);font-variant-numeric:tabular-nums;line-height:1.25;display:block;margin-top:10px}
+.driver-home__grid{display:grid;grid-template-columns:minmax(0,1fr);gap:23px}
+.driver-subhead{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px}
+.driver-subhead h2{font-size:1.55rem;letter-spacing:-.05em;margin:0}
+.driver-subhead span{font-size:.78rem;color:var(--muted)}
+.departure-list{display:grid;gap:15px}
+.departure-card,.departure-form-card,.driver-empty{background:#fff;border:1px solid var(--line);border-radius:19px;padding:23px}
+.departure-card__top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.departure-card__tag{color:var(--green);font-size:.81rem;font-weight:850}
+.departure-card h3{margin:19px 0 12px;font-size:clamp(1.3rem,2.5vw,1.65rem);letter-spacing:-.055em}
+.departure-facts{display:flex;flex-wrap:wrap;gap:24px;margin:13px 0 20px}
+.departure-facts dt{color:var(--muted);font-size:.72rem;letter-spacing:.04em;font-weight:850;text-transform:uppercase}
+.departure-facts dd{font-size:.9rem;margin:3px 0 0;font-weight:800}
+.departure-card__link,.driver-action-link{display:inline-block;color:var(--green);text-decoration:underline;text-underline-offset:4px;font-weight:850;font-size:.9rem}
+.driver-empty{text-align:center;padding:46px 25px}.driver-empty h3{font-size:1.25rem;margin:0}
+.driver-empty p{color:var(--muted);line-height:1.7}.driver-empty .button{margin-top:12px}
+.driver-home__side{align-self:start;position:relative;overflow:hidden;border-radius:20px;background:var(--forest);color:white;padding:29px}
+.driver-home__side::before{content:"";position:absolute;right:-150px;top:-140px;border-radius:50%;background:#0f8160;width:310px;height:310px;opacity:.38}
+.driver-home__side>*{position:relative}
+.driver-home__label{color:var(--lime);font-size:.72rem;letter-spacing:.08em;font-weight:850}
+.driver-home__side h2{font-size:clamp(1.8rem,3vw,2.45rem);line-height:1.2;letter-spacing:-.055em;margin:20px 0}
+.driver-home__side>p{font-size:.87rem;color:#def1e5;line-height:1.75}
+.driver-home__side ol{padding-left:21px;display:grid;gap:12px;font-size:.9rem;line-height:1.6}
+.driver-quicklinks{display:grid;gap:10px;margin-top:24px}.driver-quicklinks a{display:flex;justify-content:space-between;gap:18px;padding:13px 15px;border:1px solid #4b9070;border-radius:12px;font-size:.87rem;font-weight:850}
+.driver-home__note{font-size:.78rem!important;border-top:1px solid #438a6d;padding-top:18px;margin-top:29px}
+.driver-home>.data-notice{margin-top:27px}
+.departure-form-card h2{font-size:1.55rem;letter-spacing:-.05em;margin:0 0 23px}
+.driver-form-field{margin-bottom:21px}
+.driver-form-field label{display:block;margin-bottom:8px;font-size:.9rem;font-weight:800}
+.driver-form-field input,.driver-form-field select{width:100%;min-height:53px;border:1px solid #aac7b6;border-radius:11px;background:var(--cream);padding:12px;color:var(--ink)}
+.driver-form-field--error input,.driver-form-field--error select{border-color:#bc4e37}
+.driver-help{font-size:.81rem;line-height:1.6;color:var(--muted);margin:7px 0}
+.driver-time-note{font-size:.82rem;line-height:1.7;color:var(--muted);margin:23px 0}
+.driver-submit{width:100%;border:0;cursor:pointer}
+.departure-actions{display:grid;gap:11px;margin:24px 0}
+.departure-actions form{margin:0}.departure-actions button{border:1px solid var(--line);width:100%;cursor:pointer}
+@media(min-width:630px){.driver-stats{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(min-width:900px){.driver-home{padding-top:72px}.driver-home__grid{grid-template-columns:minmax(0,1.55fr) minmax(290px,.85fr);gap:28px}.driver-home__side{position:sticky;top:100px}.departure-form-card,.departure-card{padding:30px}}

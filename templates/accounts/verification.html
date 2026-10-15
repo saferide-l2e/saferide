@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Your verification status | SafeRide{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/verification.css' %}">{% endblock %}
+{% block content %}
+<section class="verify-page container" aria-labelledby="verify-title">
+  <span class="eyebrow">Your SafeRide account</span>
+  <h1 id="verify-title">A little trust goes a long way.</h1>
+  <p class="verify-intro">Both passengers and drivers complete a simulated eligibility review before using restricted journeys.</p>
+  {% include "ui/demo_notice.html" %}
+  {% if error_message %}<div class="verify-alert verify-alert--error" role="alert">{{ error_message }}</div>{% endif %}
+  {% if info_message %}<div class="verify-alert" role="status">{{ info_message }}</div>{% endif %}
+  <div class="verify-grid">
+    <article class="verify-card" aria-labelledby="verify-card-title">
+      <div class="verify-card__top"><span class="verify-kicker">Your review status</span>
+        {% if status == "VERIFIED" %}{% include "ui/status_badge.html" with badge_text="Simulated approval complete" badge_variant="positive" only %}
+        {% elif status == "PENDING" %}{% include "ui/status_badge.html" with badge_text="Awaiting review" badge_variant="neutral" only %}
+        {% elif status == "REJECTED" %}{% include "ui/status_badge.html" with badge_text="Review not approved" badge_variant="neutral" only %}
+        {% elif status == "SUSPENDED" %}{% include "ui/status_badge.html" with badge_text="Account restricted" badge_variant="neutral" only %}
+        {% else %}{% include "ui/status_badge.html" with badge_text="Not submitted" badge_variant="neutral" only %}{% endif %}
+      </div>
+      {% if status == "VERIFIED" %}
+        <h2 id="verify-card-title">Your profile has been approved.</h2>
+        <p>Your simulated verification review is complete. Other permissions still depend on your role and the relevant departure.</p>
+        {% if next_url %}<a href="{{ next_url }}" class="button button--primary">Continue to SafeRide <span aria-hidden="true">→</span></a>{% endif %}
+      {% elif status == "PENDING" %}
+        <h2 id="verify-card-title">We're reviewing your request.</h2>
+        <p>An authorised team member needs to review your fictional declaration. You can't approve your own account.</p>
+      {% elif status == "REJECTED" %}
+        <h2 id="verify-card-title">Your review wasn't approved.</h2>
+        <p>Check the instructions from the review team. You may submit a revised declaration only if resubmission is allowed.</p>
+        {% if rejection_reason %}<p class="verify-reason"><strong>Review note:</strong> {{ rejection_reason }}</p>{% endif %}
+      {% elif status == "SUSPENDED" %}
+        <h2 id="verify-card-title">Your access is restricted.</h2>
+        <p>Booking, boarding and departure publishing are not available while your account is suspended. Contact the review team for assistance.</p>
+      {% else %}
+        <h2 id="verify-card-title">You're ready for the first step.</h2>
+        <p>Submit a fictional eligibility declaration. No real identity documents or ID numbers are needed.</p>
+      {% endif %}
+      {% if can_submit and form and submit_action %}
+      <form method="post" action="{{ submit_action }}" class="verify-form">
+        {% csrf_token %}
+        {% if form.non_field_errors %}<div role="alert" class="verify-alert verify-alert--error">{{ form.non_field_errors }}</div>{% endif %}
+        {% for field in form %}
+          <div class="form-field{% if field.errors %} form-field--error{% endif %}">
+            {% if field.field.widget.input_type == 'checkbox' %}
+              <div class="checkbox-row">{{ field }}{{ field.label_tag }}</div>
+            {% else %}
+              {{ field.label_tag }}{{ field }}
+            {% endif %}
+            {% if field.help_text %}<p class="field-help">{{ field.help_text }}</p>{% endif %}
+            {% include "ui/field_errors.html" with field=field only %}
+          </div>
+        {% endfor %}
+        <button class="button button--primary" type="submit">Submit for staff review <span aria-hidden="true">→</span></button>
+      </form>
+      {% endif %}
+      {% if support_url %}<p><a class="verify-link" href="{{ support_url }}">Contact account support <span aria-hidden="true">↗</span></a></p>{% endif %}
+    </article>
+    <aside class="verify-side">
+      <div class="verify-side__icon" aria-hidden="true">✓</div>
+      <h2>Trust works both ways.</h2>
+      <p>Passengers and drivers follow the same principle: staff-approved eligibility with private identity information kept out of public profiles.</p>
+      <ol><li>Submit a fictional declaration</li><li>Wait for authorised staff review</li><li>Continue when your role is eligible</li></ol>
+      <p class="verify-side__note">This is a simulated verification process. It is not a government, police, licence or background check.</p>
+    </aside>
+  </div>
+</section>
+{% endblock %}

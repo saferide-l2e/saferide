@@ -1,0 +1,1 @@
+<div class="notice{% if notice_level %} notice--{{ notice_level|slugify }}{% endif %}" role="{% if notice_level == 'error' %}alert{% else %}status{% endif %}"><span class="notice-symbol" aria-hidden="true">i</span><span>{{ notice_text }}</span></div>

@@ -1,0 +1,22 @@
+{% extends "base.html" %}{% load static %}
+{% block title %}My trip history | SafeRide{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/journey.css' %}">{% endblock %}
+{% block content %}
+<section class="trip-page container" aria-labelledby="passenger-history-title">
+ <span class="eyebrow">SafeRide Journey</span><h1 id="passenger-history-title">Journeys worth remembering.</h1><p class="trip-page__lead">Your own journeys, from boarding to arrival.</p>
+ {% if trips %}
+  <div class="history-list">
+  {% for trip in trips %}
+   <article class="history-card"><div class="history-card__body"><span class="history-card__eyebrow">{{ trip.departed_at|date:"D j M Y" }}</span><h2>{{ trip.route_label }}</h2><p>{{ trip.plate_display }} · {{ trip.display_status }}</p>
+    {% if trip.disputed %}<p class="history-warning">A private concern is under review.</p>{% elif trip.driver_arrived_at and not trip.passenger_confirmed_at %}<p class="history-warning">Driver marked arrived; your confirmation is still pending.</p>{% endif %}
+   </div>
+   {% if trip.detail_url %}<a href="{{ trip.detail_url }}" class="history-card__link">View journey <span aria-hidden="true">→</span></a>{% endif %}
+   </article>
+  {% endfor %}
+  </div>
+ {% else %}
+  <div class="history-empty" role="status"><h2>No journeys yet.</h2><p>When you travel with SafeRide, your trips appear here.</p>{% if search_url %}<a class="button button--primary" href="{{ search_url }}">Discover buses</a>{% endif %}</div>
+ {% endif %}
+ {% include "ui/demo_notice.html" %}
+</section>
+{% endblock %}

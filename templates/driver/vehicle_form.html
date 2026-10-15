@@ -1,0 +1,44 @@
+{% extends "base.html" %}{% load static %}
+{% block title %}Register vehicle | SafeRide{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/vehicles.css' %}">{% endblock %}
+{% block content %}
+<section class="vehicle-page container" aria-labelledby="vehicle-title">
+{% if vehicle_list_url %}<a href="{{ vehicle_list_url }}" class="vehicle-back">← My vehicles</a>{% endif %}
+<span class="eyebrow">Driver space</span>
+<h1 id="vehicle-title">Your vehicle. Your next journey.</h1>
+<p class="vehicle-lead">Add your bus information for review. A vehicle must be approved by staff before it can be listed to passengers.</p>
+<div class="vehicle-grid">
+ <article class="vehicle-surface">
+ {% if error_message %}<p role="alert" class="vehicle-error">{{ error_message }}</p>{% endif %}
+ {% if success_message %}<p role="status" class="vehicle-success">{{ success_message }}</p>{% endif %}
+ {% if can_register and form and form_action %}
+  <h2>Vehicle information</h2>
+  <form method="post" action="{{ form_action }}" novalidate>
+   {% csrf_token %}
+   {% if form.non_field_errors %}<div class="vehicle-error" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+   {% for field in form %}
+    <div class="vehicle-field{% if field.errors %} vehicle-field--error{% endif %}">
+     {{ field.label_tag }}{{ field }}
+     {% if field.help_text %}<p class="vehicle-help">{{ field.help_text }}</p>{% endif %}
+     {% include "ui/field_errors.html" with field=field only %}
+    </div>
+   {% endfor %}
+   <p class="vehicle-help">Vehicle type, display plate and positive seating capacity are reviewed before any departure can be published. Do not upload real identity documents.</p>
+   <button class="button button--primary vehicle-submit" type="submit">Submit for review <span aria-hidden="true">→</span></button>
+  </form>
+ {% else %}
+   <h2>Registration is unavailable</h2>
+   <p>{{ action_message|default:"Sign in as an eligible driver to register a vehicle." }}</p>
+   {% if verification_url %}<a class="button button--outline" href="{{ verification_url }}">Check verification <span aria-hidden="true">→</span></a>{% endif %}
+ {% endif %}
+ </article>
+ <aside class="vehicle-side">
+  <span>DRIVER ONBOARDING</span><h2>Ready to get moving?</h2>
+  <p>Vehicle registration gives the team the details needed to review a bus. It does not make the vehicle approved automatically.</p>
+  <ol><li>Submit your vehicle</li><li>Wait for staff approval</li><li>Publish your departure</li></ol>
+  <svg viewBox="0 0 300 135" aria-hidden="true" fill="none"><rect x="28" y="14" width="243" height="97" rx="22" fill="#fff"/><rect x="48" y="25" width="203" height="51" rx="13" fill="#b9edcf"/><path d="M149 25v51" stroke="#087D5B" stroke-width="5"/><path d="M42 92h218" stroke="#D6F86C" stroke-width="8"/><circle cx="83" cy="110" r="17" fill="#102F2C"/><circle cx="217" cy="110" r="17" fill="#102F2C"/></svg>
+ </aside>
+</div>
+{% include "ui/demo_notice.html" %}
+</section>
+{% endblock %}

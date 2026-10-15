@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Your reservation | SafeRide Journey{% endblock %}
+{% block description %}Check your SafeRide seat hold, boarding code and expiry time.{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/booking.css' %}"><script defer src="{% static 'js/hold.js' %}"></script>{% endblock %}
+{% block content %}
+<section class="hold-page container" aria-labelledby="hold-page-title">
+  {% if booking %}
+    <div class="hold-heading"><span class="eyebrow">SafeRide Journey</span>
+      <h1 id="hold-page-title">{% if booking.status == "HELD" %}You're almost on board.{% elif booking.status == "BOARDED" %}You're checked in.{% elif booking.status == "EXPIRED" %}Your reservation expired.{% elif booking.status == "CANCELLED" %}This reservation is cancelled.{% else %}Your booking details.{% endif %}</h1>
+      <p>Reservation reference: <strong>{{ booking.reference }}</strong></p>
+    </div>
+    {% if error_message %}<div class="hold-error" role="alert"><strong>Booking update unsuccessful.</strong><p>{{ error_message }}</p></div>{% endif %}
+    <div class="hold-layout">
+      <div class="hold-main">
+        <article class="hold-timer-card" aria-labelledby="hold-timer-title"
+          data-hold-timer data-booking-status="{{ booking.status }}"
+          data-expires-at="{{ booking.expires_at|date:'c' }}"
+          data-server-now="{{ server_now|date:'c' }}"
+          {% if status_url %}data-status-url="{{ status_url }}"{% endif %}>
+          <div class="hold-timer-card__header"><span>One-seat reservation</span>
+            {% if booking.status == "HELD" %}{% include "ui/status_badge.html" with badge_text="Seat held" badge_variant="light" only %}
+            {% elif booking.status == "BOARDED" %}{% include "ui/status_badge.html" with badge_text="Checked in" badge_variant="light" only %}
+            {% else %}{% include "ui/status_badge.html" with badge_text=booking.status badge_variant="light" only %}{% endif %}
+          </div>
+          {% if booking.status == "HELD" %}
+            <p id="hold-timer-title" class="hold-timer-label">Time remaining to check in</p>
+            <strong class="hold-timer-time" data-time-display role="timer" aria-live="off" aria-label="Remaining check-in time">--:--</strong>
+            <div class="hold-progress" aria-hidden="true"><span data-hold-progress></span></div>
+            <p class="hold-deadline">Expires: <time datetime="{{ booking.expires_at|date:'c' }}">{{ booking.expires_at|date:"D j M, g:i A" }}</time></p>
+            <p class="hold-a11y-status" data-hold-message aria-live="polite">The displayed timer is a guide. Your reservation expiry is decided by the server.</p>
+            <p class="hold-refresh"><a href="{{ request.path }}">Refresh booking status <span aria-hidden="true">↻</span></a></p>
+          {% else %}
+            <p id="hold-timer-title" class="hold-timer-label">Current booking status</p><strong class="hold-final-status" data-hold-message role="status">{{ booking.get_status_display|default:booking.status }}</strong>
+            <p>The server decides whether this seat is held, used, cancelled or expired.</p>
+          {% endif %}
+          <div class="hold-timer-footer"><span>{{ booking.route_label }}</span><span>One passenger, one seat</span></div>
+        </article>
+        <article class="hold-info-card" aria-labelledby="boarding-guide-title">
+          <h2 id="boarding-guide-title">Before you board</h2>
+          <ol class="hold-steps">
+            <li><span class="hold-step-number">01</span><span>Go to <strong>{{ booking.boarding_point }}</strong> before the hold expires.</span></li>
+            <li><span class="hold-step-number">02</span><span>Find the assigned vehicle: <strong>{{ booking.plate_display }}</strong>.</span></li>
+            <li><span class="hold-step-number">03</span><span>Show your private boarding code to the assigned driver for one-time check-in.</span></li>
+          </ol>
+        </article>
+      </div>
+      <aside class="hold-sidebar">
+        <div class="boarding-pass" aria-labelledby="boarding-pass-title">
+          <span class="boarding-pass__eyebrow">Your boarding pass</span>
+          <h2 id="boarding-pass-title">Ready for the next step?</h2>
+          {% if booking.status == "HELD" and booking.boarding_code %}
+            <div class="boarding-pass__code" data-boarding-code>
+              <span>Your private code</span><strong>{{ booking.boarding_code }}</strong>
+            </div>
+            <p>Only show this code to your assigned driver. Never post it publicly.</p>
+          {% elif booking.status == "HELD" %}
+            <p>For your security, the original boarding code may only be shown when issued. Follow your driver's official check-in instructions.</p>
+          {% elif booking.status == "BOARDED" %}
+            <p>Your driver checked you in. Keep your trip details for the journey.</p>
+          {% else %}
+            <p>This boarding code is not available for the current booking status.</p>
+          {% endif %}
+          {% if booking.status == "HELD" and cancel_action %}
+            <form method="post" action="{{ cancel_action }}" data-one-time-submit>{% csrf_token %}<button class="button button--outline boarding-pass__cancel" type="submit">Cancel my reservation</button></form>
+          {% endif %}
+          {% if search_url %}<a href="{{ search_url }}" class="boarding-pass__back">Find another bus <span aria-hidden="true">→</span></a>{% endif %}
+        </div>
+        <p class="hold-offline" hidden data-offline-warning role="status">Your device is offline. The displayed time may be stale. Reconnect and refresh to confirm this booking's status.</p>
+        {% include "ui/demo_notice.html" %}
+      </aside>
+    </div>
+  {% else %}
+    <div class="hold-empty" role="status"><h1 id="hold-page-title">We couldn't find this reservation.</h1><p>Check the booking in your own account or return to available buses.</p>{% if search_url %}<a class="button button--primary" href="{{ search_url }}">Find buses <span aria-hidden="true">→</span></a>{% endif %}</div>
+  {% endif %}
+</section>
+{% endblock %}

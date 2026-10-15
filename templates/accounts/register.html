@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Create an account | SafeRide{% endblock %}
+{% block description %}Create your SafeRide passenger or driver account.{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/auth.css' %}">{% endblock %}
+{% block content %}
+<section class="auth-layout container" aria-labelledby="register-heading">
+  <div class="auth-main">
+    <span class="eyebrow">Join SafeRide</span>
+    <h1 id="register-heading">Start your journey.</h1>
+    <p class="auth-intro">Create a passenger or driver account to make the most of every trip.</p>
+    <form method="post" action="{{ form_action|default:request.path }}" class="auth-form" novalidate>
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+        <div class="form-alert" role="alert" id="register-form-errors">
+          <strong>Please check your details.</strong>
+          <ul>{% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}</ul>
+        </div>
+      {% endif %}
+      {% include "includes/form_fields.html" with form=form only %}
+      <p class="form-privacy">Your password is stored securely by SafeRide. Do not upload identity documents or share a password with another person.</p>
+      <button class="button button--primary auth-submit" type="submit">Create account <span aria-hidden="true">→</span></button>
+      <p class="auth-switch">Already have an account?
+        {% url 'login' as named_login_url %}
+        {% if login_url or named_login_url %}
+          <a href="{{ login_url|default:named_login_url }}">Sign in</a>
+        {% else %}
+          <span>Sign in will be available when registration opens.</span>
+        {% endif %}
+      </p>
+    </form>
+  </div>
+  <aside class="auth-art" aria-label="About joining SafeRide">
+    <div class="auth-art-glow" aria-hidden="true"></div>
+    <span class="auth-art-kicker">Every journey matters</span>
+    <h2>One city.<br>Two sides.<br><span>One better journey.</span></h2>
+    <div class="auth-journey" aria-hidden="true"><span class="auth-journey-stop"></span><span class="auth-journey-track"></span><span class="auth-journey-stop"></span></div>
+    <div class="auth-art-summary">
+      <p><strong>Passenger</strong><span>Explore routes and keep track of your bookings.</span></p>
+      <p><strong>Driver</strong><span>Manage an approved vehicle and scheduled departures.</span></p>
+    </div>
+  </aside>
+</section>
+{% endblock %}

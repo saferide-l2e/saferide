@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Available buses | SafeRide Discover{% endblock %}
+{% block description %}Explore scheduled SafeRide buses, boarding points, and seats along your selected route.{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/search.css' %}">{% endblock %}
+{% block content %}
+<section class="results-page container" aria-labelledby="results-title">
+  <div class="results-heading">
+    <div><span class="eyebrow">SafeRide Discover</span><h1 id="results-title">Your next bus.</h1><p>See a departure that fits your journey.</p></div>
+    <span class="results-meta">Boarding and availability details are provided by SafeRide.</span>
+  </div>
+  {% if error_message %}<p role="alert" class="route-error">{{ error_message }}</p>{% endif %}
+  {% include "includes/route_search_form.html" %}
+
+  <div class="results-grid">
+    <div class="results-main">
+      <div class="results-count">
+        <h2>{% if has_searched %}Matching departures{% else %}Explore departures{% endif %}</h2>
+        {% if has_searched %}<span>{% if buses %}{{ buses|length }} listed{% else %}No departures{% endif %}</span>{% endif %}
+      </div>
+      {% if eligibility_message %}<div class="eligibility-note" role="status">{{ eligibility_message }}</div>{% endif %}
+      {% if buses %}
+        <div class="bus-results">
+        {% for bus in buses %}
+          <article class="bus-card" aria-labelledby="bus-{{ forloop.counter }}-title">
+            <div class="bus-card__icon" aria-hidden="true">
+              <svg viewBox="0 0 96 66" width="100" height="78" fill="none"><rect x="7" y="8" width="82" height="44" rx="12" fill="white"/><rect x="16" y="15" width="64" height="22" rx="5" fill="#B9EDD5"/><path d="M12 43h72" stroke="#087D5B" stroke-width="4"/><circle cx="26" cy="53" r="8" fill="#064F40"/><circle cx="70" cy="53" r="8" fill="#064F40"/></svg>
+            </div>
+            <div class="bus-card__body">
+              <div class="bus-card__top"><h3 id="bus-{{ forloop.counter }}-title">{{ bus.route_label }}</h3>{% if bus.is_full %}{% include "ui/status_badge.html" with badge_text="Full" badge_variant="neutral" only %}{% else %}{% include "ui/status_badge.html" with badge_text="Booking open" badge_variant="positive" only %}{% endif %}</div>
+              <p class="bus-card__date">{{ bus.scheduled_departure_at|date:"D j M, g:i A" }}</p>
+              <dl class="bus-facts">
+                <div><dt>Boarding point</dt><dd>{{ bus.boarding_point }}</dd></div>
+                <div><dt>Vehicle</dt><dd>{{ bus.vehicle_type_display }}{% if bus.plate_display %} · {{ bus.plate_display }}{% endif %}</dd></div>
+                <div><dt>Driver</dt><dd>{{ bus.driver_name }}</dd></div>
+                <div><dt>Seats</dt><dd>{% if bus.is_full %}All seats taken{% else %}{{ bus.available_seats }} available{% endif %}</dd></div>
+              </dl>
+              {% if bus.driver_approved %}<p class="bus-card__driver-note">✓ Driver profile approved for this pilot</p>{% endif %}
+            </div>
+            <div class="bus-card__actions">
+              {% if bus.detail_url %}<a class="button button--primary" href="{{ bus.detail_url }}">View bus <span aria-hidden="true">→</span></a>
+              {% else %}<span class="bus-card__pending">Details available when this route opens</span>{% endif %}
+              {% if bus.is_full and bus.waitlist_url %}<a class="waitlist-link" href="{{ bus.waitlist_url }}">Join the waitlist <span aria-hidden="true">→</span></a>{% endif %}
+            </div>
+          </article>
+        {% endfor %}
+        </div>
+      {% elif has_searched %}
+        <div class="results-empty" role="status"><span class="results-empty__symbol" aria-hidden="true">⌕</span><h3>No matching departures</h3><p>Try another route, or check back when new buses are published. Only eligible, scheduled buses appear here.</p></div>
+      {% else %}
+        <div class="results-empty" role="status"><span class="results-empty__symbol" aria-hidden="true">⌕</span><h3>Let's find your bus</h3><p>Enter your starting point and destination, then select Find buses.</p></div>
+      {% endif %}
+      {% include "ui/demo_notice.html" %}
+    </div>
+    <aside class="results-map" aria-label="Route preview">
+      {% include "includes/route_map.html" %}
+      <div class="results-map__text"><strong>Plan the journey</strong><p>This map is a route illustration. It does not show moving buses, live traffic or your current location.</p></div>
+    </aside>
+  </div>
+</section>
+{% endblock %}

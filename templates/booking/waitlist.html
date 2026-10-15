@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Your waitlist | SafeRide Journey{% endblock %}
+{% block description %}Check your place in the SafeRide waitlist for your selected bus.{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/waitlist.css' %}"><script defer src="{% static 'js/waitlist.js' %}"></script>{% endblock %}
+{% block content %}
+<section class="queue-page container" aria-labelledby="queue-title">
+  <span class="eyebrow">SafeRide Journey</span>
+  <h1 id="queue-title">{% if entry and entry.status == "WAITING" %}Your place is coming.{% elif entry and entry.status == "OFFERED" %}A seat is available!{% else %}The bus is full. Here's what comes next.{% endif %}</h1>
+  <p class="queue-intro">Waitlists are managed in the order passengers become eligible. Seat counts and queue positions may change.</p>
+  {% if error_message %}<div class="queue-error" role="alert"><strong>Unable to update the waitlist.</strong><p>{{ error_message }}</p></div>{% endif %}
+  {% if info_message %}<div class="queue-info" role="status">{{ info_message }}</div>{% endif %}
+  <div class="queue-grid">
+    <div class="queue-main">
+      {% if entry and entry.status == "WAITING" %}
+        <article class="queue-number-card" data-waitlist-status data-status-url="{{ status_url|default:'' }}" aria-labelledby="queue-position-title">
+          <span class="queue-number-card__eyebrow">Current position</span>
+          <h2 id="queue-position-title">You are in the queue</h2>
+          <div class="queue-position"><strong data-queue-position>{% if entry.position %}#{{ entry.position }}{% else %}Position pending{% endif %}</strong>
+            <span>{% if entry.people_ahead != None %}{{ entry.people_ahead }} passengers ahead{% else %}Position can change{% endif %}</span></div>
+          <p data-queue-message aria-live="polite">Your position is a snapshot. Refresh to see the latest order.</p>
+          <div class="queue-number-card__route">{{ entry.route_label }}</div>
+        </article>
+      {% elif entry and entry.status == "OFFERED" %}
+        <article class="queue-number-card"><span class="queue-number-card__eyebrow">You're next</span><h2>A seat has been offered to you.</h2><p>Offers stay available for two minutes. Accept before the deadline shown on your offer page.</p>
+          {% if offer_url %}<a href="{{ offer_url }}" class="button button--lime">Review your offer <span aria-hidden="true">→</span></a>{% else %}<p>Refresh this page to see your offer details.</p>{% endif %}</article>
+      {% elif entry %}
+        <article class="queue-number-card"><span class="queue-number-card__eyebrow">Your queue status</span><h2>{{ entry.status }}</h2><p>The server determines whether an offer has expired, been accepted or been cancelled.</p></article>
+      {% else %}
+        <article class="queue-number-card"><span class="queue-number-card__eyebrow">Join the waitlist</span><h2>First come. First considered.</h2><p>When a seat opens, the next eligible passenger receives a short offer.</p>
+          {% if can_join and join_action %}<form method="post" action="{{ join_action }}" data-one-time-submit>{% csrf_token %}<button type="submit" class="button button--lime">Join waitlist <span aria-hidden="true">→</span></button></form>
+          {% elif verification_url %}<a href="{{ verification_url }}" class="button button--lime">View eligibility <span aria-hidden="true">→</span></a>
+          {% else %}<p class="queue-not-ready" role="status">{{ action_message|default:"Join when your account and this departure are eligible." }}</p>{% endif %}
+        </article>
+      {% endif %}
+      <article class="queue-explainer" aria-labelledby="queue-explainer-title"><h2 id="queue-explainer-title">How the queue works</h2>
+        <ol><li><span>01</span><p>Join the waitlist when your selected bus is full.</p></li><li><span>02</span><p>When a seat is released, the next eligible passenger gets a two-minute offer.</p></li><li><span>03</span><p>Accept an offer to begin a fresh ten-minute reservation.</p></li></ol>
+      </article>
+    </div>
+    <aside class="queue-aside">
+      <div class="queue-trip-card"><span class="queue-trip-card__label">Selected route</span><strong>{% if route_label %}{{ route_label }}{% elif entry %}{{ entry.route_label }}{% else %}Route details pending{% endif %}</strong><p>New seats are allocated by SafeRide's server, not by queue animations on your device.</p>
+        {% if entry and entry.status == "WAITING" and leave_action %}
+          <form method="post" action="{{ leave_action }}" data-one-time-submit>{% csrf_token %}<button type="submit" class="button button--outline queue-leave">Leave waitlist</button></form>
+        {% endif %}
+        {% if search_url %}<a href="{{ search_url }}" class="queue-search-back">Find another bus <span aria-hidden="true">→</span></a>{% endif %}
+      </div>
+      <p class="queue-offline" hidden role="status" data-queue-offline>You're offline. Reconnect and refresh to check the current queue.</p>
+      {% include "ui/demo_notice.html" %}
+    </aside>
+  </div>
+</section>
+{% endblock %}

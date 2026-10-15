@@ -1,0 +1,56 @@
+/* FE-10: staff-limited passenger roster and one-time boarding code frontend */
+.driver-page,.checkin-page{padding-block:52px 95px}
+.driver-heading{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:17px}
+.driver-heading h1,.checkin-page h1{font-size:clamp(2.35rem,5vw,4rem);letter-spacing:-.06em;line-height:1.14;margin:22px 0 10px}
+.driver-heading p,.checkin-intro{color:var(--muted);line-height:1.7}
+.driver-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;margin:32px 0 15px}
+.driver-stat{min-width:0;background:white;border:1px solid var(--line);border-radius:18px;padding:22px}
+.driver-stat>strong{display:block;font-size:clamp(2rem,4vw,3.3rem);line-height:1.2;color:var(--forest);font-variant-numeric:tabular-nums;letter-spacing:-.055em}
+.driver-stat>span{display:block;color:var(--muted);font-size:.8rem;margin-top:8px;font-weight:750}
+.roster-refresh-status{color:var(--muted);font-size:.8rem;line-height:1.7}
+.driver-roster{margin-top:33px;background:white;border:1px solid var(--line);border-radius:20px;overflow:hidden}
+.driver-roster__heading{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;padding:23px;border-bottom:1px solid var(--line)}
+.driver-roster__heading h2{font-size:1.4rem;letter-spacing:-.045em;margin:0}
+.driver-roster__heading>span{color:var(--muted);font-size:.77rem}
+.roster-rows{display:grid}.roster-row{display:grid;grid-template-columns:51px minmax(0,1fr);align-items:center;gap:14px;padding:17px 22px;border-bottom:1px solid var(--line)}
+.roster-row:last-child{border-bottom:0}
+.roster-avatar{display:grid;place-items:center;width:50px;height:50px;background:var(--mint);border-radius:50%;color:var(--green);font-weight:900}
+.roster-row__main h3{font-size:1.05rem;margin:0 0 3px}
+.roster-row__main p{color:var(--muted);font-size:.75rem;margin:3px 0;line-height:1.55}
+.roster-row__status{grid-column:2;display:flex;align-items:flex-start;flex-direction:column;gap:8px}
+.roster-row__status small{font-size:.73rem;color:var(--muted)}
+.roster-empty{text-align:center;padding:39px 20px}.roster-empty h3{font-size:1.15rem;margin:0 0 9px}.roster-empty p{font-size:.85rem;color:var(--muted)}
+.roster-bottom{display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;background:var(--mint);border-radius:17px;margin-block:25px;padding:24px}
+.roster-bottom>div{max-width:620px}.roster-bottom strong{font-size:1.03rem}.roster-bottom p{color:#3e6654;font-size:.82rem;line-height:1.75;margin:7px 0}
+.roster-bottom form button,.checkin-form-card button{cursor:pointer}
+.roster-bottom form button:disabled,.checkin-form-card button:disabled{opacity:.65;cursor:wait}
+.driver-page>.data-notice,.checkin-page>.data-notice{margin-top:22px;font-size:.81rem}
+.boarding-offline{padding:14px;border-radius:11px;border:1px solid #dfc486;background:#fff3d5;font-size:.81rem;color:#6d4c1c}
+.boarding-error,.boarding-success{background:#fff0ed;border:1px solid #dba99d;color:#782b21;padding:14px 17px;border-radius:12px;margin:24px 0}
+.boarding-success{background:var(--mint);color:var(--forest);border-color:#afd4bc}
+.boarding-error p,.boarding-success p{margin:5px 0}
+.checkin-intro{max-width:780px}
+.checkin-grid{display:grid;grid-template-columns:1fr;gap:22px;margin-top:32px}
+.checkin-form-card{background:white;border:1px solid var(--line);border-radius:19px;padding:26px}
+.checkin-eyebrow{text-transform:uppercase;letter-spacing:.08em;color:var(--green);font-size:.73rem;font-weight:900}
+.checkin-form-card h2{font-size:clamp(1.5rem,3vw,2.1rem);letter-spacing:-.05em;margin:19px 0 26px}
+.checkin-form-card form>label{font-size:.88rem;font-weight:800;display:block;margin-bottom:8px}
+.checkin-form-card input{display:block;width:100%;min-height:64px;text-align:center;font-size:clamp(1.55rem,4vw,2.3rem);letter-spacing:.18em;font-variant-numeric:tabular-nums;font-weight:800;border:1px solid #adcbb9;border-radius:12px;background:var(--cream)}
+.checkin-form-card input:focus{outline:3px solid #b2e4d1;outline-offset:2px}
+.checkin-help{font-size:.79rem;color:var(--muted);line-height:1.7;margin:12px 0 25px}
+.checkin-form-card button{width:100%;border:0}
+.checkin-roster-link{display:inline-block;margin-top:23px;font-size:.88rem;color:var(--green);font-weight:850;text-decoration:underline;text-underline-offset:4px}
+.checkin-tip{position:relative;background:var(--forest);border-radius:19px;color:white;padding:28px;overflow:hidden}
+.checkin-tip::before{content:"";position:absolute;border-radius:50%;background:#197f61;width:270px;height:270px;right:-140px;top:-130px;opacity:.46}
+.checkin-tip>*{position:relative}
+.checkin-tip__icon{display:grid;place-items:center;width:55px;height:55px;border-radius:50%;background:var(--lime);color:var(--forest);font-weight:950;font-size:1.7rem}
+.checkin-tip h2{font-size:clamp(1.7rem,3vw,2.5rem);letter-spacing:-.055em;line-height:1.15;margin:25px 0}
+.checkin-tip>p{font-size:.92rem;color:#d9f0e3;line-height:1.75}
+.checkin-trip{margin-top:36px;border:1px solid #529173;border-radius:13px;padding:17px}
+.checkin-trip span,.checkin-trip strong,.checkin-trip small{display:block}
+.checkin-trip span{font-size:.72rem;color:#d7eee1;text-transform:uppercase;font-weight:850}
+.checkin-trip strong{font-size:1.25rem;margin:7px 0}
+.checkin-trip small{color:#c9e8d9}
+.checkin-tip .checkin-privacy{font-size:.77rem;margin-top:24px}
+@media(min-width:650px){.driver-stats{grid-template-columns:repeat(3,minmax(0,1fr))}.roster-row{grid-template-columns:56px minmax(0,1fr) 170px}.roster-row__status{grid-column:3;align-items:flex-end}}
+@media(min-width:900px){.driver-page,.checkin-page{padding-top:70px}.checkin-grid{grid-template-columns:minmax(0,1.1fr) minmax(310px,.9fr);gap:30px}.checkin-form-card,.checkin-tip{padding:38px}}
