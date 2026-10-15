@@ -234,71 +234,129 @@
     return polyline;
   }
 
-  async function showOpenStreetMap() {
-    // Always use a real street map when Google has not yet been configured.
-    // This uses OpenStreetMap tiles and the public OSRM *sample* routing server.
-    if (!window.L) await loadScript("https://unpkg.com/leaflet@1.9.4/dist/leaflet.js");
+  async function showOpenFreeMap() {
+    // OSM Foundation volunteer raster tiles can reject production requests (403).
+    // OpenFreeMap explicitly permits public/commercial keyless vector-map usage.
+    if (!window.maplibregl) {
+      await loadScript("https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.js");
+    }
     element.replaceChildren();
-    const map = L.map(element, {
-      zoomControl: true, scrollWheelZoom: false,
-      keyboard: true
-    }).setView([6.49, 3.34], 12);
-    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>',
-      maxZoom: 19
-    }).addTo(map);
+    const map = new maplibregl.Map({
+      container: element,
+      style: "https://tiles.openfreemap.org/styles/liberty",
+      center: [3.34, 6.49],
+      zoom: 11,
+      attributionControl: true,
+      dragRotate: false,
+      pitchWithRotate: false
+    });
+    map.scrollZoom.disable();
+    map.touchZoomRotate.disableRotation();
+    map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-left");
 
-    const stopIcon = (letter, isEnd) => L.divIcon({
-      html: '<span class="site-map-stop' + (isEnd ? ' site-map-stop--end' : '') +
-        '">' + letter + '</span>',
-      className: "site-map-stop-wrapper",
-      iconSize: [31, 31], iconAnchor: [15, 15]
-    });
-    L.marker([JIBOWU.lat, JIBOWU.lng], {icon: stopIcon("J", false)})
-      .addTo(map).bindPopup("Jibowu Bus Stop · Approximate location");
-    L.marker([MILE_TWO.lat, MILE_TWO.lng], {icon: stopIcon("M", true)})
-      .addTo(map).bindPopup("Mile 2 · Approximate interchange location");
-    map.fitBounds([[JIBOWU.lat, JIBOWU.lng], [MILE_TWO.lat, MILE_TWO.lng]], {
-      padding: [30, 30], maxZoom: 12
-    });
+    // A basemap is only marked ready after the vector style has actually loaded.
+    // A broken style must give visitors useful directions, not blank or 403 tiles.
+    try {
+      await new Promise((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          reject(new Error("Map tiles timed out."));
+        }, 15000);
+        const onError = event => {
+          if (!map.isStyleLoaded()) {
+            clearTimeout(timeout);
+            map.off("error", onError);
+            reject(event.error || new Error("Map provider is unavailable."));
+          }
+        };
+        map.on("error", onError);
+        map.once("load", () => {
+          clearTimeout(timeout);
+          map.off("error", onError);
+          resolve();
+        });
+      });
+    } catch (error) {
+      map.remove();
+      throw error;
+    }
+
+    const marker = (label, location, isEnd) => {
+      const wrapper = document.createElement("span");
+      wrapper.className = "site-map-stop" + (isEnd ? " site-map-stop--end" : "");
+      wrapper.textContent = label;
+      wrapper.setAttribute("aria-hidden", "true");
+      return new maplibregl.Marker({ element: wrapper })
+        .setLngLat([location.lng, location.lat])
+        .addTo(map);
+    };
+    marker("J", JIBOWU, false);
+    marker("M", MILE_TWO, true);
+    const area = [
+      [Math.min(JIBOWU.lng, MILE_TWO.lng), Math.min(JIBOWU.lat, MILE_TWO.lat)],
+      [Math.max(JIBOWU.lng, MILE_TWO.lng), Math.max(JIBOWU.lat, MILE_TWO.lat)]
+    ];
+    map.fitBounds(area, { padding: 35, maxZoom: 12, duration: 0 });
     hideLoading();
-    provider.textContent = "OpenStreetMap";
-    showMessage("Map loaded · Finding driving route…");
+    provider.textContent = "OpenFreeMap";
+    showMessage("Street map loaded · Finding driving route…");
 
+    // OSRM is only a best-effort demo routing source; never substitute a
+    // straight imaginary line if actual road geometry is unavailable.
     const abort = new AbortController();
     const timer = setTimeout(() => abort.abort(), 11000);
     try {
       const api = "https://router.project-osrm.org/route/v1/driving/" +
         JIBOWU.lng + "," + JIBOWU.lat + ";" + MILE_TWO.lng + "," + MILE_TWO.lat +
         "?overview=full&geometries=geojson";
-      const response = await fetch(api, {signal: abort.signal});
-      if (!response.ok) throw new Error("OSRM route temporarily unavailable.");
+      const response = await fetch(api, { signal: abort.signal });
+      if (!response.ok) throw new Error("Demo routing service unavailable.");
       const body = await response.json();
       const road = body.routes?.[0];
       if (!road || !Array.isArray(road.geometry?.coordinates)) {
         throw new Error("No road geometry in routing response.");
       }
-      const path = road.geometry.coordinates.map(([lng, lat]) => ({lat, lng}));
-      if (!validRoadPath(path)) throw new Error("Route geometry is outside Lagos.");
-      const geometry = path.map(p => [p.lat, p.lng]);
-      L.polyline(geometry, {color: "#d6f86c", weight: 11, opacity: .85}).addTo(map);
-      L.polyline(geometry, {color: "#067759", weight: 6, opacity: 1}).addTo(map);
-      map.fitBounds(geometry, {padding: [30, 30]});
-      const busIcon = L.divIcon({
-        html: '<img src="' + busImage + '" alt="" width="88" height="63">',
-        className: "site-map-bus-icon",
-        iconSize: [88, 63], iconAnchor: [44, 44]
+      const path = road.geometry.coordinates.map(([lng, lat]) => ({ lat, lng }));
+      if (!validRoadPath(path)) throw new Error("Invalid Lagos road geometry.");
+      const coords = path.map(p => [p.lng, p.lat]);
+      map.addSource("saferide-road", {
+        type: "geojson",
+        data: {
+          type: "Feature",
+          properties: {},
+          geometry: { type: "LineString", coordinates: coords }
+        }
       });
-      const bus = L.marker(geometry[0], {icon: busIcon, zIndexOffset: 1000}).addTo(map);
+      map.addLayer({
+        id: "saferide-road-outline", type: "line", source: "saferide-road",
+        paint: { "line-color": "#d6f86c", "line-width": 10, "line-opacity": 0.95 },
+        layout: { "line-join": "round", "line-cap": "round" }
+      });
+      map.addLayer({
+        id: "saferide-road-path", type: "line", source: "saferide-road",
+        paint: { "line-color": "#067759", "line-width": 6 },
+        layout: { "line-join": "round", "line-cap": "round" }
+      });
+      const bounds = coords.reduce((box, point) => box.extend(point),
+        new maplibregl.LngLatBounds(coords[0], coords[0]));
+      map.fitBounds(bounds, { padding: 35, maxZoom: 13, duration: 0 });
+
+      const bus = document.createElement("img");
+      bus.src = busImage;
+      bus.alt = "";
+      bus.className = "site-map-google-bus";
+      bus.style.width = "88px";
+      bus.style.filter = "drop-shadow(0 8px 7px #15241e63)";
+      const movingMarker = new maplibregl.Marker({ element: bus, anchor: "center" })
+        .setLngLat(coords[0]).addTo(map);
       showMessage("Approx. " + (road.distance / 1000).toFixed(1) +
-        " km by road · Animated danfo follows the mapped route");
-      prepareAnimation(path, position => bus.setLatLng([position.lat, position.lng]));
+        " km by road · Illustrated danfo follows the mapped route");
+      prepareAnimation(path, position => movingMarker.setLngLat([position.lng, position.lat]));
     } catch (error) {
-      console.warn("SafeRide sample route unavailable:", error.message);
-      showMessage("Street map loaded. Road route unavailable right now—open Google Maps for directions.");
+      console.warn("SafeRide demo road route unavailable:", error.message);
+      showMessage("Street map loaded; road route is temporarily unavailable. Use Google Maps directions.");
     } finally {
       clearTimeout(timer);
-      setTimeout(() => map.invalidateSize(), 120);
+      setTimeout(() => map.resize(), 120);
     }
   }
 
@@ -308,11 +366,11 @@
         await showGoogle();
         return;
       } catch (error) {
-        console.warn("SafeRide Google Maps route unavailable; switching to OpenStreetMap.", error.message);
+        console.warn("SafeRide Google Maps route unavailable; switching to OpenFreeMap.", error.message);
       }
     }
     try {
-      await showOpenStreetMap();
+      await showOpenFreeMap();
     } catch (error) {
       hideLoading();
       provider.textContent = "Google Maps directions";
