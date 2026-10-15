@@ -27,8 +27,8 @@ as cinematic footage, moving danfos, or evidence of realistic passenger movement
   WebPs are optimized crops/encodes of that single original composition.
 - `components/journey_art.html` and `journey_steps.html`: original inline SVGs
   authored in this change. No third-party artwork or stock footage incorporated.
-- `tests/fixtures/cinematic-test-pattern.mp4`: original FFmpeg `testsrc2`,
-  320×180, 24fps, 1.2 seconds, silent H.264. Test-only colour bars and shapes;
+- `tests/fixtures/cinematic-test-pattern.mp4` and `.webm`: original FFmpeg `testsrc2`,
+  320×180, 24fps, 1.2 seconds, silent H.264/VP8. Test-only colour bars and shapes;
   never linked by production templates or copied into production static assets.
 - Existing mapping libraries, data and mandatory attribution retain their own
   licences. No provider watermark, Terms link or required attribution was hidden.
@@ -245,3 +245,13 @@ keyboard focus to the section. Without JavaScript the expanded header scrolls
 with the document rather than covering search. Native search clicks with and
 without JavaScript, keyboard section focus, and the full local landing/media
 suite passed again after this correction. See the PR's latest CI for confirmation.
+
+### Native media test compatibility
+
+The native media check renders the actual Django hero component with controlled
+test sources, rather than duplicating its markup. Silent WebM/VP8 and MP4/H.264
+fixtures match the production source order, supporting Chromium builds with
+different codec availability. Mobile and desktop playback controls, actual loop
+progress, pause/resume, offscreen pause and preference/failure paths are tested.
+The desktop playback control is outside the background media stacking context so
+headline layout cannot intercept it. No test pattern is enabled on the website.

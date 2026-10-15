@@ -22,3 +22,8 @@ captured frames, about 7.1 seconds): hero, smooth section navigation, actual
 keyless MapLibre road preview/stop selection and theme switching. It is **not**
 cinematic traffic/boarding footage. `interface-recording.json` records timing.
 `production-smoke.json` records the separate DEBUG=false local static-page check.
+
+`native-media-results.json` is the follow-up complete landing/media run using the
+actual Django hero template, WebM + MP4 fixtures, and both mobile and desktop
+playback controls. Its axe array is empty because that follow-up run did not
+repeat axe; the separate 28-audit evidence remains in landing-results.json.

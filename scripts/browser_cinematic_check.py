@@ -6,6 +6,7 @@ The colour-bars fixture is NOT cinematic footage or visual motion evidence.
 import json
 import os
 import re
+import sys
 from pathlib import Path
 
 from playwright.sync_api import expect, sync_playwright
@@ -13,6 +14,14 @@ from playwright.sync_api import expect, sync_playwright
 BASE = os.getenv("SAFERIDE_BROWSER_BASE", "http://127.0.0.1:8000")
 if not BASE.startswith(("http://127.0.0.1:", "http://localhost:")):
     raise SystemExit("This check only accepts an isolated local instance.")
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
+import django  # noqa: E402
+
+django.setup()
+from django.template.loader import render_to_string  # noqa: E402
+
 OUT = Path("artifacts/cinematic/final")
 OUT.mkdir(parents=True, exist_ok=True)
 report = {"screens": [], "accessibility": [], "pages": [], "errors": [], "media_fixture": {}}
@@ -136,35 +145,48 @@ with sync_playwright() as pw:
         report["no_javascript"] = "Navigation, poster and GET search work"
         # Controlled, silent colour-bars video; tests component lifecycle, not art quality.
         fixture = Path("tests/fixtures/cinematic-test-pattern.mp4").read_bytes()
-        video_markup = '''<video class="cinematic-hero__video" muted loop playsinline preload="none" aria-hidden="true" data-hero-video data-desktop-mp4="/qa-fixture.mp4" data-mobile-mp4="/qa-fixture.mp4"></video><button class="cinematic-hero__motion" data-video-toggle hidden>Pause scene</button>'''
-        for mode in ["normal", "reduced", "save-data", "failure", "autoplay-blocked"]:
-            media_context = browser.new_context(viewport={"width": 390, "height": 844}, reduced_motion="reduce" if mode == "reduced" else "no-preference")
+        webm_fixture = Path("tests/fixtures/cinematic-test-pattern.webm").read_bytes()
+        fixture_hero = render_to_string("components/cinematic_hero.html", {"cinematic_video": {
+            "desktop_webm": "/qa-fixture.webm", "mobile_webm": "/qa-fixture.webm",
+            "desktop_mp4": "/qa-fixture.mp4", "mobile_mp4": "/qa-fixture.mp4",
+        }})
+        for mode in ["normal", "desktop", "reduced", "save-data", "failure", "autoplay-blocked"]:
+            media_context = browser.new_context(viewport={"width": 1440 if mode == "desktop" else 390, "height": 844}, reduced_motion="reduce" if mode == "reduced" else "no-preference")
             media_page = media_context.new_page()
             requests = []
+            report["stage"] = f"Native media lifecycle: {mode}"
             if mode == "save-data":
                 media_page.add_init_script("Object.defineProperty(navigator,'connection',{value:{saveData:true,effectiveType:'4g',addEventListener(){}}})")
             if mode == "autoplay-blocked":
                 media_page.add_init_script("HTMLMediaElement.prototype.play=()=>Promise.reject(new DOMException('Blocked by test','NotAllowedError'))")
             def media_response(route, request, *, requests=requests, mode=mode):
                 requests.append(route.request.url)
-                route.fulfill(status=503 if mode == "failure" else 200, content_type="video/mp4", body=b"" if mode == "failure" else fixture)
-            media_page.route("**/qa-fixture.mp4", media_response)
+                is_webm = request.url.endswith(".webm")
+                route.fulfill(status=503 if mode == "failure" else 200, content_type="video/webm" if is_webm else "video/mp4", body=b"" if mode == "failure" else webm_fixture if is_webm else fixture)
+            media_page.route("**/qa-fixture.*", media_response)
             def inject(route):
                 response = route.fetch()
-                html = response.text().replace('<div class="cinematic-hero__media">', '<div class="cinematic-hero__media">' + video_markup)
+                html = re.sub(r'<section class="cinematic-hero".*?</section>', lambda match: fixture_hero, response.text(), count=1, flags=re.DOTALL)
                 route.fulfill(response=response, body=html)
             media_page.route(re.compile(re.escape(BASE) + r"/$"), inject)
             visit(media_page)
             video = media_page.locator("video")
-            if mode == "normal":
+            support = video.evaluate("v=>({webm:v.canPlayType('video/webm; codecs=vp8'),h264:v.canPlayType('video/mp4; codecs=avc1.42E01E')})")
+            if os.getenv("GITHUB_ACTIONS") and mode == "normal":
+                print(f"::notice title=Native video codec support::{json.dumps(support)}", flush=True)
+            if mode in ("normal", "desktop"):
                 media_page.wait_for_function("document.querySelector('video').currentTime>.1")
+                media_page.wait_for_timeout(1400)
+                assert video.evaluate("v=>!v.paused && !v.ended && v.currentTime<v.duration")
                 assert video.evaluate("v=>v.muted && v.loop && v.playsInline")
+                report["stage"] = f"{mode} media pause/resume control"
                 media_page.get_by_role("button", name="Pause scene").click()
                 frozen = video.evaluate("v=>v.currentTime")
                 media_page.wait_for_timeout(250)
                 assert video.evaluate("v=>v.paused && Math.abs(v.currentTime-" + str(frozen) + ")<.05")
                 media_page.get_by_role("button", name="Play scene").click()
                 media_page.wait_for_function("!document.querySelector('video').paused")
+                report["stage"] = f"{mode} media offscreen pause"
                 media_page.evaluate("scrollTo(0,document.body.scrollHeight)")
                 media_page.wait_for_function("document.querySelector('video').paused")
                 media_page.evaluate("scrollTo(0,0)")
@@ -177,7 +199,7 @@ with sync_playwright() as pw:
                 assert not media_page.locator("[data-cinematic-hero]").evaluate("e=>e.classList.contains('is-playing')")
                 if mode in ["reduced", "save-data"]:
                     assert not requests
-            report["media_fixture"][mode] = {"passed": True, "media_requests": len(requests), "fixture_only": True}
+            report["media_fixture"][mode] = {"passed": True, "media_requests": len(requests), "fixture_only": True, "webm_supported": video.evaluate("v=>v.canPlayType('video/webm; codecs=vp8')"), "h264_supported": video.evaluate("v=>v.canPlayType('video/mp4; codecs=avc1.42E01E')")}
             media_context.close()
         assert not missing, missing
         assert not report["errors"], report["errors"]
