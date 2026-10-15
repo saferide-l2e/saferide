@@ -1,5 +1,5 @@
 {% load static %}<!doctype html>
-<html lang="en" class="has-js"><head>
+<html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{% block title %}SafeRide — Every journey matters{% endblock %}</title>
 <meta name="description" content="{% block description %}Move smarter. Explore routes, book your seat and follow your journey with SafeRide.{% endblock %}">
@@ -9,9 +9,9 @@
 <script defer src="{% static 'js/navigation.js' %}"></script>
 </head><body>
 <a class="skip-link" href="#main-content">Skip to content</a>
-<header class="site-header"><div class="container header-inner">
+<header class="site-header" data-site-header><div class="container header-inner">
   <a class="brand" href="{% url 'core:home' %}" aria-label="SafeRide home"><span>Safe<strong>Ride</strong></span><svg class="brand-pin" width="16" height="20" viewBox="0 0 16 20" fill="none" aria-hidden="true"><path d="M8 1a7 7 0 0 0-7 7c0 4.5 7 11 7 11s7-6.5 7-11a7 7 0 0 0-7-7Z" fill="currentColor"/><circle cx="8" cy="8" r="2.4" fill="white"/></svg></a>
-  <button type="button" class="menu-toggle" aria-label="Open navigation" aria-controls="primary-navigation" aria-expanded="false" data-menu-toggle><span></span><span></span><span></span></button>
+  <button type="button" class="menu-toggle" aria-label="Open navigation" aria-controls="primary-navigation" aria-expanded="false" data-nav-toggle><span></span><span></span><span></span></button>
   <nav class="primary-navigation" id="primary-navigation" aria-label="Main navigation" data-primary-nav>
     {% if user.is_authenticated and user.role == "DRIVER" %}
       <a data-nav-link href="{% url 'departures:dashboard' %}">Dashboard</a>

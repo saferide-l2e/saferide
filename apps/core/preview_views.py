@@ -1,0 +1,405 @@
+"""Internal-only visual review of existing SafeRide Django templates.
+
+Enabled only by SAFERIDE_VISUAL_PREVIEW=true in the isolated preview branch.
+No database reads, account creation, seat holds, code acceptance, SOS dispatch,
+or form submissions. Data is deliberately fictional. Never import into production.
+"""
+
+# ruff: noqa: I001  # Review-only view imports; no application runtime effect.
+from datetime import timedelta
+
+from django import forms
+from django.http import Http404
+from django.shortcuts import render
+from django.utils import timezone
+from django.views.decorators.cache import never_cache
+from django.views.decorators.http import require_GET
+
+
+PAGE_GROUPS = (
+    ("Discover", (
+        ("search", "Find a bus", "passenger/search.html"),
+        ("results", "Bus results", "passenger/results.html"),
+        ("bus-detail", "Bus details & driver", "passenger/bus_detail.html"),
+        ("route-updates", "Route updates", "safety/route_feed.html"),
+    )),
+    ("Journey", (
+        ("reservation", "10-minute seat hold", "booking/hold.html"),
+        ("queue", "Virtual queue", "booking/waitlist.html"),
+        ("offer", "Two-minute seat offer", "booking/offer.html"),
+        ("trip", "Journey progress", "passenger/trip.html"),
+        ("history", "Passenger trip history", "passenger/history.html"),
+        ("review", "Rate a journey", "safety/review.html"),
+    )),
+    ("Safety & Accounts", (
+        ("register", "Create an account", "accounts/register.html"),
+        ("login", "Sign in", "accounts/login.html"),
+        ("verification", "Verification status", "accounts/verification.html"),
+        ("passenger-profile", "Passenger profile", "passenger/profile.html"),
+        ("driver-profile", "Driver profile", "driver/profile.html"),
+        ("report", "Private safety report", "safety/report.html"),
+        ("contribute", "Share a route update", "safety/route_update_form.html"),
+    )),
+    ("Driver Space", (
+        ("driver-dashboard", "Driver dashboard", "driver/dashboard.html"),
+        ("vehicles", "My vehicles", "driver/vehicle_list.html"),
+        ("register-vehicle", "Register a vehicle", "driver/vehicle_form.html"),
+        ("publish-departure", "Publish departure", "driver/publish_departure.html"),
+        ("departure-detail", "Manage departure", "driver/departure_detail.html"),
+        ("roster", "Boarding roster", "driver/roster.html"),
+        ("boarding", "Check in a passenger", "driver/check_in.html"),
+        ("driver-history", "Driver trip history", "driver/history.html"),
+    )),
+)
+PAGES = {slug: template for _group, entries in PAGE_GROUPS for slug, _label, template in entries}
+
+
+class RegistrationForm(forms.Form):
+    role = forms.ChoiceField(choices=(("PASSENGER", "Passenger"), ("DRIVER", "Driver")))
+    display_name = forms.CharField(label="Your name", initial="Tomi Ade")
+    email = forms.EmailField(label="Email address", initial="tomi@example.test")
+    password1 = forms.CharField(label="Password", widget=forms.PasswordInput)
+    password2 = forms.CharField(label="Confirm password", widget=forms.PasswordInput)
+    privacy_acknowledged = forms.BooleanField(label="I agree to the privacy notice", required=True)
+
+
+class LoginForm(forms.Form):
+    email = forms.EmailField(label="Email address", initial="tomi@example.test")
+    password = forms.CharField(label="Password", widget=forms.PasswordInput)
+
+
+class DeclarationForm(forms.Form):
+    declaration = forms.ChoiceField(
+        label="Your role", choices=(("PASSENGER", "Passenger"), ("DRIVER", "Driver"))
+    )
+    fictional_declaration = forms.BooleanField(label="I confirm these example details are fictional")
+
+
+class VehicleForm(forms.Form):
+    vehicle_type = forms.ChoiceField(choices=(("MINIBUS", "Minibus"), ("BUS", "Bus")))
+    plate_display = forms.CharField(label="Vehicle plate", initial="SRD-204")
+    seat_capacity = forms.IntegerField(label="Seats", min_value=1, initial=14)
+
+
+class DepartureForm(forms.Form):
+    vehicle = forms.ChoiceField(choices=(("1", "Minibus · SRD-204"),))
+    route = forms.ChoiceField(choices=(("1", "Jibowu → Mile 2"),))
+    boarding_point = forms.CharField(initial="Jibowu Park")
+    scheduled_departure_at = forms.DateTimeField(
+        label="Departure date and time", widget=forms.DateTimeInput(attrs={"type": "datetime-local"})
+    )
+
+
+class ReviewForm(forms.Form):
+    stars = forms.ChoiceField(label="Overall rating", choices=tuple(
+        (str(n), f"{n} {'star' if n == 1 else 'stars'}") for n in range(5, 0, -1)
+    ))
+    comment = forms.CharField(label="What went well?", required=False, widget=forms.Textarea)
+
+
+class ReportForm(forms.Form):
+    category = forms.ChoiceField(choices=(("SAFETY", "Safety concern"), ("OTHER", "Other")))
+    description = forms.CharField(label="Describe what happened", widget=forms.Textarea)
+
+
+class CommunityForm(forms.Form):
+    route = forms.ChoiceField(choices=(("JIBOWU-MILE2", "Jibowu → Mile 2"),))
+    category = forms.ChoiceField(choices=(("BOARDING", "Boarding update"), ("TRAFFIC", "Traffic")))
+    note = forms.CharField(label="Route update", widget=forms.Textarea)
+
+
+def uri(slug):
+    """Static visual-review URL; never a booking or approval endpoint."""
+    return f"/preview/{slug}/"
+
+
+def _sample():
+    """Only safe, fictional public fields. No model instances or private credentials."""
+    now = timezone.now()
+    departure = {
+        "route_label": "Jibowu → Mile 2",
+        "scheduled_departure_at": now + timedelta(hours=4),
+        "boarding_point": "Jibowu Park",
+        "destination_point": "Mile 2",
+        "vehicle_type_display": "Minibus",
+        "plate_display": "SRD-204",
+        "driver_name": "Amina O.",
+        "driver_public_name": "Amina O.",
+        "driver_initials": "AO",
+        "driver_approved": True,
+        "available_seats": 5,
+        "capacity": 14,
+        "is_open": True,
+        "is_full": False,
+        "status": "BOARDING_OPEN",
+        "status_label": "Boarding open",
+        "detail_url": uri("bus-detail"),
+        "boarded_count": 7,
+        "held_count": 2,
+    }
+    hold = {
+        "reference": "SR-1024",
+        "status": "HELD",
+        "route_label": departure["route_label"],
+        "boarding_point": departure["boarding_point"],
+        "plate_display": departure["plate_display"],
+        "expires_at": now + timedelta(seconds=600),
+        "boarding_code": "482913",
+    }
+    trip = {
+        "route_label": departure["route_label"],
+        "plate_display": departure["plate_display"],
+        "display_status": "On the way",
+        "booking_status": "BOARDED",
+        "booking_held_at": now - timedelta(minutes=35),
+        "boarded_at": now - timedelta(minutes=25),
+        "en_route_at": now - timedelta(minutes=18),
+        "driver_arrived_at": None,
+        "passenger_confirmed_at": None,
+    }
+    passenger = {
+        "initials": "TA", "public_display_name": "Tomi A.",
+        "short_reference": "SR-1024", "status": "HELD", "verified": True,
+        "expires_at": now + timedelta(seconds=600),
+    }
+    vehicle = {
+        "vehicle_type_display": "Minibus", "plate_display": "SRD-204",
+        "seat_capacity": 14, "approval_status": "APPROVED",
+        "can_publish": True, "publish_url": uri("publish-departure"),
+    }
+    return {
+        "form_action": uri("register"),
+        "register_url": uri("register"), "login_url": uri("login"),
+        "search_url": uri("search"), "origin": "Jibowu", "destination": "Mile 2",
+        "has_searched": True,
+        "buses": [departure, {**departure, "plate_display": "SRD-208",
+                               "available_seats": 0, "is_full": True,
+                               "driver_name": "Tunde K.", "detail_url": uri("bus-detail")}],
+        "bus": departure, "route_notices": [],
+        "booking": hold, "server_now": now,
+        "entry": {"status": "WAITING", "route_label": departure["route_label"],
+                  "position": 4, "people_ahead": 3},
+        "offer": {"status": "OFFERED", "route_label": departure["route_label"],
+                  "expires_at": now + timedelta(seconds=120)},
+        "trip": trip,
+        "trips": [{**trip, "departed_at": now - timedelta(days=2),
+                   "display_status": "Completed", "detail_url": uri("trip")}],
+        "departure": {**departure, "vehicle_plate": departure["plate_display"],
+                      "detail_url": uri("departure-detail")},
+        "departures": [{**departure, "detail_url": uri("departure-detail")}],
+        "roster": [passenger, {**passenger, "public_display_name": "Daniel I.",
+                                "initials": "DI", "short_reference": "SR-1031",
+                                "status": "BOARDED"}],
+        "boarded_count": 7, "held_count": 2, "capacity": 14,
+        "upcoming_count": 2, "approved_vehicle_count": 1, "boarded_today_count": 7,
+        "vehicles": [vehicle, {**vehicle, "plate_display": "SRD-208",
+                              "approval_status": "PENDING", "can_publish": False}],
+        "updates": [{"status": "APPROVED", "type_label": "Boarding point",
+                     "route_label": departure["route_label"],
+                     "note": "Boarding point information posted for staff review.",
+                     "published_at": now}],
+        "route_label": departure["route_label"],
+        "profile": {"initials": "AO", "public_display_name": "Amina O.", "is_approved": True},
+        "status": "PENDING", "can_submit": True,
+        "can_reserve": False, "can_join_waitlist": False, "can_join": False,
+        "can_review": True, "trip_is_completed": True,
+        "can_report": True, "can_contribute": True,
+        "can_register": True, "can_publish": True, "can_check_in": True,
+        "review_action": uri("review"), "report_action": uri("report"),
+        "submit_action": uri("verification"),
+        "join_action": uri("queue"), "can_advance": False,
+        "verification_url": uri("verification"), "vehicle_list_url": uri("vehicles"),
+        "publish_url": uri("publish-departure"),
+        "dashboard_url": uri("driver-dashboard"),
+        "history_url": uri("history"), "reporting_url": uri("report"),
+        "rating_url": uri("review"), "feed_url": uri("route-updates"),
+        "contribute_url": uri("contribute"), "roster_url": uri("roster"),
+        "checkin_url": uri("boarding"), "queue_url": uri("queue"),
+        "offer_url": uri("offer"),
+        "time_zone_label": "Africa/Lagos (WAT, UTC+1)",
+    }
+
+
+WORKFLOWS = {
+    "search": ("results", "See matching buses"),
+    "results": ("bus-detail", "Inspect this bus"),
+    "bus-detail": ("reservation", "See seat reservation"),
+    "reservation": ("queue", "Explore virtual queue"),
+    "queue": ("offer", "See a seat offer"),
+    "offer": ("trip", "View journey progress"),
+    "trip": ("history", "View journey history"),
+    "history": ("review", "Rate a journey"),
+    "review": ("report", "Report a concern"),
+    "route-updates": ("contribute", "Share a route update"),
+    "register": ("verification", "View verification status"),
+    "login": ("driver-dashboard", "Explore driver dashboard"),
+    "verification": ("passenger-profile", "View public profile"),
+    "driver-dashboard": ("vehicles", "View my vehicles"),
+    "vehicles": ("register-vehicle", "Register a vehicle"),
+    "register-vehicle": ("publish-departure", "Publish a departure"),
+    "publish-departure": ("departure-detail", "Manage a departure"),
+    "departure-detail": ("roster", "View boarding roster"),
+    "roster": ("boarding", "Check in a passenger"),
+    "boarding": ("driver-history", "View previous journeys"),
+}
+
+
+def area(slug):
+    for group, entries in PAGE_GROUPS:
+        if any(current == slug for current, _label, _template in entries):
+            if group == "Discover":
+                return "discover"
+            if group == "Journey":
+                return "journey"
+            if group == "Driver Space":
+                return "driver"
+            return "safety" if slug in {"report", "route-updates", "contribute"} else "home"
+    return "home"
+
+
+@never_cache
+@require_GET
+def app_home(request):
+    """App-style entry point: one page with navigation into separate destinations."""
+    response = render(request, "preview/app_home.html", {
+        "preview_gallery_url": "/preview/",
+        "preview_area": "home",
+        "preview_section": "public",
+    })
+    response["X-Robots-Tag"] = "noindex, nofollow"
+    return response
+
+
+PUBLIC_PAGES = {
+    "how-it-works": ("preview/how_it_works.html", "how"),
+    "drive": ("preview/drive.html", "drive"),
+    "support": ("preview/support.html", "support"),
+    "my-trips": ("preview/passenger_hub.html", "my-trips"),
+}
+
+
+@never_cache
+@require_GET
+def public_page(request, slug):
+    """Company pages and passenger preview hub; never changes state."""
+    definition = PUBLIC_PAGES.get(slug)
+    if not definition:
+        raise Http404("Unknown site page")
+    template, active_page = definition
+    response = render(request, template, {
+        "preview_gallery_url": "/preview/",
+        "preview_area": active_page,
+        "preview_section": "passenger" if slug == "my-trips" else "public",
+    })
+    response["X-Robots-Tag"] = "noindex, nofollow"
+    return response
+
+
+@never_cache
+@require_GET
+def gallery(request):
+    response = render(request, "preview/gallery.html", {"groups": PAGE_GROUPS, "preview_gallery_url": "/preview/", "preview_area": "screens", "preview_section": "public"})
+    response["X-Robots-Tag"] = "noindex, nofollow"
+    return response
+
+
+@never_cache
+@require_GET
+def page(request, slug):
+    template = PAGES.get(slug)
+    if not template:
+        raise Http404("Unknown review page")
+    context = _sample()
+    context["preview_gallery_url"] = "/preview/"
+    context["preview_area"] = area(slug)
+    driver_pages = {
+        "driver-dashboard", "vehicles", "register-vehicle", "publish-departure",
+        "departure-detail", "roster", "boarding", "driver-history",
+    }
+    passenger_pages = {
+        "results", "bus-detail", "reservation", "queue", "offer",
+        "trip", "history", "review", "passenger-profile", "verification",
+    }
+    if slug in driver_pages:
+        context["preview_section"] = "driver"
+    elif slug in passenger_pages:
+        context["preview_section"] = "passenger"
+    else:
+        context["preview_section"] = "public"
+    if slug in {"search", "results", "bus-detail"}:
+        context["preview_area"] = "routes"
+    elif slug == "driver-dashboard":
+        context["preview_area"] = "driver-dashboard"
+    elif slug in {"vehicles", "register-vehicle"}:
+        context["preview_area"] = "vehicles"
+    elif slug in {"publish-departure", "departure-detail"}:
+        context["preview_area"] = "departures"
+    elif slug in {"roster", "boarding"}:
+        context["preview_area"] = "boarding"
+    elif slug == "history":
+        context["preview_area"] = "history"
+    if slug in WORKFLOWS:
+        next_slug, next_label = WORKFLOWS[slug]
+        context["preview_next_url"] = uri(next_slug)
+        context["preview_next_text"] = next_label
+    # Navigation follows the design journey, not a functional transaction.
+    if slug == "search":
+        context["search_url"] = uri("results")
+    elif slug == "results":
+        context["search_url"] = uri("results")
+        context["origin"] = request.GET.get("origin", "Jibowu")[:120]
+        context["destination"] = request.GET.get("destination", "Mile 2")[:120]
+        start_point = " ".join(context["origin"].casefold().split())
+        end_point = " ".join(context["destination"].casefold().split())
+        if start_point != "jibowu" or end_point not in {"mile 2", "mile2"}:
+            context["buses"] = []
+            context.pop("preview_next_url", None)
+            context.pop("preview_next_text", None)
+            context["error_message"] = (
+                "This route isn't in the current pilot listing. "
+                "Explore Jibowu to Mile 2 while more routes are being prepared."
+            )
+    elif slug == "bus-detail":
+        context["search_url"] = uri("results")
+    if slug == "register":
+        role = request.GET.get("role", "PASSENGER")
+        context["form"] = RegistrationForm(initial={
+            "role": role if role in {"PASSENGER", "DRIVER"} else "PASSENGER"
+        })
+        context["form_action"] = uri("register")
+    elif slug == "login":
+        context["form"] = LoginForm()
+        context["form_action"] = uri("login")
+    elif slug == "verification":
+        context["form"] = DeclarationForm()
+    elif slug == "register-vehicle":
+        context["form"] = VehicleForm()
+        context["form_action"] = uri("register-vehicle")
+    elif slug == "publish-departure":
+        context["form"] = DepartureForm()
+        context["form_action"] = uri("publish-departure")
+    elif slug == "review":
+        context["form"] = ReviewForm()
+    elif slug == "report":
+        context["form"] = ReportForm()
+    elif slug == "contribute":
+        context["form"] = CommunityForm()
+        context["form_action"] = uri("contribute")
+    elif slug == "boarding":
+        context["checkin_action"] = uri("boarding")
+    elif slug == "driver-dashboard":
+        context["publish_url"] = uri("publish-departure")
+    elif slug == "vehicles":
+        context["register_url"] = uri("register-vehicle")
+    elif slug == "roster":
+        context["checkin_url"] = uri("boarding")
+    elif slug == "bus-detail":
+        context["action_message"] = "Seat booking becomes available after backend integration."
+    elif slug == "offer":
+        context["accept_action"] = uri("offer")
+        context["decline_action"] = uri("offer")
+    # JS-enhanced countdowns show server timestamps from a fixed fictional clock;
+    # no live poll endpoints, no real bookings, and all POST requests return HTTP 405.
+    response = render(request, template, context)
+    response["X-Robots-Tag"] = "noindex, nofollow"
+    return response

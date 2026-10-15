@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}SafeRide — Screen Review{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/preview.css' %}">{% endblock %}
+{% block content %}
+<section class="review-gallery container" aria-labelledby="review-title">
+  <span class="eyebrow">Team design review</span>
+  <h1 id="review-title">Every screen. One journey.</h1>
+  <p class="review-lead">Open a page below to review how SafeRide looks on mobile, tablet or desktop. These pages use sample visual content; forms and booking actions don't change real data.</p>
+  <a class="review-home-link" href="/preview/">Enter the SafeRide website <span aria-hidden="true">↗</span></a>
+  {% for group_name, pages in groups %}
+    <section class="review-group" aria-labelledby="review-group-{{ forloop.counter }}">
+      <div class="review-group-title"><span class="review-group-number">0{{ forloop.counter }}</span><h2 id="review-group-{{ forloop.counter }}">{{ group_name }}</h2></div>
+      <div class="review-grid">
+      {% for slug, label, template in pages %}
+        <a class="review-card" href="/preview/{{ slug }}/">
+          <span class="review-card-label">{{ label }}</span>
+          <span class="review-card-link" aria-hidden="true">↗</span>
+        </a>
+      {% endfor %}
+      </div>
+    </section>
+  {% endfor %}
+</section>
+{% endblock %}
