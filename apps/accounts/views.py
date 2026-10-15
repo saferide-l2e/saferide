@@ -42,7 +42,7 @@ def login_view(request):
     return render(request, "accounts/login.html", {"form": form})
 
 
-@require_http_methods(["POST", "GET"])
+@require_http_methods(["POST"])
 def logout_view(request):
     if request.user.is_authenticated:
         record(request.user, "account.logout", request.user)
