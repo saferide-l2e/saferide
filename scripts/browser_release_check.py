@@ -87,7 +87,7 @@ with sync_playwright() as playwright:
         page.locator('input[name="fictional_data"]').check()
         page.locator('input[name="simulated_review"]').check()
         page.get_by_role("button", name=re.compile("Submit for staff review")).click()
-        expect(page.get_by_text("Awaiting review")).to_be_visible()
+        expect(page.get_by_text("Profile submitted")).to_be_visible()
         page.screenshot(path=str(OUT / "verification-pending.png"), full_page=True)
         evidence["journeys"].append("Browser registration -> fictional declaration -> pending staff review")
 
