@@ -62,12 +62,10 @@ with sync_playwright() as playwright:
         expect(page.locator("[data-destination-label]")).to_have_text("Ikeja")
         expect(page.locator("#site-to")).to_have_value("Ikeja")
         page.screenshot(path=str(OUT / "lagos-map-ikeja-selected.png"), full_page=True)
-        page.locator("[data-theme-toggle]").click()
-        assert page.locator("html").get_attribute("data-theme") == "dark"
-        page.screenshot(path=str(OUT / "lagos-dark-mode.png"), full_page=True)
-        page.locator("[data-theme-toggle]").click()
-        assert page.locator("html").get_attribute("data-theme") == "light"
-        evidence["journeys"].append("Lagos stop switching updates labels and search; dark theme toggles")
+        assert page.locator("[data-theme-toggle]").count() == 0
+        assert page.locator("[data-map-motion]").count() == 0
+        assert page.locator("[data-map-provider]").count() == 0
+        evidence["journeys"].append("Lagos stops update route and search; no broken theme or animation controls")
 
         visit(page, "/departures/search/?origin=Agege&destination=Lekki%20Phase%201")
         expect(page.get_by_role("heading", name="No matching departures")).to_be_visible()
