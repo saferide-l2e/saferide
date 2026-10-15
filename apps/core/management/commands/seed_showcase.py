@@ -4,7 +4,7 @@ Never import real users, scan identity documents or bypass approval of signups.
 This management command must be explicitly enabled by the service operator.
 """
 import os
-from datetime import date, datetime, time
+from datetime import date, datetime, time, timedelta
 from zoneinfo import ZoneInfo
 
 from django.core.management.base import BaseCommand, CommandError
