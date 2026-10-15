@@ -191,6 +191,45 @@ with sync_playwright() as playwright:
         expect(page.get_by_text("Passenger boarded.")).to_be_visible()
         page.screenshot(path=str(OUT / "driver-checkin.png"), full_page=True)
         evidence["journeys"].append("Approved driver sees roster -> checks in boarding code")
+
+        visit(page, "/driver/vehicles/new/")
+        expect(page.get_by_role("button", name=re.compile("Submit for review"))).to_be_visible()
+        page.locator('[name="plate_display"]').fill("QA-" + uuid.uuid4().hex[:8].upper())
+        page.locator('[name="vehicle_type"]').fill("Toyota Hiace")
+        page.locator('[name="capacity"]').fill("10")
+        page.get_by_role("button", name=re.compile("Submit for review")).click()
+        page.wait_for_url("**/driver/vehicles/")
+        expect(page.get_by_text("Vehicle submitted. An administrator must approve it.")).to_be_visible()
+        evidence["journeys"].append("Approved driver submits vehicle for staff review")
+
+        page.locator(".nav-logout-form button").click()
+        visit(page, "/accounts/register/?role=DRIVER")
+        page.locator('[name="display_name"]').fill("Vehicle Onboarding QA")
+        page.locator('[name="email"]').fill(f"vehicle-qa-{uuid.uuid4().hex[:12]}@example.test")
+        page.locator('[name="password1"]').fill("BrowserStrongPassword!2026")
+        page.locator('[name="password2"]').fill("BrowserStrongPassword!2026")
+        page.get_by_role("button", name=re.compile("Create account")).click()
+        page.wait_for_url("**/verification/")
+        visit(page, "/driver/vehicles/new/")
+        expect(page.get_by_role("heading", name="Account approval required")).to_be_visible()
+        assert page.locator('[name="plate_display"]').count() == 0
+        token = page.locator('[name="csrfmiddlewaretoken"]').first.input_value()
+        response = page.request.post(BASE + "/driver/vehicles/new/", form={
+            "csrfmiddlewaretoken": token, "plate_display": "QA-BLOCKED",
+            "vehicle_type": "Toyota Hiace", "capacity": "10",
+        })
+        assert response.status == 200
+        assert "Account approval required" in response.text()
+        for theme in ("light", "dark"):
+            page.evaluate("theme => document.documentElement.dataset.theme = theme", theme)
+            for width, height in viewports:
+                page.set_viewport_size({"width": width, "height": height})
+                assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
+                page.screenshot(path=str(OUT / f"vehicle-approval-{theme}-{width}.png"))
+        page.get_by_role("link", name=re.compile("Review account status")).click()
+        page.wait_for_url("**/verification/")
+        expect(page.locator("#verification-declaration")).to_be_visible()
+        evidence["journeys"].append("Unapproved driver gets account review guidance, including stale form POST")
     except Exception as exc:
         evidence["failure"] = f"{type(exc).__name__}: {exc}"
         page.screenshot(path=str(OUT / "failure.png"), full_page=True, mask=[page.locator("[data-boarding-code]")])

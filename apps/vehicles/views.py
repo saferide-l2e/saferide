@@ -41,13 +41,14 @@ def vehicle_create(request):
             messages.success(request, "Vehicle submitted. An administrator must approve it.")
             return redirect("vehicles:list")
         except PermissionDenied as exc:
-            raise exc
+            form.add_error(None, str(exc))
         except ValidationError as exc:
             for msg in exc.messages:
                 form.add_error(None, msg)
     profile = get_or_create_driver_profile(request.user)
     return render(request, "driver/vehicle_form.html", {
-        "form": form, "profile": profile, "can_register": True,
+        "form": form, "profile": profile, "can_register": request.user.is_verified,
+        "action_message": "Your driver account must be approved by staff before you can submit a vehicle. Review your account status to complete your profile or check progress.",
         "form_action": reverse("vehicles:create"),
         "vehicle_list_url": reverse("vehicles:list"),
         "verification_url": reverse("verification:status"),

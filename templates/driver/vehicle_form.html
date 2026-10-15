@@ -27,9 +27,9 @@
    <button class="button button--primary vehicle-submit" type="submit">Submit for review <span aria-hidden="true">→</span></button>
   </form>
  {% else %}
-   <h2>Registration is unavailable</h2>
+   <h2>Account approval required</h2>
    <p>{{ action_message|default:"Sign in as an eligible driver to register a vehicle." }}</p>
-   {% if verification_url %}<a class="button button--outline" href="{{ verification_url }}">Check verification <span aria-hidden="true">→</span></a>{% endif %}
+   {% if verification_url %}<a class="button button--outline" href="{{ verification_url }}">Review account status <span aria-hidden="true">→</span></a>{% endif %}
  {% endif %}
  </article>
  <aside class="vehicle-side">
