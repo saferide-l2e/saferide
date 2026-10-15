@@ -1,0 +1,88 @@
+{
+  "providers": [
+    {
+      "name": "Default runtime using MapLibre fallback",
+      "routes": [
+        {
+          "origin": "Jibowu",
+          "destination": "Mile 2",
+          "distance": "Approx. 12.8 km by road",
+          "vertices": null
+        },
+        {
+          "origin": "Lekki Phase 1",
+          "destination": "Jibowu",
+          "distance": "Approx. 19.3 km by road",
+          "vertices": null
+        },
+        {
+          "origin": "Yaba",
+          "destination": "Ikeja",
+          "distance": "Approx. 14.3 km by road",
+          "vertices": null
+        },
+        {
+          "origin": "Agege",
+          "destination": "Oshodi",
+          "distance": "Approx. 9.2 km by road",
+          "vertices": null
+        },
+        {
+          "origin": "Surulere",
+          "destination": "CMS",
+          "distance": "Approx. 7.9 km by road",
+          "vertices": null
+        },
+        {
+          "origin": "Maryland",
+          "destination": "Victoria Island",
+          "distance": "Approx. 20.8 km by road",
+          "vertices": null
+        }
+      ]
+    },
+    {
+      "name": "MapLibre + live OSRM",
+      "routes": [
+        {
+          "origin": "Jibowu",
+          "destination": "Mile 2",
+          "distance": "Approx. 12.8 km by road",
+          "vertices": 293
+        },
+        {
+          "origin": "Lekki Phase 1",
+          "destination": "Jibowu",
+          "distance": "Approx. 19.3 km by road",
+          "vertices": 515
+        },
+        {
+          "origin": "Yaba",
+          "destination": "Ikeja",
+          "distance": "Approx. 14.3 km by road",
+          "vertices": 335
+        },
+        {
+          "origin": "Agege",
+          "destination": "Oshodi",
+          "distance": "Approx. 9.2 km by road",
+          "vertices": 204
+        },
+        {
+          "origin": "Surulere",
+          "destination": "CMS",
+          "distance": "Approx. 7.9 km by road",
+          "vertices": 171
+        },
+        {
+          "origin": "Maryland",
+          "destination": "Victoria Island",
+          "distance": "Approx. 20.8 km by road",
+          "vertices": 376
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "failure": "Unavailable providers retain usable directions without invented distance"
+}

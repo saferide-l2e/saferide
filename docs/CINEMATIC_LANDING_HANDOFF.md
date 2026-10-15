@@ -192,3 +192,28 @@ Outstanding: legitimate finished desktop/mobile cinematic footage; artistic
 review of actual boarding movement and loop seam; production release and live
 verification after review. Absolute absence of bugs cannot be guaranteed by
 these tests.
+
+### GitHub review and runs
+
+- PR: https://github.com/saferide-l2e/saferide/pull/80
+- Initial Django run: https://github.com/saferide-l2e/saferide/actions/runs/38796937041
+- Initial Chromium run: https://github.com/saferide-l2e/saferide/actions/runs/38796936912
+
+Run links are evidence locations, not a statement that a still-running check has
+passed. The PR's checks show the latest commit and any follow-up runs.
+
+### Additional road-preview validation
+
+Read-only Chromium checked all six requested stop pairs with live OSRM road
+geometry (171–515 vertices, not artificial straight lines), fitted MapLibre maps
+and required attribution. Blocking both providers retained the external link and
+did not invent a distance. The default configured adapter also used the working
+MapLibre fallback during this check; this is **not** evidence of successful Google
+Routes responses. See `route-results.json` and `route-keyless.webp` in evidence.
+
+The first GitHub Django run passed. The first Chromium run failed; remote logs
+were blocked by the environment's network policy. Two exact GitHub log/artifact
+hosts were added to the saved environment configuration draft; applying that
+draft requires publishing the environment settings. Failure annotations were
+added to the browser script so subsequent CI failures can be diagnosed through
+the already accessible GitHub API. See the PR for final check results.

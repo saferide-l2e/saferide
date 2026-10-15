@@ -20,6 +20,7 @@
   };
   const loaders = new Map();
   let googleBoot = null;
+  let googleUnavailable = false;
   let current = null;
   let sequence = 0;
 
@@ -299,10 +300,13 @@
       return;
     }
     const start = stops[origin.value], end = stops[destination.value];
-    if (root.dataset.googleKey) {
+    if (root.dataset.googleKey && !googleUnavailable) {
       try {await googleMap(session, start, end); return;}
       catch (error) {
         if (!isCurrent(session)) return;
+        // Keep subsequent stop changes usable after a provider failure instead
+        // of repeating the same SDK/API timeout for every selected journey.
+        googleUnavailable = true;
         session.cleanup?.(); session.cleanup = null;
         console.info("Using an alternate route preview.", error.message);
       }

@@ -181,6 +181,13 @@ with sync_playwright() as pw:
         assert not report["errors"], report["errors"]
         violations = [v for result in report["accessibility"] for v in result["violations"]]
         assert not violations, violations
+    except Exception as exc:
+        report["failure"] = f"{type(exc).__name__}: {exc}"
+        # GitHub annotations remain readable through the API when artifact/log
+        # downloads are unavailable in a restricted development environment.
+        annotation = report["failure"].replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+        print(f"::error title=Cinematic landing QA::{annotation}", flush=True)
+        raise
     finally:
         (OUT / "result.json").write_text(json.dumps(report, indent=2))
         browser.close()
