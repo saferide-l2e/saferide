@@ -53,7 +53,7 @@ def search(request):
     }
     return render(
         request,
-        "passenger/results.html" if searching else "passenger/search.html",
+        "passenger/search.html",
         context,
     )
 
