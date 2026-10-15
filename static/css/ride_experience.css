@@ -39,3 +39,15 @@
 .demo-bus-card h3{font-size:1.35rem;letter-spacing:-.05em}
 @media(max-width:850px){.ride-product__grid{grid-template-columns:1fr}.ride-product__checkout{position:static}}
 @media(max-width:520px){.ride-product{padding-block:25px 55px}.ride-product__facts{gap:6px}.ride-product__facts>div{padding:15px 9px}.ride-product__facts strong{font-size:1.05rem}.ride-product__banner{min-height:225px;padding:18px}.ride-product__checkout{padding:22px}.ride-product__stops{padding:19px}}
+
+.ride-rewards{background:linear-gradient(120deg,#0d3038,#155545);color:#fff;border-radius:26px;padding:28px;margin:26px 0 34px;box-shadow:0 20px 46px #153a3421}
+.ride-rewards__top{display:flex;align-items:center;justify-content:space-between}
+.ride-rewards__top .eyebrow{background:#1e5e52;color:#d6f86c}
+.ride-rewards__top>span{font-size:1.6rem;color:#d6f86c}
+.ride-rewards h2{font-size:clamp(2.1rem,4vw,3.3rem);letter-spacing:-.06em;margin:15px 0 4px}
+.ride-rewards>p{color:#daeee2;font-weight:650}
+.ride-rewards__track{height:10px;border-radius:20px;background:#437069;overflow:hidden;margin:19px 0 14px}
+.ride-rewards__track span{display:block;height:100%;background:#d6f86c;transition:width .25s}
+.ride-rewards__actions{display:flex;flex-wrap:wrap;gap:12px;margin:21px 0}
+.ride-rewards__actions a{display:inline-flex;align-items:center;padding:10px 14px;border-radius:10px;border:1px solid #bad9c56b;font-weight:850}
+.ride-rewards small{font-size:.73rem;color:#d3e3dd}
