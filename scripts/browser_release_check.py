@@ -92,7 +92,7 @@ with sync_playwright() as playwright:
         page.get_by_role("button", name=re.compile("Reserve one seat")).click()
         page.wait_for_url(re.compile(r"/bookings/[0-9a-f-]{36}/"), timeout=20000)
         code = page.locator("[data-boarding-code] strong").inner_text()
-        assert code and len(code) >= 12
+        assert len(code) == 6 and code.isdigit()
         page.screenshot(path=str(OUT / "passenger-reservation.png"), full_page=True)
         evidence["journeys"].append("Verified passenger login -> route search -> seat hold -> private code")
 
