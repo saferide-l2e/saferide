@@ -7,7 +7,7 @@ import os
 import re
 from pathlib import Path
 
-from playwright.sync_api import sync_playwright, expect
+from playwright.sync_api import expect, sync_playwright
 
 BASE = os.environ.get("SAFERIDE_BROWSER_BASE", "http://127.0.0.1:8000")
 if not BASE.startswith(("http://127.0.0.1:", "http://localhost:")):
