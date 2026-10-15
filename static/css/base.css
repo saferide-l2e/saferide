@@ -129,3 +129,23 @@ button,a{touch-action:manipulation}
   .footer-inner nav{gap:14px}
 }
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+
+/* FE-13 resilience: high zoom, long status text and forced colour settings. */
+h1,h2,h3,p,dd,li,.status-badge,.button{overflow-wrap:break-word}
+button:focus-visible,[type=submit]:focus-visible{outline:3px solid #ad6c00;outline-offset:4px}
+@media(max-width:359px){
+  .container{width:calc(100% - 24px)}
+  .hero-actions{flex-direction:column}
+  .hero-actions .button{width:100%}
+  .status-badge{white-space:normal}
+}
+@media(forced-colors:active){
+  .button,.nav-cta,.status-badge,.eyebrow{border:1px solid ButtonText}
+  .status-dot{border:1px solid currentColor}
+  .menu-toggle{border:1px solid ButtonText}
+  a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid Highlight}
+}
+@media(prefers-contrast:more){
+  :root{--muted:#284d41;--line:#7e9f90}
+  .field-errors{font-weight:700}
+}
