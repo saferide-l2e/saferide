@@ -61,6 +61,8 @@
           {% else %}
             <p>This boarding code is not available for the current booking status.</p>
           {% endif %}
+          {% if confirm_action %}<form method="post" action="{{ confirm_action }}">{% csrf_token %}<button type="submit" class="button button--primary">Confirm I have arrived →</button></form>{% endif %}
+          {% if review_url %}<a class="button button--outline" href="{{ review_url }}">Rate this journey →</a>{% endif %}
           {% if booking.status == "HELD" and cancel_action %}
             <form method="post" action="{{ cancel_action }}" data-one-time-submit>{% csrf_token %}<button class="button button--outline boarding-pass__cancel" type="submit">Cancel my reservation</button></form>
           {% endif %}

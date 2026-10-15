@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.views.decorators.http import require_http_methods
 
 from apps.bookings.models import Booking
@@ -32,7 +33,15 @@ def review_booking(request, booking_id):
             raise
         except ValidationError as exc:
             form.add_error(None, "; ".join(exc.messages))
-    return render(request, "safety/review_form.html", {"form": form, "booking": booking})
+    completed = booking.status == "COMPLETED"
+    return render(request, "safety/review_form.html", {
+        "form": form, "booking": booking,
+        "can_review": booking.passenger_id == request.user.id,
+        "trip_is_completed": completed,
+        "has_reviewed": hasattr(booking, "review"),
+        "review_action": reverse("safety:review", args=[booking.pk]),
+        "report_url": reverse("safety:report_booking", args=[booking.pk]),
+    })
 
 
 @login_required
@@ -61,7 +70,11 @@ def report_incident(request, booking_id=None):
             raise
         except ValidationError as exc:
             form.add_error(None, "; ".join(exc.messages))
-    return render(request, "safety/incident_form.html", {"form": form, "booking": booking})
+    return render(request, "safety/incident_form.html", {
+        "form": form, "booking": booking, "can_report": True,
+        "report_action": reverse("safety:report_booking", args=[booking.pk])
+        if booking else reverse("safety:report"),
+    })
 
 
 @login_required
@@ -83,7 +96,11 @@ def route_update(request):
             raise
         except ValidationError as exc:
             form.add_error(None, "; ".join(exc.messages))
-    return render(request, "safety/route_update_form.html", {"form": form})
+    return render(request, "safety/route_update_form.html", {
+        "form": form, "can_submit": True,
+        "form_action": reverse("safety:route_update_new"),
+        "feed_url": reverse("safety:route_updates"),
+    })
 
 
 def route_updates(request):
@@ -93,4 +110,15 @@ def route_updates(request):
         .select_related("route", "reporter")
         .order_by("-occurred_at")
     )
-    return render(request, "safety/route_updates.html", {"updates": updates})
+    cards = [{
+        "status": update.status,
+        "type_label": update.get_type_display(),
+        "route_label": f"{update.route.origin_name} → {update.route.destination_name}",
+        "note": update.note,
+        "published_at": update.occurred_at,
+    } for update in updates]
+    return render(request, "safety/route_updates.html", {
+        "updates": cards,
+        "can_contribute": request.user.is_authenticated,
+        "contribute_url": reverse("safety:route_update_new"),
+    })

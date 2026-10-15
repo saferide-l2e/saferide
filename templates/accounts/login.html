@@ -21,7 +21,7 @@
       {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
       <button class="button button--primary auth-submit" type="submit">Sign in securely <span aria-hidden="true">→</span></button>
       <p class="auth-switch">New to SafeRide?
-        {% url 'register' as named_register_url %}
+        {% url 'accounts:register' as named_register_url %}
         {% if register_url or named_register_url %}
           <a href="{{ register_url|default:named_register_url }}">Create an account</a>
         {% else %}

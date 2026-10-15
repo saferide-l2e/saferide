@@ -1,0 +1,29 @@
+{% extends "base.html" %}{% load static %}
+{% block title %}My Trips | SafeRide{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/journey.css' %}">{% endblock %}
+{% block content %}
+<section class="container trip-page">
+ <span class="eyebrow">Your SafeRide account</span>
+ <h1>My trips and reservations.</h1>
+ <p class="trip-page__lead">View seat holds, boarding status, past trips and available queue offers.</p>
+ <div class="history-list">
+ {% for offer in offers %}
+ <article class="history-card"><div class="history-card__body">
+ <span class="history-card__eyebrow">Seat offered · time limited</span>
+ <h2>{{ offer.departure.route.origin_name }} → {{ offer.departure.route.destination_name }}</h2>
+ <p>A seat is available until {{ offer.offer_expires_at|date:"D j M, g:i A" }}. Acceptance is checked by the server.</p></div>
+ <form method="post" action="{% url 'bookings:accept_offer' offer.pk %}">{% csrf_token %}<button type="submit" class="button button--primary">Accept seat offer →</button></form>
+ </article>
+ {% endfor %}
+ {% for booking in bookings %}
+ <article class="history-card"><div class="history-card__body">
+ <span class="history-card__eyebrow">{{ booking.created_at|date:"D j M Y" }} · {{ booking.get_status_display }}</span>
+ <h2>{{ booking.departure.route.origin_name }} → {{ booking.departure.route.destination_name }}</h2>
+ <p>Vehicle: {{ booking.departure.vehicle.plate_display }} · Departing {{ booking.departure.scheduled_departure_at|date:"D j M, g:i A" }}</p>
+ </div><a class="history-card__link" href="{% url 'bookings:detail' booking.pk %}">View reservation →</a></article>
+ {% empty %}
+ {% if not offers %}<div class="history-empty" role="status"><h2>No bookings yet.</h2><p>Find a scheduled bus to begin your journey.</p><a class="button button--primary" href="{{ search_url }}">Find a ride →</a></div>{% endif %}
+ {% endfor %}
+ </div>
+ {% include "ui/demo_notice.html" %}
+</section>{% endblock %}

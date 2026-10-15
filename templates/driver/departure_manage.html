@@ -9,11 +9,12 @@
 <div class="driver-stats"><article class="driver-stat"><span>Confirmed aboard</span><strong>{{ departure.boarded_count }}</strong></article><article class="driver-stat"><span>Seats held</span><strong>{{ departure.held_count }}</strong></article><article class="driver-stat"><span>Bus capacity</span><strong>{{ departure.capacity }}</strong></article></div>
 <div class="driver-home__grid"><article class="departure-form-card"><h2>Manage departure</h2>
 <p>Current status: <strong>{{ departure.status_label }}</strong></p>
-{% if can_close or can_start or can_arrive or can_cancel %}
+{% if departure.status == "DRAFT" or can_close or can_start or can_arrive or can_cancel %}
 <form method="post" action="{{ transition_action }}">{% csrf_token %}
+{% if departure.status == "DRAFT" %}<button class="button button--primary" name="action" value="publish">Open boarding</button>{% endif %}
 {% if can_close %}<button class="button button--primary" name="action" value="close_boarding">Close boarding</button>{% endif %}
 {% if can_start %}<button class="button button--primary" name="action" value="start_trip">Start trip</button>{% endif %}
-{% if can_arrive %}<button class="button button--primary" name="action" value="arrive">Mark driver arrival</button>{% endif %}
+{% if can_arrive %}<button class="button button--primary" name="action" value="mark_arrived">Mark driver arrival</button>{% endif %}
 {% if can_cancel %}<button class="button button--outline" name="action" value="cancel">Cancel departure</button>{% endif %}
 </form>{% endif %}
 <h2>Private passenger roster</h2>

@@ -80,7 +80,9 @@
             {% elif not bus.is_open %}<strong>Bookings are closed</strong><p>This departure isn't accepting reservations.</p>
             {% else %}<strong>{{ bus.available_seats }} seats available</strong><p>Your reservation is only confirmed after the server accepts it.</p>{% endif %}
           </div>
-          {% if bus.is_open and not bus.is_full and can_reserve and reserve_action %}
+          {% if booking_url %}
+            <a class="button button--primary detail-submit" href="{{ booking_url }}">View my reservation <span aria-hidden="true">→</span></a>
+          {% elif bus.is_open and not bus.is_full and can_reserve and reserve_action %}
             <form method="post" action="{{ reserve_action }}">{% csrf_token %}<button class="button button--primary detail-submit" type="submit">Reserve one seat <span aria-hidden="true">→</span></button></form>
           {% elif bus.is_full and can_join_waitlist and waitlist_action %}
             <form method="post" action="{{ waitlist_action }}">{% csrf_token %}<button class="button button--primary detail-submit" type="submit">Join waitlist <span aria-hidden="true">→</span></button></form>
