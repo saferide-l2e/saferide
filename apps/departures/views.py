@@ -10,7 +10,7 @@ from apps.bookings.models import Booking, BookingStatus, WaitlistEntry, Waitlist
 from apps.bookings.services import available_seats, check_in, passenger_eligible
 from apps.core.exceptions import SafeRideError
 from apps.core.permissions import driver_required, passenger_required
-from apps.core.presentation import departure_card, driver_card, roster_card, route_label
+from apps.core.presentation import departure_card, driver_card, roster_card
 from apps.vehicles.services import get_or_create_driver_profile
 
 from .forms import DepartureForm
