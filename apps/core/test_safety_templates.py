@@ -61,7 +61,7 @@ class SafetyTemplateTests(SimpleTestCase):
 
     def test_public_feed_excludes_pending_and_escapes_text(self):
         html = self.render("safety/route_feed.html", {
-            "updates": [
+            "updates_cards": [
                 {"status": "PENDING", "note": "PRIVATE-PENDING-TEXT"},
                 {"status": "APPROVED", "type_label": "Traffic",
                  "route_label": "Jibowu → Mile 2",

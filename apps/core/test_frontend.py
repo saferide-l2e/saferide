@@ -6,22 +6,24 @@ from django.urls import reverse
 
 
 class FrontendShellTests(SimpleTestCase):
-    def test_homepage_shows_discover_journey_and_safety(self):
-        response = self.client.get(reverse("home"))
+    def test_homepage_shows_routes_driver_and_safety_sections(self):
+        response = self.client.get(reverse("core:home"))
         self.assertEqual(response.status_code, 200)
-        for label in ('id="discover"', 'id="journey"', 'id="safety"'):
+        for label in ('id="how-it-works"', 'id="for-drivers"', 'id="site-safety-title"'):
             with self.subTest(section=label):
                 self.assertContains(response, label)
-        self.assertContains(response, "Your city.")
+        self.assertContains(response, "Move smarter.")
         self.assertContains(response, "Jibowu")
 
     def test_accessible_navigation_and_truthful_route_label(self):
-        response = self.client.get(reverse("home"))
+        response = self.client.get(reverse("core:home"))
         self.assertContains(response, 'href="#main-content"')
         self.assertContains(response, 'aria-label="Main navigation"')
         self.assertContains(response, 'aria-expanded="false"')
-        self.assertContains(response, "Not live GPS")
-        self.assertContains(response, "not live tracking")
+        self.assertContains(response, "Not live vehicle tracking")
+        self.assertContains(response, "no live GPS")
+        self.assertContains(response, 'data-site-header')
+        self.assertContains(response, 'data-nav-toggle')
 
     def test_shared_components_are_available(self):
         for name in (
@@ -36,6 +38,6 @@ class FrontendShellTests(SimpleTestCase):
                 self.assertIsNotNone(get_template(name))
 
     def test_health_check_still_works(self):
-        response = self.client.get(reverse("health"))
+        response = self.client.get(reverse("core:health"))
         self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(response.content, {"status": "ok"})

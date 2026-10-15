@@ -1,12 +1,14 @@
 {% load static %}<!doctype html>
 <html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+{% if preview_gallery_url %}<meta name="robots" content="noindex,nofollow">{% endif %}
 <title>{% block title %}SafeRide — Every journey matters{% endblock %}</title>
 <meta name="description" content="{% block description %}Move smarter. Explore routes, book your seat and follow your journey with SafeRide.{% endblock %}">
 <link rel="stylesheet" href="{% static 'css/base.css' %}">
 <link rel="stylesheet" href="{% static 'css/site_public.css' %}">
 {% block extra_head %}{% endblock %}
 <script defer src="{% static 'js/navigation.js' %}"></script>
+{% if preview_gallery_url %}<script defer src="{% static 'js/preview.js' %}"></script>{% endif %}
 </head><body>
 <a class="skip-link" href="#main-content">Skip to content</a>
 <header class="site-header" data-site-header><div class="container header-inner">
@@ -36,6 +38,7 @@
     {% endif %}
   </nav>
 </div></header>
+{% if preview_gallery_url %}<aside class="container data-notice" role="note"><strong>Preview environment</strong><p>Sample routes and profiles · No active bookings. <a href="/preview/screens/">Design library</a></p></aside>{% endif %}
 {% if messages %}<div class="container site-messages" aria-live="polite">
   {% for message in messages %}<div class="notice{% if message.tags == 'error' %} notice--error{% endif %}" role="status"><span class="notice-symbol" aria-hidden="true">i</span>{{ message }}</div>{% endfor %}
 </div>{% endif %}

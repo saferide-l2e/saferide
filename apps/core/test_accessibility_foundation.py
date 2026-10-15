@@ -9,7 +9,7 @@ from django.urls import reverse
 
 class AccessibilityFoundationTests(SimpleTestCase):
     def test_home_has_named_navigation_and_skip_link(self):
-        html = self.client.get(reverse("home")).content.decode()
+        html = self.client.get(reverse("core:home")).content.decode()
         self.assertIn('href="#main-content"', html)
         self.assertIn('id="main-content"', html)
         self.assertIn('aria-label="Main navigation"', html)
