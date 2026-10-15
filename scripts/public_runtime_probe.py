@@ -45,8 +45,8 @@ def checked(url, expected, redirect_host=None, redirect_path=None):
 
 
 if __name__ == "__main__":
-    checked(VERCEL + "/", 307, redirect_host="saferide-friday-web.onrender.com")
     checked(VERCEL + "/accounts/register/", 307, redirect_host="saferide-friday-web.onrender.com")
+    checked(VERCEL + "/", 307, redirect_host="saferide-friday-web.onrender.com")
     checked(VERCEL + "/accounts/login/", 307, redirect_host="saferide-friday-web.onrender.com")
     health = checked(RENDER + "/health/", 200)
     assert json.loads(health) == {"status": "ok"}
