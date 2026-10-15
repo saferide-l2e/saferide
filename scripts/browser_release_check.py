@@ -56,6 +56,30 @@ with sync_playwright() as playwright:
                 expect(page.locator('a[href="/accounts/register/"]').first).to_be_visible()
                 toggle.click()
 
+        # Search eligibility notice uses theme text tokens, including its link.
+        visit(page, "/departures/search/?origin=Jibowu&destination=Mile%202")
+        notice = page.locator(".eligibility-note")
+        expect(notice).to_be_visible()
+        for theme in ("light", "dark"):
+            page.evaluate("theme => document.documentElement.dataset.theme = theme", theme)
+            for selector in (".eligibility-note", ".eligibility-note a"):
+                contrast = page.locator(selector).evaluate("""element => {
+                    const luminance = colour => colour.match(/[\\d.]+/g).slice(0, 3)
+                        .map(Number).map(v => v / 255)
+                        .map(v => v <= .04045 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4)
+                        .reduce((sum, v, i) => sum + v * [.2126, .7152, .0722][i], 0);
+                    const a = luminance(getComputedStyle(element).color);
+                    const b = luminance(getComputedStyle(element.closest('.eligibility-note')).backgroundColor);
+                    return (Math.max(a, b) + .05) / (Math.min(a, b) + .05);
+                }""")
+                assert contrast >= 4.5, f"{theme} {selector} contrast: {contrast}"
+            for width, height in viewports:
+                page.set_viewport_size({"width": width, "height": height})
+                notice.scroll_into_view_if_needed()
+                assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
+                page.screenshot(path=str(OUT / f"search-notice-{theme}-{width}.png"))
+        page.evaluate("document.documentElement.dataset.theme = 'light'")
+
         page.set_viewport_size({"width": 1440, "height": 900})
         visit(page, "/")
         page.locator("[data-map-destination]").select_option(label="Ikeja")
