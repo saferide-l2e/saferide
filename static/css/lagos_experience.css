@@ -66,3 +66,6 @@ h1,h2,h3{text-wrap:balance}.landing-section{padding-block:90px}
 
 /* Sign-out is shared by every authenticated page. */
 .nav-logout-form{display:flex;margin:0}.nav-logout{min-height:44px;padding:10px 15px;border:1px solid var(--line);border-radius:11px;background:#fff;color:var(--forest);font-size:.86rem;font-weight:800;cursor:pointer}.nav-logout:hover{background:var(--mint)}
+/* Form focus and browser scrolling must settle immediately. Hero anchors opt in. */
+html{scroll-behavior:auto}
+html:not(.has-js) .site-header{position:static}

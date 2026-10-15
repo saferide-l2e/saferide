@@ -107,6 +107,7 @@ with sync_playwright() as pw:
         report["working_homepage_links"] = links
         page.locator("#site-from").fill("Yaba")
         page.locator("#site-to").fill("Ikeja")
+        report["stage"] = "JavaScript-enabled route search submission"
         page.get_by_role("button", name="Find buses").click()
         assert "origin=Yaba" in page.url and "destination=Ikeja" in page.url
         report["search_query_preserved"] = True
@@ -128,6 +129,7 @@ with sync_playwright() as pw:
         expect(plain.get_by_role("navigation", name="Main navigation")).to_be_visible()
         plain.locator("#site-from").fill("Yaba")
         plain.locator("#site-to").fill("Ikeja")
+        report["stage"] = "No-JavaScript route search submission"
         plain.get_by_role("button", name="Find buses").click()
         assert "origin=Yaba" in plain.url
         nojs.close()
@@ -182,7 +184,7 @@ with sync_playwright() as pw:
         violations = [v for result in report["accessibility"] for v in result["violations"]]
         assert not violations, violations
     except Exception as exc:
-        report["failure"] = f"{type(exc).__name__}: {exc}"
+        report["failure"] = f"{report.get('stage', 'Landing checks')}: {type(exc).__name__}: {exc}"
         # GitHub annotations remain readable through the API when artifact/log
         # downloads are unavailable in a restricted development environment.
         annotation = report["failure"].replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")

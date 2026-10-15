@@ -217,3 +217,31 @@ hosts were added to the saved environment configuration draft; applying that
 draft requires publishing the environment settings. Failure annotations were
 added to the browser script so subsequent CI failures can be diagnosed through
 the already accessible GitHub API. See the PR for final check results.
+
+### Production-settings smoke
+
+A separate local Gunicorn process with DEBUG=false, isolated local PostgreSQL and
+the normal trusted-proxy HTTPS header served the homepage, three public pages and
+sign-in successfully. Collected WhiteNoise static assets and theme persistence
+worked, with zero missing static responses or page exceptions. The existing
+storage is CompressedStaticFilesStorage (unhashed names), not manifest storage;
+that established deployment configuration is preserved. See production-smoke.json.
+
+Follow-up runs for the route-fallback/diagnostics commit:
+https://github.com/saferide-l2e/saferide/actions/runs/38797737103 (Django),
+https://github.com/saferide-l2e/saferide/actions/runs/38797737062 (Chromium).
+
+### Interface recording and scrolling
+
+`docs/evidence/cinematic/interface-walkthrough.mp4` records actual Chromium UI
+interaction, using the real keyless MapLibre/OSRM preview (92 captured frames,
+about 7.1 seconds). The poster remains static. This demonstrates section
+navigation, route selection and colour themes, not cinematic vehicle movement.
+
+The Chromium CI annotation identified a timeout clicking Find buses while the
+control was moving. Smooth scrolling is now scoped to explicit hero section links
+instead of all browser/form scrolling. Those links retain URL history and move
+keyboard focus to the section. Without JavaScript the expanded header scrolls
+with the document rather than covering search. Native search clicks with and
+without JavaScript, keyboard section focus, and the full local landing/media
+suite passed again after this correction. See the PR's latest CI for confirmation.

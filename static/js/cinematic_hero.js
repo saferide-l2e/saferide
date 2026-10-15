@@ -2,6 +2,20 @@
 (() => {
   "use strict";
   const hero = document.querySelector("[data-cinematic-hero]");
+  // Scope smooth scrolling to explicit section links. Global smooth scrolling
+  // also animates browser/keyboard form scrolling and can leave controls moving.
+  hero?.querySelectorAll('a[href^="#"]').forEach(link => {
+    link.addEventListener("click", event => {
+      if (event.button || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      const target = document.getElementById(link.hash.slice(1));
+      if (!target) return;
+      event.preventDefault();
+      history.pushState(null, "", link.hash);
+      target.scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth"});
+      target.setAttribute("tabindex", "-1");
+      target.focus({preventScroll: true});
+    });
+  });
   const video = hero?.querySelector("[data-hero-video]");
   if (!video) return;
   const control = hero.querySelector("[data-video-toggle]");

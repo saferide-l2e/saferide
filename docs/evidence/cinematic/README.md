@@ -16,3 +16,9 @@ The hero is an original **static** composition. Video lifecycle tests use silent
 synthetic colour bars injected by the local test harness. These captures do not
 show or prove realistic moving danfos, passenger boarding animation, a seamless
 cinematic video loop, or a deployed release. See the handoff for outstanding media.
+
+`interface-walkthrough.mp4` is a native Chromium/CDP interface recording (92
+captured frames, about 7.1 seconds): hero, smooth section navigation, actual
+keyless MapLibre road preview/stop selection and theme switching. It is **not**
+cinematic traffic/boarding footage. `interface-recording.json` records timing.
+`production-smoke.json` records the separate DEBUG=false local static-page check.
