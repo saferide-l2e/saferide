@@ -83,6 +83,10 @@ def search(request):
         "eligible": eligible,
         "has_searched": has_searched,
         "valid_search": valid_search,
+        "is_pilot_route": (not valid_search or (
+            origin.casefold().replace(" ", "") == "jibowu"
+            and destination.casefold().replace(" ", "") == "mile2"
+        )),
         "search_url": reverse("departures:search"),
         "eligibility_message": eligibility_message,
         "error_message": error_message,
