@@ -80,4 +80,4 @@ class SafetyTemplateTests(SimpleTestCase):
         self.assertIn('action="/routes/submit/"', html)
         self.assertIn('name="csrfmiddlewaretoken"', html)
         pending = self.render("safety/route_update_form.html", {"submitted": True})
-        self.assertIn("remains pending", pending)
+        self.assertIn("automatically after five seconds", pending)

@@ -6,6 +6,7 @@ from django.urls import reverse
 from django.views.decorators.http import require_http_methods
 
 from apps.bookings.models import Booking
+from apps.core.automatic_reviews import review_snapshot
 
 from .forms import IncidentForm, ReviewForm, RouteUpdateForm
 from .models import RouteUpdate, RouteUpdateStatus
@@ -90,7 +91,7 @@ def route_update(request):
                 note=form.cleaned_data["note"],
                 occurred_at=form.cleaned_data["occurred_at"],
             )
-            messages.success(request, "Route update submitted for moderation.")
+            messages.success(request, "Route update submitted for publication.")
             return redirect("safety:route_updates")
         except PermissionDenied:
             raise
@@ -118,6 +119,8 @@ def route_updates(request):
         "published_at": update.occurred_at,
     } for update in updates]
     return render(request, "safety/route_updates.html", {
+        "review_pending": request.user.is_authenticated and RouteUpdate.objects.filter(reporter=request.user, status=RouteUpdateStatus.PENDING).exists(),
+        "review_version": review_snapshot(request.user)["version"] if request.user.is_authenticated else "",
         "updates": updates,
         "updates_cards": cards,
         "can_contribute": request.user.is_authenticated,

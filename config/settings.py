@@ -68,6 +68,7 @@ TEMPLATES = [{
         "django.template.context_processors.request",
         "django.contrib.auth.context_processors.auth",
         "django.contrib.messages.context_processors.messages",
+        "apps.core.context_processors.review_policy",
     ]},
 }]
 
@@ -112,3 +113,7 @@ SECURE_SSL_REDIRECT = not DEBUG and os.getenv("ENABLE_HTTPS_REDIRECT", "true").l
 
 # Render terminates TLS at its proxy. Honour only the platform proxy header.
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+# Account, driver, vehicle and route-post approval policy. Staff rejections and
+# suspensions remain authoritative. This grants access, not identity screening.
+SAFERIDE_AUTO_APPROVAL = os.getenv("SAFERIDE_AUTO_APPROVAL", "true").lower() == "true"

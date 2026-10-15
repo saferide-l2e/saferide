@@ -18,7 +18,7 @@ def get_or_create_driver_profile(user):
 
 @transaction.atomic
 def register_vehicle(user, *, plate_display, vehicle_type, capacity):
-    """An approved driver registers a synthetic demo vehicle."""
+    """An approved driver submits a vehicle for listing approval."""
     if user.role != Role.DRIVER:
         raise PermissionDenied("Only drivers can register vehicles.")
     if not user.is_verified:

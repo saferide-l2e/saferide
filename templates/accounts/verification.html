@@ -6,7 +6,7 @@
 <section class="verify-page container" aria-labelledby="verify-title">
   <span class="eyebrow">Your SafeRide account</span>
   <h1 id="verify-title">Get set for your next ride.</h1>
-  <p class="verify-intro">Complete your account and preferred boarding details. The team reviews access for restricted bookings.</p>
+  <p class="verify-intro">Complete your account and preferred boarding details. {% if automatic_approval %}Submitted profiles are approved automatically after five seconds.{% else %}The team reviews access for restricted bookings.{% endif %}</p>
   {% if error_message %}<div class="verify-alert verify-alert--error" role="alert">{{ error_message }}</div>{% endif %}
   {% if info_message %}<div class="verify-alert" role="status">{{ info_message }}</div>{% endif %}
   <div class="verify-grid">
@@ -25,7 +25,7 @@
         {% if next_url %}<a href="{{ next_url }}" class="button button--primary">Continue to SafeRide <span aria-hidden="true">→</span></a>{% endif %}
       {% elif status == "PENDING" %}
         <h2 id="verify-card-title">Your details are in.</h2>
-        <p>We're reviewing your request. While your profile is being reviewed, you can still discover routes and plan journeys. Booking requires staff approval.</p>
+        <p>{% if automatic_approval %}Your request is processing. Your account becomes eligible automatically five seconds after submission. You can keep browsing while it completes.{% else %}We're reviewing your request. While your profile is being reviewed, you can still discover routes and plan journeys. Booking requires staff approval.{% endif %}</p>
       {% elif status == "REJECTED" %}
         <h2 id="verify-card-title">Your review wasn't approved.</h2>
         <p>Check the instructions from the review team. You may submit a revised declaration only if resubmission is allowed.</p>
@@ -38,6 +38,7 @@
         <p>Share the basics about how you travel. No ID numbers, identity uploads or home address are required.</p>
         {% if can_submit %}<p class="verify-hint"><a href="#verification-declaration">Complete your declaration below ↓</a></p>{% endif %}
       {% endif %}
+      {% include "components/review_progress.html" %}
       {% if can_submit %}
       <div class="verify-form-intro"><span class="verify-kicker">YOUR TRAVEL PROFILE</span><h3>{% if status == "PENDING" %}Update your details{% else %}Tell us about yourself{% endif %}</h3><p>Your details are private to the SafeRide account review process.</p></div>
       <form method="post" action="{{ submit_action }}" class="verify-form" id="verification-declaration" aria-label="Submit your account profile">
@@ -55,7 +56,7 @@
             {% if field.errors %}<ul class="field-errors" id="{{ field.auto_id }}_error">{% for error in field.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
           </div>
         {% endfor %}
-        <button class="button button--primary" type="submit">{% if status == "PENDING" %}Save profile details{% else %}Submit for staff review{% endif %} <span aria-hidden="true">→</span></button>
+        <button class="button button--primary" type="submit">{% if status == "PENDING" %}Save profile details{% else %}Submit profile{% endif %} <span aria-hidden="true">→</span></button>
       </form>
       {% endif %}
       {% if support_url %}<p><a class="verify-link" href="{{ support_url }}">Contact account support <span aria-hidden="true">↗</span></a></p>{% endif %}
@@ -64,8 +65,8 @@
       <div class="verify-side__icon" aria-hidden="true">✓</div>
       <h2>Your journey starts here.</h2>
       <p>Your route preferences are ready whenever you are. Explore Lagos, compare buses and keep your travel details together.</p>
-      <ol><li>Complete your rider profile</li><li>Explore available routes</li><li>Book published seats after staff approval</li></ol>
-      <p class="verify-side__note">SafeRide staff review account access. This does not include government identity, police, licence or background checks.</p>
+      <ol><li>Complete your rider profile</li><li>Explore available routes</li><li>Book published seats after account approval</li></ol>
+      <p class="verify-side__note">{% if automatic_approval %}Account approval is automatic. It does not include government identity, police, licence or background checks.{% else %}SafeRide staff review account access. This does not include government identity, police, licence or background checks.{% endif %}</p>
     </aside>
   </div>
 </section>

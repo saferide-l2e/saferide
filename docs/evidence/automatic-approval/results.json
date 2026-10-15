@@ -1,0 +1,56 @@
+{
+  "errors": [],
+  "timing": {
+    "account_visible_ms": 6043,
+    "vehicle_visible_ms": 5817,
+    "route_update_visible_ms": 5771
+  },
+  "screens": [
+    {
+      "theme": "light",
+      "width": 320
+    },
+    {
+      "theme": "light",
+      "width": 390
+    },
+    {
+      "theme": "light",
+      "width": 768
+    },
+    {
+      "theme": "light",
+      "width": 1024
+    },
+    {
+      "theme": "light",
+      "width": 1440
+    },
+    {
+      "theme": "dark",
+      "width": 320
+    },
+    {
+      "theme": "dark",
+      "width": 390
+    },
+    {
+      "theme": "dark",
+      "width": 768
+    },
+    {
+      "theme": "dark",
+      "width": 1024
+    },
+    {
+      "theme": "dark",
+      "width": 1440
+    }
+  ],
+  "database": {
+    "account_db_seconds": 5.105806,
+    "closed_tab_approved": true,
+    "closed_tab_db_seconds": 5.126384
+  },
+  "success": true
+}

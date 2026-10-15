@@ -16,10 +16,10 @@ def test_passenger_sees_driver_and_vehicle_review_status(client, passenger, depa
     assert response.status_code == 200
     assert profile.approved_display_name.encode() in response.content
     assert b"I drive the Jibowu corridor." in response.content
-    for label in (b"Account review", b"Driver eligibility review", b"Assigned vehicle review"):
+    for label in (b"Account access", b"Driver profile access", b"Vehicle listing access"):
         assert label in response.content
     assert departure.driver.email.encode() not in response.content
-    assert b"Eligibility reviews are currently simulated" in response.content
+    assert b"Access approvals are automatic" in response.content
 
 
 def test_unapproved_driver_bio_is_not_published(client, passenger, departure):

@@ -25,7 +25,7 @@ def register(request):
         ensure_verification(user)
         record(user, "account.registered", user, {"role": user.role})
         login(request, user)
-        messages.success(request, "Account created. Complete your profile for staff review to continue.")
+        messages.success(request, "Account created. Complete your profile for account approval to continue.")
         return redirect("verification:status")
     return render(request, "accounts/register.html", {"form": form})
 

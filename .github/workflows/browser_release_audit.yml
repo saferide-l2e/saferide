@@ -54,6 +54,7 @@ jobs:
           '
       - name: Launch localhost Django app
         run: |
+          python manage.py process_reviews --watch > /tmp/saferide-review-worker.log 2>&1 &
           python manage.py runserver 127.0.0.1:8000 --noreload > /tmp/saferide-browser-server.log 2>&1 &
           for attempt in $(seq 1 40); do
             if curl -fsS http://127.0.0.1:8000/health/ >/dev/null; then exit 0; fi
@@ -74,4 +75,5 @@ jobs:
             artifacts/browser/
             artifacts/cinematic/final/
             /tmp/saferide-browser-server.log
+            /tmp/saferide-review-worker.log
           if-no-files-found: warn

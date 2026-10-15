@@ -1,7 +1,7 @@
-"""Simulated demo verification status (KYC placeholder).
+"""Account access status and private profile details.
 
-This is NOT real identity verification. No documents, licence numbers, addresses
-or phone numbers are ever stored. Only a status transition record is kept.
+Approvals may be automatic or issued by staff. No identity, licence or criminal
+background screening is performed by this account-access workflow.
 """
 
 import uuid

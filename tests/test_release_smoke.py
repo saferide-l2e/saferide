@@ -65,7 +65,7 @@ def test_demo_signup_to_declaration_to_staff_approval(client, staff):
     assert b'name="fictional_data"' in verification.content
     assert b'name="simulated_review"' in verification.content
     assert b'id="verification-declaration"' in verification.content
-    assert b"Submit for staff review" in verification.content
+    assert b"Submit profile" in verification.content
 
     submitted = client.post(reverse("verification:submit"), {
         "fictional_data": "on",

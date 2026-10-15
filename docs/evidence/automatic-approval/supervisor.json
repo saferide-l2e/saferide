@@ -1,0 +1,14 @@
+[
+  {
+    "restart": 0,
+    "health": true,
+    "worker_supervised": true,
+    "clean_shutdown": true
+  },
+  {
+    "restart": 1,
+    "health": true,
+    "worker_supervised": true,
+    "clean_shutdown": true
+  }
+]

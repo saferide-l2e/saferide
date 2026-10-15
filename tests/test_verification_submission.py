@@ -19,7 +19,7 @@ def test_unverified_user_sees_and_submits_declaration(client, unverified_passeng
     assert b'name="simulated_review"' in page.content
     result = client.post(reverse("verification:submit"), DECLARATION, follow=True)
     assert result.status_code == 200
-    assert b"We're reviewing your request." in result.content
+    assert b"Your request is processing." in result.content
     verification = unverified_passenger.verification
     verification.refresh_from_db()
     assert verification.status == VerificationStatus.PENDING

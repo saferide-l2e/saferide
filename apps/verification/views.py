@@ -5,6 +5,8 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_http_methods
 
+from apps.core.automatic_reviews import review_snapshot
+
 from .forms import VerificationDeclarationForm
 from .services import ensure_verification, submit, update_pending_profile
 
@@ -17,6 +19,8 @@ def status(request):
 def _status_page(request, form=None, http_status=200):
     verification = ensure_verification(request.user)
     return render(request, "accounts/verification.html", {
+        "review_pending": verification.status == "PENDING",
+        "review_version": review_snapshot(request.user)["version"],
         "verification": verification,
         "status": verification.status,
         "can_submit": verification.status in {"NOT_SUBMITTED", "REJECTED", "PENDING"},
@@ -47,7 +51,7 @@ def submit_request(request):
             messages.success(request, "Profile details saved. You can continue exploring routes.")
         else:
             submit(request.user, **details)
-            messages.success(request, "Your profile has been submitted to the review team.")
+            messages.success(request, "Your profile has been submitted for approval.")
     except ValidationError as exc:
         messages.error(request, "; ".join(exc.messages))
     return redirect("verification:status")

@@ -6,7 +6,7 @@
 {% if vehicle_list_url %}<a href="{{ vehicle_list_url }}" class="vehicle-back">← My vehicles</a>{% endif %}
 <span class="eyebrow">Driver space</span>
 <h1 id="vehicle-title">Your vehicle. Your next journey.</h1>
-<p class="vehicle-lead">Add your bus information for review. A vehicle must be approved by staff before it can be listed to passengers.</p>
+<p class="vehicle-lead">Add your bus information for review. A vehicle must be approved before you can publish a departure.</p>
 <div class="vehicle-grid">
  <article class="vehicle-surface">
  {% if error_message %}<p role="alert" class="vehicle-error">{{ error_message }}</p>{% endif %}
@@ -23,7 +23,7 @@
      {% include "ui/field_errors.html" with field=field only %}
     </div>
    {% endfor %}
-   <p class="vehicle-help">Vehicle type, display plate and positive seating capacity are reviewed before any departure can be published. Do not upload real identity documents.</p>
+   <p class="vehicle-help">{% if automatic_approval %}Vehicle approval runs automatically five seconds after submission.{% else %}Vehicle details are reviewed before a departure can be published.{% endif %} Do not upload real identity documents.</p>
    <button class="button button--primary vehicle-submit" type="submit">Submit for review <span aria-hidden="true">→</span></button>
   </form>
  {% else %}
@@ -34,8 +34,8 @@
  </article>
  <aside class="vehicle-side">
   <span>DRIVER ONBOARDING</span><h2>Ready to get moving?</h2>
-  <p>Vehicle registration gives the team the details needed to review a bus. It does not make the vehicle approved automatically.</p>
-  <ol><li>Submit your vehicle</li><li>Wait for staff approval</li><li>Publish your departure</li></ol>
+  <p>Vehicle registration gives the team the details needed to review a bus. {% if automatic_approval %}Approval is automatic after five seconds; it is not a mechanical inspection or licence check.{% else %}It does not make the vehicle approved automatically.{% endif %}</p>
+  <ol><li>Submit your vehicle</li><li>{% if automatic_approval %}Approval after five seconds{% else %}Wait for staff approval{% endif %}</li><li>Publish your departure</li></ol>
   <svg viewBox="0 0 300 135" aria-hidden="true" fill="none"><rect x="28" y="14" width="243" height="97" rx="22" fill="#fff"/><rect x="48" y="25" width="203" height="51" rx="13" fill="#b9edcf"/><path d="M149 25v51" stroke="#087D5B" stroke-width="5"/><path d="M42 92h218" stroke="#D6F86C" stroke-width="8"/><circle cx="83" cy="110" r="17" fill="#102F2C"/><circle cx="217" cy="110" r="17" fill="#102F2C"/></svg>
  </aside>
 </div>
