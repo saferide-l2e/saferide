@@ -36,9 +36,10 @@
       {% else %}
         <h2 id="verify-card-title">You're ready for the first step.</h2>
         <p>Submit a fictional eligibility declaration. No real identity documents or ID numbers are needed.</p>
+        {% if can_submit %}<p class="verify-hint"><a href="#verification-declaration">Complete your declaration below ↓</a></p>{% endif %}
       {% endif %}
-      {% if can_submit and form and submit_action %}
-      <form method="post" action="{{ submit_action }}" class="verify-form">
+      {% if can_submit %}
+      <form method="post" action="{{ submit_action }}" class="verify-form" id="verification-declaration" aria-label="Submit your fictional eligibility declaration">
         {% csrf_token %}
         {% if form.errors %}<p class="verify-alert verify-alert--error" role="alert">Please confirm both declarations before submitting your request.</p>{% endif %}
         {% if form.non_field_errors %}<div role="alert" class="verify-alert verify-alert--error">{{ form.non_field_errors }}</div>{% endif %}
