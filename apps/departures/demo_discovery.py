@@ -6,7 +6,7 @@ external services. The result cannot be booked or checked in.
 
 import hashlib
 import random
-from datetime import timedelta, timezone as datetime_timezone
+from datetime import UTC, timedelta
 
 from django.utils import timezone
 
@@ -38,7 +38,7 @@ def sample_buses(origin, destination, *, now=None, count=4):
         return []
 
     now = now or timezone.now()
-    bucket = now.astimezone(datetime_timezone.utc).date().isoformat()
+    bucket = now.astimezone(UTC).date().isoformat()
     key = f"{origin.casefold()}|{destination.casefold()}|{bucket}"
     rng = random.Random(int.from_bytes(hashlib.sha256(key.encode("utf-8")).digest(), "big"))
 
