@@ -105,3 +105,15 @@
 .demo-any-route p{margin:0;color:var(--muted);line-height:1.65}
 .demo-any-route small{display:block;color:var(--muted);line-height:1.45}
 .demo-any-route .button{white-space:normal;text-align:center}
+
+
+/* Override the 3-column published departure layout on compact preview cards. */
+.demo-bus-grid .demo-bus-card{display:block;padding:24px;min-height:0}
+.demo-bus-grid .demo-bus-card .bus-card__body{display:block;width:100%;min-width:0}
+.demo-bus-grid .demo-bus-card .bus-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:15px}
+.demo-bus-grid .demo-bus-card .bus-card__date{line-height:1.55}
+.demo-bus-grid .demo-bus-details{width:100%}
+@media(max-width:480px){
+ .demo-bus-grid .demo-bus-card{padding:18px}
+ .demo-bus-grid .demo-bus-card .bus-facts{grid-template-columns:1fr 1fr}
+}
