@@ -4,7 +4,7 @@ Never import real users, scan identity documents or bypass approval of signups.
 This management command must be explicitly enabled by the service operator.
 """
 import os
-from datetime import date, datetime, time, timedelta
+from datetime import date, datetime, time
 from zoneinfo import ZoneInfo
 
 from django.core.management.base import BaseCommand, CommandError
@@ -70,7 +70,7 @@ class Command(BaseCommand):
         lagos = ZoneInfo("Africa/Lagos")
         friday = date(2026, 10, 16)
         times = [
-            timezone.now() + timedelta(hours=4),
+            datetime.combine(date(2026, 10, 15), time(22, 30), tzinfo=lagos),
             *(datetime.combine(friday, time(hour, minute), tzinfo=lagos)
               for hour, minute in ((10, 30), (13, 30), (17, 30), (21, 30))),
         ]
