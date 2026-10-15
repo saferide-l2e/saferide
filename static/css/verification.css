@@ -30,3 +30,9 @@
 .public-profile__card h1{font-size:clamp(2rem,4vw,3rem);letter-spacing:-.055em;margin:23px 0 5px}
 .public-profile__card>p{color:var(--muted)}.public-profile__privacy{margin:25px 0 0;padding-top:17px;border-top:1px solid var(--line);line-height:1.75;font-size:.84rem}
 @media(min-width:840px){.verify-grid{grid-template-columns:minmax(0,1.55fr) minmax(300px,.95fr);gap:26px}.verify-card{padding:37px}.verify-side{padding:39px}.verify-page{padding-top:72px}}
+
+/* Keep the actual submission action visible and recognisable at every breakpoint. */
+.verify-hint{margin:12px 0 0;font-size:.9rem;font-weight:800}
+.verify-hint a{color:var(--green);text-decoration:underline;text-underline-offset:4px}
+.verify-form{scroll-margin-top:110px;display:block;visibility:visible}
+.verify-form .checkbox-row label{cursor:pointer;line-height:1.5}
