@@ -4,12 +4,11 @@
   const key = "saferide-color-theme";
   const root = document.documentElement;
   const toggle = document.querySelector("[data-theme-toggle]");
-  let theme = "light";
-  try { theme = localStorage.getItem(key) === "dark" ? "dark" : "light"; }
-  catch (error) { theme = "light"; }
+  let theme = root.dataset.theme || "light";
   const apply = mode => {
     root.dataset.theme = mode;
     if (toggle) {
+      toggle.hidden = false;
       toggle.textContent = mode === "dark" ? "☀" : "☾";
       toggle.setAttribute("aria-label", mode === "dark" ? "Switch to light mode" : "Switch to dark mode");
       toggle.setAttribute("aria-pressed", String(mode === "dark"));
@@ -20,6 +19,15 @@
     theme = root.dataset.theme === "dark" ? "light" : "dark";
     apply(theme);
     try { localStorage.setItem(key, theme); } catch (error) { /* Session theme only. */ }
+  });
+  const systemTheme = matchMedia("(prefers-color-scheme: dark)");
+  systemTheme.addEventListener("change", event => {
+    let saved;
+    try { saved = localStorage.getItem(key); } catch (_) { /* Use system preference. */ }
+    if (!saved) apply(event.matches ? "dark" : "light");
+  });
+  window.addEventListener("storage", event => {
+    if (event.key === key) apply(event.newValue === "dark" ? "dark" : event.newValue === "light" ? "light" : systemTheme.matches ? "dark" : "light");
   });
   const from = document.querySelector("[data-map-origin]");
   const to = document.querySelector("[data-map-destination]");

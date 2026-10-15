@@ -15,12 +15,12 @@ def test_home_has_mobile_first_search_and_stop_controls(client):
     html = page.content.decode()
     for required in (
         "data-map-origin", "data-map-destination", "site-from",
-        "lagos_experience.css", "lagos-park.svg",
+        "lagos_experience.css", "saferide-lagos-poster.webp",
         "Victoria Island", "Lekki Phase 1",
         "View directions",
     ):
         assert required in html, required
-    assert "data-theme-toggle" not in html
+    assert "data-theme-toggle" in html
     assert "data-map-provider" not in html
     assert "data-map-motion" not in html
     assert html.index('id="quick-ride"') < html.index('id="hero-route-map"')

@@ -47,7 +47,7 @@ with sync_playwright() as playwright:
                 "map_state": map_state,
             })
             assert overflow <= 5, f"{width}px viewport overflows horizontally by {overflow}px"
-            expect(page.locator("h1#site-hero-title")).to_be_visible()
+            expect(page.locator("h1#hero-title")).to_be_visible()
             if width <= 390:
                 toggle = page.locator("[data-nav-toggle]")
                 expect(toggle).to_be_visible()
@@ -62,7 +62,11 @@ with sync_playwright() as playwright:
         expect(page.locator("[data-destination-label]")).to_have_text("Ikeja")
         expect(page.locator("#site-to")).to_have_value("Ikeja")
         page.screenshot(path=str(OUT / "lagos-map-ikeja-selected.png"), full_page=True)
-        assert page.locator("[data-theme-toggle]").count() == 0
+        page.locator("[data-theme-toggle]").click()
+        assert page.locator("html").get_attribute("data-theme") == "dark"
+        page.reload(wait_until="domcontentloaded")
+        assert page.locator("html").get_attribute("data-theme") == "dark"
+        page.locator("[data-theme-toggle]").click()
         assert page.locator("[data-map-motion]").count() == 0
         assert page.locator("[data-map-provider]").count() == 0
         evidence["journeys"].append("Lagos stops update route and search; no broken theme or animation controls")

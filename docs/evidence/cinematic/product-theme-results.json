@@ -1,0 +1,178 @@
+[
+  {
+    "role": "passenger",
+    "theme": "light",
+    "path": "/dashboard/",
+    "status": 200,
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "role": "passenger",
+    "theme": "light",
+    "path": "/verification/",
+    "status": 200,
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "role": "passenger",
+    "theme": "light",
+    "path": "/accounts/profile/",
+    "status": 200,
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "role": "passenger",
+    "theme": "light",
+    "path": "/bookings/",
+    "status": 200,
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "role": "passenger",
+    "theme": "light",
+    "path": "/safety/reports/",
+    "status": 200,
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "role": "passenger",
+    "theme": "light",
+    "path": "/safety/route-updates/",
+    "status": 200,
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "role": "passenger",
+    "theme": "dark",
+    "path": "/dashboard/",
+    "status": 200,
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "role": "passenger",
+    "theme": "dark",
+    "path": "/verification/",
+    "status": 200,
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "role": "passenger",
+    "theme": "dark",
+    "path": "/accounts/profile/",
+    "status": 200,
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "role": "passenger",
+    "theme": "dark",
+    "path": "/bookings/",
+    "status": 200,
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "role": "passenger",
+    "theme": "dark",
+    "path": "/safety/reports/",
+    "status": 200,
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "role": "passenger",
+    "theme": "dark",
+    "path": "/safety/route-updates/",
+    "status": 200,
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "role": "driver",
+    "theme": "light",
+    "path": "/dashboard/",
+    "status": 200,
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "role": "driver",
+    "theme": "light",
+    "path": "/driver/vehicles/",
+    "status": 200,
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "role": "driver",
+    "theme": "light",
+    "path": "/departures/driver/",
+    "status": 200,
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "role": "driver",
+    "theme": "light",
+    "path": "/departures/driver/new/",
+    "status": 200,
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "role": "driver",
+    "theme": "light",
+    "path": "/verification/",
+    "status": 200,
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "role": "driver",
+    "theme": "dark",
+    "path": "/dashboard/",
+    "status": 200,
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "role": "driver",
+    "theme": "dark",
+    "path": "/driver/vehicles/",
+    "status": 200,
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "role": "driver",
+    "theme": "dark",
+    "path": "/departures/driver/",
+    "status": 200,
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "role": "driver",
+    "theme": "dark",
+    "path": "/departures/driver/new/",
+    "status": 200,
+    "overflow": false,
+    "violations": []
+  },
+  {
+    "role": "driver",
+    "theme": "dark",
+    "path": "/verification/",
+    "status": 200,
+    "overflow": false,
+    "violations": []
+  }
+]

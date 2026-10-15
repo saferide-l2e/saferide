@@ -12,7 +12,7 @@ class FrontendShellTests(SimpleTestCase):
         for label in ('id="how-it-works"', 'id="for-drivers"', 'href="/safety/route-updates/"'):
             with self.subTest(section=label):
                 self.assertContains(response, label)
-        self.assertContains(response, "From your first stop to your last.")
+        self.assertContains(response, "Lagos moves.")
         self.assertContains(response, "Jibowu")
 
     def test_accessible_navigation_and_truthful_route_label(self):

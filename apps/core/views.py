@@ -1,16 +1,41 @@
 import os
 
 from django.contrib.auth.decorators import login_required
+from django.contrib.staticfiles import finders
 from django.http import JsonResponse
 from django.shortcuts import render
+from django.templatetags.static import static
 
 from apps.accounts.models import Role
 
 
 def home(request):
+    # Footage is opt-in as a complete, reviewed asset set. Missing encodes must
+    # never create broken requests or conceal the original static composition.
+    video_files = {
+        f"{size}_{codec}": f"media/saferide-lagos-{size}.{codec}"
+        for size in ("desktop", "mobile") for codec in ("webm", "mp4")
+    }
+    video = (
+        {key: static(path) for key, path in video_files.items()}
+        if all(finders.find(path) for path in video_files.values()) else None
+    )
     return render(request, "home.html", {
         "google_maps_browser_key": os.getenv("GOOGLE_MAPS_BROWSER_KEY", "").strip(),
+        "cinematic_video": video,
     })
+
+
+def how_it_works(request):
+    return render(request, "public/how_it_works.html")
+
+
+def for_drivers(request):
+    return render(request, "public/for_drivers.html")
+
+
+def safety_support(request):
+    return render(request, "public/safety_support.html")
 
 
 def health(request):
