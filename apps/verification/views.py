@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.views.decorators.http import require_http_methods
 
 from .forms import VerificationDeclarationForm
-from .services import ensure_verification, submit
+from .services import ensure_verification, submit, update_pending_profile
 
 
 @login_required
@@ -19,11 +19,15 @@ def _status_page(request, form=None, http_status=200):
     return render(request, "accounts/verification.html", {
         "verification": verification,
         "status": verification.status,
-        "can_submit": verification.status in {"NOT_SUBMITTED", "REJECTED"},
+        "can_submit": verification.status in {"NOT_SUBMITTED", "REJECTED", "PENDING"},
         "submit_action": reverse("verification:submit"),
         "next_url": reverse("core:dashboard"),
         "rejection_reason": verification.note,
-        "form": form if form is not None else VerificationDeclarationForm(),
+        "form": form if form is not None else VerificationDeclarationForm(initial={
+            "profile_name": verification.profile_name or request.user.display_name,
+            "home_area": verification.home_area,
+            "preferred_stop": verification.preferred_stop,
+        }),
     }, status=http_status)
 
 
@@ -34,8 +38,16 @@ def submit_request(request):
     if not form.is_valid():
         return _status_page(request, form=form, http_status=400)
     try:
-        submit(request.user)
-        messages.success(request, "Verification submitted for simulated review.")
+        details = {key: form.cleaned_data[key] for key in (
+            "profile_name", "home_area", "preferred_stop",
+        )}
+        verification = ensure_verification(request.user)
+        if verification.status == "PENDING":
+            update_pending_profile(request.user, **details)
+            messages.success(request, "Profile details saved. You can continue exploring routes.")
+        else:
+            submit(request.user, **details)
+            messages.success(request, "Your profile has been submitted to the review team.")
     except ValidationError as exc:
         messages.error(request, "; ".join(exc.messages))
     return redirect("verification:status")

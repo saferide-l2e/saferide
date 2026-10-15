@@ -47,6 +47,8 @@ def sample_buses(origin, destination, *, now=None, count=4):
         capacity = rng.choice((12, 14, 16, 18))
         seats = rng.randint(2, min(capacity, 9))
         departure = now + timedelta(minutes=35 + index * 34 + rng.randint(0, 12))
+        travel_minutes = rng.randint(18, 65)
+        fare_estimate_naira = rng.choice((250, 300, 350, 400, 450, 500, 600, 750))
         result.append({
             "reference": f"SIM-{index + 1:02d}",
             "route_label": f"{origin} → {destination}",
@@ -58,6 +60,10 @@ def sample_buses(origin, destination, *, now=None, count=4):
             "scheduled_departure_at": departure,
             "available_seats": seats,
             "capacity": capacity,
+            "travel_minutes": travel_minutes,
+            "fare_estimate_naira": fare_estimate_naira,
+            "ride_class": ("Classic Danfo", "City Express", "Comfort Bus", "Mini Shuttle")[index],
+            "option": index + 1,
             "is_simulated": True,
             "bookable": False,
         })

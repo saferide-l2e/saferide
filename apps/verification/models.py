@@ -36,6 +36,9 @@ class Verification(models.Model):
     )
     reviewed_at = models.DateTimeField(null=True, blank=True)
     note = models.CharField(max_length=280, blank=True)
+    profile_name = models.CharField(max_length=80, blank=True)
+    home_area = models.CharField(max_length=80, blank=True)
+    preferred_stop = models.CharField(max_length=80, blank=True)
 
     class Meta:
         ordering = ["-submitted_at", "user__display_name"]

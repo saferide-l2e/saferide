@@ -6,7 +6,7 @@
 {% block content %}
 <section class="explore-page container" aria-labelledby="search-title">
   <div class="explore-intro">
-    <div><span class="eyebrow">SafeRide Discover</span><h1 id="search-title">Where to next?</h1><p>Find your route and see the planned departures, stops and available seats.</p></div>
+    <div><span class="eyebrow">YOUR LAGOS RIDE</span><h1 id="search-title">Find your next danfo.</h1><p>Find your route and see the planned departures, stops and available seats.</p></div>
     <div class="explore-mark" aria-hidden="true"><span>⌁</span></div>
   </div>
   {% if error_message %}<p class="route-error" role="alert">{{ error_message }}</p>{% endif %}
@@ -44,12 +44,14 @@
         {% for bus in sample_buses %}
         <article class="bus-card demo-bus-card" aria-label="Fictional example {{ forloop.counter }}">
           <div class="bus-card__body">
-            <div class="demo-bus-card__kicker"><span class="demo-pill">Fictional example</span><span>{{ bus.reference }}</span></div>
-            <h3>{{ bus.route_label }}</h3>
+            <div class="demo-bus-card__kicker"><span class="demo-pill">Illustrative option</span><span>{{ bus.reference }}</span></div>
+            <h3>{{ bus.ride_class }} · {{ bus.route_label }}</h3>
             <p class="bus-card__date">Example departure · {{ bus.scheduled_departure_at|date:"D j M, g:i A" }}</p>
             <dl class="bus-facts">
               <div><dt>Vehicle</dt><dd>{{ bus.vehicle_type_display }}</dd></div>
               <div><dt>Example seats</dt><dd><strong>{{ bus.available_seats }}</strong> of {{ bus.capacity }}</dd></div>
+              <div><dt>Illustrative fare</dt><dd><strong>₦{{ bus.fare_estimate_naira }}</strong></dd></div>
+              <div><dt>Illustrative journey time</dt><dd>{{ bus.travel_minutes }} min</dd></div>
             </dl>
             <details class="demo-bus-details">
               <summary>See this sample bus</summary>
@@ -58,6 +60,7 @@
               <p><strong>Driver:</strong> {{ bus.driver_public_name }}</p>
               <p>Preview only. Not a published route, available seat or live service.</p>
             </details>
+            <a class="button button--primary demo-bus-view" href="{% url 'departures:sample_ride' %}?origin={{ origin|urlencode }}&amp;destination={{ destination|urlencode }}&amp;option={{ bus.option }}">See this sample bus →</a>
           </div>
         </article>
         {% endfor %}

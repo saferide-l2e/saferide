@@ -6,13 +6,16 @@
 <meta name="description" content="{% block description %}Move smarter. Explore routes, book your seat and follow your journey with SafeRide.{% endblock %}">
 <link rel="stylesheet" href="{% static 'css/base.css' %}">
 <link rel="stylesheet" href="{% static 'css/site_public.css' %}">
+<link rel="stylesheet" href="{% static 'css/lagos_experience.css' %}">
 {% block extra_head %}{% endblock %}
 <script defer src="{% static 'js/navigation.js' %}"></script>
+<script defer src="{% static 'js/lagos_experience.js' %}"></script>
 {% if preview_gallery_url %}<script defer src="{% static 'js/preview.js' %}"></script>{% endif %}
 </head><body>
 <a class="skip-link" href="#main-content">Skip to content</a>
 <header class="site-header" data-site-header><div class="container header-inner">
   <a class="brand" href="{% url 'core:home' %}" aria-label="SafeRide home"><span>Safe<strong>Ride</strong></span><svg class="brand-pin" width="16" height="20" viewBox="0 0 16 20" fill="none" aria-hidden="true"><path d="M8 1a7 7 0 0 0-7 7c0 4.5 7 11 7 11s7-6.5 7-11a7 7 0 0 0-7-7Z" fill="currentColor"/><circle cx="8" cy="8" r="2.4" fill="white"/></svg></a>
+  <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to dark mode" title="Switch theme">☾</button>
   <button type="button" class="menu-toggle" aria-label="Open navigation" aria-controls="primary-navigation" aria-expanded="false" data-nav-toggle><span></span><span></span><span></span></button>
   <nav class="primary-navigation" id="primary-navigation" aria-label="Main navigation" data-primary-nav>
     {% if user.is_authenticated and user.role == "DRIVER" %}
@@ -47,8 +50,8 @@
   <div class="site-footer__identity"><a href="{% url 'core:home' %}" class="brand brand--footer">Safe<strong>Ride</strong></a><p>Every journey matters.</p><small>Made for clearer journeys around Lagos.</small></div>
   <nav class="site-footer__columns" aria-label="Footer navigation">
     <div><strong>Ride</strong><a href="{% url 'departures:search' %}">Find a Ride</a><a href="{% url 'bookings:index' %}">My Trips</a></div>
-    <div><strong>Drive</strong><a href="{% url 'accounts:register' %}">Join as a Driver</a><a href="{% url 'departures:dashboard' %}">Driver Dashboard</a></div>
+    <div><strong>Drive</strong><a href="{% url 'accounts:register' %}?role=DRIVER">Join as a Driver</a><a href="{% url 'departures:dashboard' %}">Driver Dashboard</a></div>
     <div><strong>Help</strong><a href="{% url 'safety:route_updates' %}">Route Updates</a><a href="{% url 'safety:report' %}">Report a Concern</a></div>
   </nav>
-</div><div class="container site-footer__bottom"><span>© 2026 SafeRide.</span><span>Sample routes and verification data are simulated; no live GPS or emergency dispatch</span></div>
+</div><div class="container site-footer__bottom"><span>© 2026 SafeRide.</span><span>Route previews are illustrative; no live GPS or emergency dispatch.</span></div>
 </footer>{% block extra_scripts %}{% endblock %}</body></html>

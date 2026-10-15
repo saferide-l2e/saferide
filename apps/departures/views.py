@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db.models import Value
 from django.db.models.functions import Replace
-from django.http import JsonResponse
+from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -266,3 +266,27 @@ def departure_check_in(request, departure_id):
     except SafeRideError as exc:
         messages.error(request, str(exc))
     return redirect("departures:manage", departure_id=departure.id)
+
+
+@require_http_methods(["GET"])
+def sample_ride(request):
+    """Read-only fictional itinerary screen, never a bookable Departure."""
+    origin = clean_stop(request.GET.get("origin", ""))
+    destination = clean_stop(request.GET.get("destination", ""))
+    try:
+        option = int(request.GET.get("option", "1"))
+    except (ValueError, TypeError):
+        raise Http404("Choose a valid ride option.") from None
+    if option not in (1, 2, 3, 4):
+        raise Http404("Choose a valid ride option.")
+    examples = sample_buses(origin, destination)
+    if not examples:
+        raise Http404("Select two different locations.")
+    return render(request, "passenger/sample_ride.html", {
+        "ride": examples[option - 1],
+        "origin": origin,
+        "destination": destination,
+        "search_url": reverse("departures:search"),
+        "history_url": reverse("bookings:index"),
+        "safety_url": reverse("safety:report"),
+    })

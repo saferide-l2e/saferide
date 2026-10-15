@@ -20,7 +20,7 @@ def ensure_verification(user):
 
 
 @transaction.atomic
-def submit(user):
+def submit(user, *, profile_name="", home_area="", preferred_stop=""):
     """Passenger/driver submits their own demo verification request."""
     verification = ensure_verification(user)
     if verification.status == VerificationStatus.VERIFIED:
@@ -34,8 +34,28 @@ def submit(user):
     verification.reviewed_by = None
     verification.reviewed_at = None
     verification.note = ""
-    verification.save(update_fields=["status", "submitted_at", "reviewed_by", "reviewed_at", "note"])
+    verification.profile_name = (profile_name or "")[:80]
+    verification.home_area = (home_area or "")[:80]
+    verification.preferred_stop = (preferred_stop or "")[:80]
+    verification.save(update_fields=[
+        "status", "submitted_at", "reviewed_by", "reviewed_at", "note",
+        "profile_name", "home_area", "preferred_stop",
+    ])
     record(user, "verification.submitted", verification)
+    return verification
+
+
+@transaction.atomic
+def update_pending_profile(user, *, profile_name="", home_area="", preferred_stop=""):
+    """Save travel-profile details without granting eligibility."""
+    verification = ensure_verification(user)
+    if verification.status != VerificationStatus.PENDING:
+        raise ValidationError("Only a submitted profile may be updated here.")
+    verification.profile_name = (profile_name or "")[:80]
+    verification.home_area = (home_area or "")[:80]
+    verification.preferred_stop = (preferred_stop or "")[:80]
+    verification.save(update_fields=["profile_name", "home_area", "preferred_stop"])
+    record(user, "verification.profile_updated", verification)
     return verification
 
 

@@ -56,10 +56,26 @@ with sync_playwright() as playwright:
                 toggle.click()
 
         page.set_viewport_size({"width": 1440, "height": 900})
+        visit(page, "/")
+        page.locator("[data-map-destination]").select_option(label="Ikeja")
+        expect(page.locator("[data-destination-label]")).to_have_text("Ikeja")
+        expect(page.locator("#site-to")).to_have_value("Ikeja")
+        page.screenshot(path=str(OUT / "lagos-map-ikeja-selected.png"), full_page=True)
+        page.locator("[data-theme-toggle]").click()
+        assert page.locator("html").get_attribute("data-theme") == "dark"
+        page.screenshot(path=str(OUT / "lagos-dark-mode.png"), full_page=True)
+        page.locator("[data-theme-toggle]").click()
+        assert page.locator("html").get_attribute("data-theme") == "light"
+        evidence["journeys"].append("Lagos stop switching updates labels and search; dark theme toggles")
+
         visit(page, "/departures/search/?origin=Agege&destination=Lekki%20Phase%201")
         expect(page.get_by_text("Demo suggestions, not live bus availability.")).to_be_visible()
         assert page.locator(".demo-bus-card").count() == 4
         assert page.locator(".demo-bus-card form").count() == 0
+        page.locator(".demo-bus-view").first.click()
+        expect(page.get_by_text("No payment is collected on this page.")).to_be_visible()
+        page.screenshot(path=str(OUT / "danfo-ride-options.png"), full_page=True)
+        page.go_back(wait_until="domcontentloaded")
         page.locator(".demo-bus-details summary").first.click()
         expect(page.locator(".demo-bus-card").first.get_by_text("Preview only. Not a published route")).to_be_visible()
         content_width = page.locator(".demo-bus-card .bus-card__body").first.evaluate(
@@ -87,7 +103,7 @@ with sync_playwright() as playwright:
         page.locator('input[name="fictional_data"]').check()
         page.locator('input[name="simulated_review"]').check()
         page.get_by_role("button", name=re.compile("Submit for staff review")).click()
-        expect(page.get_by_text("Awaiting review")).to_be_visible()
+        expect(page.get_by_text("Profile submitted")).to_be_visible()
         page.screenshot(path=str(OUT / "verification-pending.png"), full_page=True)
         evidence["journeys"].append("Browser registration -> fictional declaration -> pending staff review")
 

@@ -72,7 +72,7 @@ def test_demo_signup_to_declaration_to_staff_approval(client, staff):
         "simulated_review": "on",
     }, follow=True)
     assert submitted.status_code == 200
-    assert b"Awaiting review" in submitted.content
+    assert b"Profile submitted" in submitted.content
     user.verification.refresh_from_db()
     assert user.verification.status == VerificationStatus.PENDING
     assert not user.is_verified

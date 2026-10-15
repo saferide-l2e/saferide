@@ -1,0 +1,70 @@
+/* SafeRide Lagos Experience — responsive public danfo journey design */
+.lagos-hero{background:linear-gradient(90deg,rgba(3,31,34,.94) 0%,rgba(3,45,43,.87) 43%,rgba(4,49,44,.70) 100%),url("../img/lagos-park.svg") center center/cover no-repeat;color:#fff;overflow:hidden}
+.lagos-hero__grid{display:grid;grid-template-columns:minmax(0,.89fr) minmax(0,1.11fr);align-items:center;gap:clamp(28px,3.6vw,72px);padding-block:70px 58px}
+.lagos-hero__story{min-width:0;position:relative;z-index:1}
+.lagos-eyebrow{display:inline-flex;align-items:center;gap:12px;color:#edffcd;font-size:.7rem;letter-spacing:.16em;font-weight:850}
+.lagos-eyebrow span{font-size:1.3rem;color:#cfff4f}
+.lagos-hero__story h1{font-size:clamp(3.5rem,6vw,6.9rem);line-height:1.02;letter-spacing:-.077em;font-weight:900;margin:25px 0 24px;max-width:680px}
+.lagos-hero__story h1 em{font-style:normal;color:#d6f86c}
+.lagos-hero__lead{max-width:520px;font-size:clamp(1rem,1.35vw,1.2rem);line-height:1.75;color:#e3f5ef}
+.lagos-hero__buttons{display:flex;flex-wrap:wrap;gap:11px;margin-top:30px}
+.lagos-hero__trust{margin-top:32px;font-size:.81rem;line-height:1.5;color:#d1e3db;max-width:510px}
+.lagos-hero__trust span{display:inline-grid;place-items:center;width:32px;height:32px;border:1px solid #ffffff55;border-radius:50%;margin-right:8px;color:#d6f86c}
+.lagos-map{position:relative;z-index:1;box-shadow:0 22px 85px #001b1a88}
+.lagos-map .site-route-map{height:clamp(280px,27vw,380px)}
+.lagos-map .site-map-summary{padding:15px 9px 5px}
+.lagos-stop-selectors{display:grid;grid-template-columns:minmax(0,1fr) 22px minmax(0,1fr);gap:9px;align-items:end;padding:0 8px 13px}
+.lagos-stop-selectors label{display:block;color:#648577;font-size:.65rem;text-transform:uppercase;font-weight:900;letter-spacing:.09em;margin-bottom:5px}
+.lagos-stop-selectors select{display:block;min-height:43px;width:100%;border:1px solid #c9dcd1;border-radius:10px;background:#f3f9f3;color:#0e4435;padding:9px 12px;font-size:.83rem;font-weight:780;cursor:pointer}
+.lagos-stop-selectors select:focus-visible{outline:3px solid #bcf06c;outline-offset:2px}
+.lagos-stop-selectors__arrow{font-weight:900;color:#04815c;padding-bottom:12px;text-align:center}
+.lagos-map .site-map-google-bus{width:54px!important;max-width:54px!important}
+.lagos-quick-ride{padding:0 0 40px}
+.lagos-quick-ride__intro{display:flex;align-items:baseline;gap:14px;margin-bottom:10px}
+.lagos-quick-ride__intro>span{color:#d6f86c;font-size:.68rem;font-weight:900;letter-spacing:.1em}
+.lagos-quick-ride__intro strong{font-size:1.07rem}
+.lagos-quick-ride .site-ride-search{margin:0;box-shadow:0 20px 48px #00261c2b}
+.lagos-route-chips{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:15px;font-size:.77rem}
+.lagos-route-chips>span{color:#def0dd;font-weight:700}
+.lagos-route-chips>a{border:1px solid #f1fbe452;color:#fff;border-radius:40px;padding:7px 12px;background:#ffffff12;transition:background .2s}
+.lagos-route-chips>a:hover{background:#ffffff35}
+.lagos-how{padding-block:90px 95px}
+.lagos-how__heading{display:flex;align-items:flex-end;justify-content:space-between;gap:26px;flex-wrap:wrap;margin-bottom:31px}
+.lagos-how__heading h2{font-size:clamp(2.3rem,4vw,4rem);letter-spacing:-.065em;line-height:1.07;margin:17px 0 0}
+.lagos-how__heading h2 em{font-style:normal;color:#159574}
+.lagos-how__heading p{max-width:320px;color:#647b70;margin:0;font-size:.95rem}
+.lagos-how__cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:17px}
+.lagos-step{min-width:0;position:relative;border:1px solid #d9e8e1;border-radius:24px;background:#fff;padding:34px;min-height:250px;box-shadow:0 14px 39px #1051380d}
+.lagos-step__number{display:block;color:#0b805c;font-size:.7rem;font-weight:900;letter-spacing:.12em}
+.lagos-step__icon{display:grid;place-items:center;background:#d6f86c;color:#113b2b;width:70px;height:70px;font-size:2rem;border-radius:21px;margin:20px 0 18px}
+.lagos-step h3{font-size:1.4rem;letter-spacing:-.04em;margin:0 0 7px}
+.lagos-step p{color:#597166;line-height:1.65;margin:0}
+.lagos-driver{background:#062e29;padding:0;margin-bottom:0;color:#fff}
+.lagos-driver__body{display:grid;grid-template-columns:1.05fr .95fr;min-height:440px;overflow:hidden}
+.lagos-driver__visual{min-height:370px;background:linear-gradient(90deg,transparent 60%,#062e29e8 100%),url("../img/lagos-park.svg") 70% 62%/cover no-repeat}
+.lagos-driver__content{align-self:center;padding:52px clamp(25px,5vw,80px)}
+.lagos-driver__content h2{font-size:clamp(2.3rem,4.7vw,4.9rem);line-height:1.08;letter-spacing:-.069em;margin:15px 0}
+.lagos-driver__content h2 em{font-style:normal;color:#d6f86c}
+.lagos-driver__content p{max-width:410px;color:#cfe4d6;line-height:1.7;margin-bottom:23px}
+.lagos-driver__content .site-kicker{color:#d6f86c}
+.theme-toggle{width:38px;height:38px;border:1px solid #b3cac1;border-radius:50%;background:transparent;color:#0b6653;font-size:1.12rem;cursor:pointer;flex-shrink:0}
+.theme-toggle:focus-visible{outline:3px solid #d6f86c}
+[data-theme="dark"]{color-scheme:dark;--ink:#e7f7f0;--muted:#b1c9bc;--cream:#081b21;--white:#132e32;--mint:#193e38;--line:#345552;--green:#9ce4b7;--forest:#e4fce5}
+[data-theme="dark"] body{background:#081b21;color:#e6f6ef}
+[data-theme="dark"] .site-header{background:rgba(9,24,31,.98);border-color:#3a5355}
+[data-theme="dark"] .brand,[data-theme="dark"] .primary-navigation>a:not(.nav-cta){color:#e5f6f0}
+[data-theme="dark"] .theme-toggle{color:#d6f86c;border-color:#536b65}
+[data-theme="dark"] .site-benefit,[data-theme="dark"] .lagos-step,[data-theme="dark"] .verify-card,[data-theme="dark"] .explore-grid>div,[data-theme="dark"] .route-search,[data-theme="dark"] .bus-card,[data-theme="dark"] .detail-card,[data-theme="dark"] .hold-timer-card,[data-theme="dark"] .site-footer,[data-theme="dark"] .profile-card{background:#102a31;color:#e6f5f0;border-color:#345552}
+[data-theme="dark"] .lagos-step h3,[data-theme="dark"] .lagos-how h2{color:#f3fcf7}
+[data-theme="dark"] .lagos-step p,[data-theme="dark"] .lagos-how__heading p{color:#b9d2c6}
+[data-theme="dark"] input:not([type=checkbox]),[data-theme="dark"] textarea,[data-theme="dark"] select{background:#19373c;color:#eefbf2;border-color:#49615b}
+[data-theme="dark"] .site-hero__scene--map{background:#13302f;color:#f4fff5;border-color:#43665a}
+[data-theme="dark"] .lagos-stop-selectors label{color:#b5d7c5}
+[data-theme="dark"] .lagos-stop-selectors select{background:#173b37;color:#eefbf2;border-color:#49685d}
+[data-theme="dark"] .site-map-summary__place strong{color:#eff9ec}
+[data-theme="dark"] .site-map-summary__place small{color:#a9c8b6}
+[data-theme="dark"] .site-footer__bottom{border-color:#33545c}
+[data-theme="dark"] .verify-card h2,[data-theme="dark"] .verify-card>p{color:#e8f6f0}
+@media(max-width:970px){.lagos-hero__grid{grid-template-columns:1fr;padding-block:55px 44px;gap:34px}.lagos-hero__story h1{max-width:720px}.lagos-map{width:100%}.lagos-map .site-route-map{height:390px}.lagos-driver__body{grid-template-columns:1fr 1fr}}
+@media(max-width:680px){.lagos-hero__grid{padding-top:46px;gap:28px}.lagos-hero__story h1{font-size:clamp(3rem,12.4vw,4.9rem)}.lagos-hero__lead{font-size:1rem}.lagos-hero__buttons{margin-top:22px}.lagos-map .site-route-map{height:290px}.lagos-map{border-radius:20px;padding:8px}.lagos-stop-selectors{gap:5px;padding-inline:4px}.lagos-stop-selectors select{font-size:.74rem;padding:8px}.lagos-quick-ride{padding-bottom:30px}.lagos-quick-ride .site-ride-search{gap:10px}.lagos-how{padding-block:64px}.lagos-how__cards{grid-template-columns:1fr}.lagos-step{min-height:0;padding:25px}.lagos-driver__body{grid-template-columns:1fr}.lagos-driver__visual{min-height:240px}.lagos-driver__content{padding:30px 16px 48px}.lagos-route-chips{font-size:.72rem}.site-map-summary__actions{gap:9px;flex-wrap:wrap}}
+@media(prefers-reduced-motion:reduce){.lagos-route-chips>a,.site-button{transition:none}}

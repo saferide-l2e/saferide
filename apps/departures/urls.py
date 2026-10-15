@@ -6,6 +6,7 @@ app_name = "departures"
 
 urlpatterns = [
     path("search/", views.search, name="search"),
+    path("sample-ride/", views.sample_ride, name="sample_ride"),
     path("<uuid:departure_id>/", views.departure_detail, name="detail"),
     path("<uuid:departure_id>/availability/", views.availability, name="availability"),
     path("driver/", views.driver_dashboard, name="dashboard"),
