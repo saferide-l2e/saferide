@@ -8,7 +8,7 @@ from django.views.decorators.http import require_http_methods
 
 from apps.core.exceptions import SafeRideError
 from apps.core.permissions import passenger_required
-from apps.core.presentation import booking_card, route_label
+from apps.core.presentation import booking_card
 from apps.departures.models import Departure
 
 from .models import Booking, BookingStatus, WaitlistEntry, WaitlistStatus
