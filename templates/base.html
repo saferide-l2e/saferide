@@ -50,7 +50,7 @@
   <div class="site-footer__identity"><a href="{% url 'core:home' %}" class="brand brand--footer">Safe<strong>Ride</strong></a><p>Every journey matters.</p><small>Made for clearer journeys around Lagos.</small></div>
   <nav class="site-footer__columns" aria-label="Footer navigation">
     <div><strong>Ride</strong><a href="{% url 'departures:search' %}">Find a Ride</a><a href="{% url 'bookings:index' %}">My Trips</a></div>
-    <div><strong>Drive</strong><a href="{% url 'accounts:register' %}">Join as a Driver</a><a href="{% url 'departures:dashboard' %}">Driver Dashboard</a></div>
+    <div><strong>Drive</strong><a href="{% url 'accounts:register' %}?role=DRIVER">Join as a Driver</a><a href="{% url 'departures:dashboard' %}">Driver Dashboard</a></div>
     <div><strong>Help</strong><a href="{% url 'safety:route_updates' %}">Route Updates</a><a href="{% url 'safety:report' %}">Report a Concern</a></div>
   </nav>
 </div><div class="container site-footer__bottom"><span>© 2026 SafeRide.</span><span>Route previews are illustrative; no live GPS or emergency dispatch.</span></div>
