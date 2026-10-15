@@ -2,8 +2,8 @@
 {% load static %}
 {% block title %}SafeRide | Your Lagos, your route{% endblock %}
 {% block description %}Find danfo routes, compare your options and plan your next journey across Lagos.{% endblock %}
-{% block extra_head %}<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.css"><link rel="stylesheet" href="{% static 'css/site_route.css' %}"><link rel="stylesheet" href="{% static 'css/lagos_experience.css' %}">{% endblock %}
-{% block extra_scripts %}<script defer src="{% static 'js/hero_route.js' %}"></script><script defer src="{% static 'js/lagos_experience.js' %}"></script>{% endblock %}
+{% block extra_head %}<link rel="preload" as="image" href="{% static 'img/lagos-park.svg' %}"><link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.css"><link rel="stylesheet" href="{% static 'css/site_route.css' %}">{% endblock %}
+{% block extra_scripts %}<script defer src="{% static 'js/hero_route.js' %}"></script>{% endblock %}
 {% block content %}
 <section class="site-hero lagos-hero" aria-labelledby="site-hero-title">
   <div class="container lagos-hero__grid">
