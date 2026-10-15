@@ -4,17 +4,18 @@ Everything here is fictional. Safe to run repeatedly: existing rows are reused.
 """
 
 import datetime
-from django.core.management.base import BaseCommand, CommandError
+
 from django.conf import settings
-from django.utils import timezone
+from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
+from django.utils import timezone
 
 from apps.accounts.models import Role, User
 from apps.departures.models import Departure, DepartureStatus
 from apps.routes.models import Route
+from apps.safety.models import IncidentCategory, IncidentReport, IncidentStatus
 from apps.vehicles.models import ApprovalStatus, DriverProfile, Vehicle
 from apps.verification.models import Verification, VerificationStatus
-from apps.safety.models import IncidentCategory, IncidentReport, IncidentStatus
 
 DEMO_PASSWORD = "saferide-demo-123"
 
@@ -25,36 +26,34 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         # Adding the mandatory explicit opt-in argument required by DB-08
         parser.add_argument(
-            '--reset-safe-demo',
-            action='store_true',
-            help='Explicit opt-in required to execute the seeding logic.',
+            "--reset-safe-demo",
+            action="store_true",
+            help="Explicit opt-in required to execute the seeding logic.",
         )
 
     def handle(self, *args, **options):
         # 1. Production Safeguard block check
-        if not settings.DEBUG and not getattr(settings, 'ALLOW_PRODUCTION_DEMO_SEED', False):
+        if not settings.DEBUG and not getattr(settings, "ALLOW_PRODUCTION_DEMO_SEED", False):
             raise CommandError(
                 "Execution Refused: Seeding is blocked in production environments "
                 "unless ALLOW_PRODUCTION_DEMO_SEED is explicitly set to True."
             )
 
         # 2. Check for the safety argument flag
-        if not options.get('reset_safe_demo'):
+        if not options.get("reset_safe_demo"):
             raise CommandError("You must provide the --reset-safe-demo flag to run this command.")
 
         self.stdout.write("Starting idempotent demo seeding execution...")
 
         with transaction.atomic():
             # --- USERS ---
-            admin = self._ensure_user(
-                "admin@example.test", "Demo Admin", Role.PASSENGER, staff=True, superuser=True
-            )
-            
+            admin = self._ensure_user("admin@example.test", "Demo Admin", Role.PASSENGER, staff=True, superuser=True)
+
             # Passengers: Two verified, one pending
             passenger_1 = self._ensure_user("passenger@example.test", "Demo Passenger 1", Role.PASSENGER)
             passenger_2 = self._ensure_user("passenger2@example.test", "Demo Passenger 2", Role.PASSENGER)
             passenger_pending = self._ensure_user("pending@example.test", "Pending Passenger", Role.PASSENGER)
-            
+
             driver = self._ensure_user("driver@example.test", "Demo Driver", Role.DRIVER)
 
             # Mark users as verified
@@ -102,9 +101,7 @@ class Command(BaseCommand):
             vehicle.save(update_fields=["capacity", "approval_status"])
 
             # --- DEPARTURE (Fixed time to Friday 16 October 2026) ---
-            demo_departure_time = timezone.make_aware(
-                datetime.datetime(2026, 10, 16, 8, 0, 0)
-            )
+            demo_departure_time = timezone.make_aware(datetime.datetime(2026, 10, 16, 8, 0, 0))
 
             departure, created = Departure.objects.get_or_create(
                 route=route,
@@ -114,7 +111,7 @@ class Command(BaseCommand):
                     "vehicle": vehicle,
                     "snapshot_capacity": vehicle.capacity,
                     "status": DepartureStatus.BOARDING_OPEN,
-                }
+                },
             )
 
             # --- PENDING DEMO REPORT ---
@@ -124,7 +121,7 @@ class Command(BaseCommand):
                     "category": IncidentCategory.SAFETY,
                     "description": "Fictional demo delay event notation.",
                     "status": IncidentStatus.PENDING,
-                }
+                },
             )
 
         self.stdout.write(self.style.SUCCESS("Seeded synthetic demo data successfully without duplicates."))
