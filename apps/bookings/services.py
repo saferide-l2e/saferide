@@ -142,7 +142,7 @@ def _require_passenger_eligible(user):
     if not user.is_active:
         raise EligibilityError("This account is inactive.")
     if not is_verified(user):
-        raise EligibilityError("Your demo verification must be approved before booking.")
+        raise EligibilityError("Your account must be approved before booking.")
 
 
 # --------------------------------------------------------------------------- #

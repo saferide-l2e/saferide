@@ -27,7 +27,7 @@
   document.addEventListener("click", function (event) {
     if (header.classList.contains("nav-open") && !header.contains(event.target)) update(false);
   });
-  const wide = window.matchMedia("(min-width: 800px)");
+  const wide = window.matchMedia("(min-width: 1181px)");
   if (wide.addEventListener) wide.addEventListener("change", function (event) {
     if (event.matches) update(false);
   });

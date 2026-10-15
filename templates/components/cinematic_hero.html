@@ -1,0 +1,21 @@
+{% load static %}
+<section class="cinematic-hero" aria-labelledby="hero-title" data-cinematic-hero>
+  <div class="cinematic-hero__media">
+    <picture>
+      <source media="(max-width: 700px)" srcset="{% static 'media/saferide-lagos-mobile.webp' %}">
+      <img class="cinematic-hero__poster" src="{% static 'media/saferide-lagos-poster.webp' %}" width="1920" height="1080" alt="Original cinematic Lagos artwork: yellow danfos on a lagoon bridge and commuters beside a danfo at a bus stop" fetchpriority="high">
+    </picture>
+    {% if cinematic_video %}
+    <video class="cinematic-hero__video" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" poster="{% static 'media/saferide-lagos-poster.webp' %}" data-hero-video data-desktop-webm="{{ cinematic_video.desktop_webm }}" data-desktop-mp4="{{ cinematic_video.desktop_mp4 }}" data-mobile-webm="{{ cinematic_video.mobile_webm }}" data-mobile-mp4="{{ cinematic_video.mobile_mp4 }}"></video>
+    {% endif %}
+    <span class="cinematic-hero__location"><span aria-hidden="true">⌖</span> LAGOS, NIGERIA <span class="cinematic-hero__location-line"></span> ALWAYS IN MOTION</span>
+  </div>
+  {% if cinematic_video %}<button class="cinematic-hero__motion" type="button" data-video-toggle hidden aria-label="Pause scene">Pause scene</button>{% endif %}
+  <div class="container cinematic-hero__inner"><div class="cinematic-hero__story">
+    <span class="editorial-label">MADE FOR THE MOVEMENT OF LAGOS</span>
+    <h1 id="hero-title">Lagos moves.<br><em>Move with it.</em></h1>
+    <p>Find your route, discover your next danfo, and move through Lagos with confidence.</p>
+    <div class="cinematic-hero__actions"><a class="site-button site-button--lime" href="#quick-ride">Find a ride <span aria-hidden="true">{% include "components/arrow_up_right.html" %}</span></a><a class="cinematic-hero__secondary" href="#explore-routes">Explore routes <span aria-hidden="true">→</span></a></div>
+    <span class="cinematic-hero__signature"><span aria-hidden="true">✳</span> YOUR CITY. YOUR PEOPLE. YOUR WAY.</span>
+  </div></div>
+</section>

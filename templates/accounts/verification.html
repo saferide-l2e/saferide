@@ -12,7 +12,7 @@
   <div class="verify-grid">
     <article class="verify-card" aria-labelledby="verify-card-title">
       <div class="verify-card__top"><span class="verify-kicker">Your review status</span>
-        {% if status == "VERIFIED" %}{% include "ui/status_badge.html" with badge_text="Simulated approval complete" badge_variant="positive" only %}
+        {% if status == "VERIFIED" %}{% include "ui/status_badge.html" with badge_text="Account approved" badge_variant="positive" only %}
         {% elif status == "PENDING" %}{% include "ui/status_badge.html" with badge_text="Profile submitted" badge_variant="neutral" only %}
           <p><a class="button button--primary" href="{% url 'departures:search' %}">Explore routes ↗</a></p>
       {% elif status == "REJECTED" %}{% include "ui/status_badge.html" with badge_text="Review not approved" badge_variant="neutral" only %}
@@ -21,7 +21,7 @@
       </div>
       {% if status == "VERIFIED" %}
         <h2 id="verify-card-title">Your profile has been approved.</h2>
-        <p>Your simulated verification review is complete. Other permissions still depend on your role and the relevant departure.</p>
+        <p>Your account review is complete. Other permissions still depend on your role and the relevant departure.</p>
         {% if next_url %}<a href="{{ next_url }}" class="button button--primary">Continue to SafeRide <span aria-hidden="true">→</span></a>{% endif %}
       {% elif status == "PENDING" %}
         <h2 id="verify-card-title">Your details are in.</h2>
@@ -40,7 +40,7 @@
       {% endif %}
       {% if can_submit %}
       <div class="verify-form-intro"><span class="verify-kicker">YOUR TRAVEL PROFILE</span><h3>{% if status == "PENDING" %}Update your details{% else %}Tell us about yourself{% endif %}</h3><p>Your details are private to the SafeRide account review process.</p></div>
-      <form method="post" action="{{ submit_action }}" class="verify-form" id="verification-declaration" aria-label="Submit your fictional eligibility declaration">
+      <form method="post" action="{{ submit_action }}" class="verify-form" id="verification-declaration" aria-label="Submit your account profile">
         {% csrf_token %}
         {% if form.errors %}<p class="verify-alert verify-alert--error" role="alert">Please confirm both declarations before submitting your request.</p>{% endif %}
         {% if form.non_field_errors %}<div role="alert" class="verify-alert verify-alert--error">{{ form.non_field_errors }}</div>{% endif %}
@@ -65,7 +65,7 @@
       <h2>Your journey starts here.</h2>
       <p>Your route preferences are ready whenever you are. Explore Lagos, compare buses and keep your travel details together.</p>
       <ol><li>Complete your rider profile</li><li>Explore available routes</li><li>Book published seats after staff approval</li></ol>
-      <p class="verify-side__note">SafeRide’s current account review is simulated; it is not a government identity, police, licence or background check.</p>
+      <p class="verify-side__note">SafeRide staff review account access. This does not include government identity, police, licence or background checks.</p>
     </aside>
   </div>
 </section>

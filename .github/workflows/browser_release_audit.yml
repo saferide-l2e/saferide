@@ -63,6 +63,8 @@ jobs:
           exit 1
       - name: Chromium screenshots and interactive journeys
         run: python scripts/browser_release_check.py
+      - name: Cinematic landing responsiveness and media lifecycle
+        run: python scripts/browser_cinematic_check.py
       - name: Attach screenshot and QA evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -70,5 +72,6 @@ jobs:
           name: saferide-chromium-release-audit
           path: |
             artifacts/browser/
+            artifacts/cinematic/final/
             /tmp/saferide-browser-server.log
           if-no-files-found: warn

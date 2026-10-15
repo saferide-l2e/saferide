@@ -20,8 +20,8 @@ def test_demo_buses_are_stable_and_explicitly_non_bookable():
     assert all(bus["is_simulated"] and not bus["bookable"] for bus in first)
     assert all(bus["scheduled_departure_at"] > now + timedelta(minutes=10) for bus in first)
     assert all(0 < bus["available_seats"] <= bus["capacity"] for bus in first)
-    assert all(bus["plate_display"].startswith("DEMO-") for bus in first)
-    assert all("Fictional" in bus["driver_public_name"] for bus in first)
+    assert all(bus["plate_display"].startswith("EXAMPLE-") for bus in first)
+    assert all("Example" in bus["driver_public_name"] for bus in first)
 
 
 @pytest.mark.parametrize("origin,destination", [
@@ -41,8 +41,8 @@ def test_local_opt_in_shows_labelled_examples_without_database_writes(client, se
     html = response.content.decode()
     assert b"Find buses" in response.content
     assert "Agege" in html and "Lekki Phase 1" in html
-    assert "Demo suggestions, not live bus availability" in html
-    assert "four fictional examples" in html
+    assert "Examples only, not live bus availability" in html
+    assert "four examples illustrate" in html
     assert "See this sample bus" in html
     assert len(response.context["sample_buses"]) == 4
     assert not response.context["buses"]

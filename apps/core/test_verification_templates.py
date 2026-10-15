@@ -24,7 +24,7 @@ class VerificationUITests(SimpleTestCase):
         messages = {
             "NOT_SUBMITTED": "Not submitted",
             "PENDING": "Profile submitted",
-            "VERIFIED": "Simulated approval complete",
+            "VERIFIED": "Account approved",
             "REJECTED": "Review not approved",
             "SUSPENDED": "Account restricted",
         }
@@ -33,7 +33,7 @@ class VerificationUITests(SimpleTestCase):
                 html = self.render("accounts/verification.html", {"status": status})
                 self.assertIn(text, html)
                 self.assertNotIn("Mark me verified", html)
-                self.assertIn("simulated", html.lower())
+                self.assertIn("does not include government identity", html.lower())
 
     def test_declaration_is_post_only_and_uses_csrf(self):
         html = self.render("accounts/verification.html", {

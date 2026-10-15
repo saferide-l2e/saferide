@@ -4,6 +4,6 @@ from django.apps import AppConfig
 class VerificationConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "apps.verification"
-    verbose_name = "Demo verification"
+    verbose_name = "Account reviews"
 
 

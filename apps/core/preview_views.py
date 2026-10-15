@@ -72,7 +72,7 @@ class DeclarationForm(forms.Form):
     declaration = forms.ChoiceField(
         label="Your role", choices=(("PASSENGER", "Passenger"), ("DRIVER", "Driver"))
     )
-    fictional_declaration = forms.BooleanField(label="I confirm these example details are fictional")
+    fictional_declaration = forms.BooleanField(label="I understand these example details do not grant booking access")
 
 
 class VehicleForm(forms.Form):

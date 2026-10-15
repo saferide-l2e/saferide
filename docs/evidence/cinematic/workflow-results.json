@@ -1,0 +1,44 @@
+{
+  "base": "http://127.0.0.1:8000",
+  "screens": [
+    {
+      "width": 320,
+      "height": 700,
+      "horizontal_overflow_px": 0,
+      "map_state": "loading"
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "horizontal_overflow_px": 0,
+      "map_state": "loading"
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "horizontal_overflow_px": 0,
+      "map_state": "ready"
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "horizontal_overflow_px": 0,
+      "map_state": "loading"
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "horizontal_overflow_px": 0,
+      "map_state": "ready"
+    }
+  ],
+  "journeys": [
+    "Lagos stops update route and search; no broken theme or animation controls",
+    "Unpublished routes show an honest empty state without fictional buses",
+    "Driver signup CTA preselects driver",
+    "Browser registration -> fictional declaration -> pending staff review",
+    "Verified passenger login -> route search -> seat hold -> private code",
+    "Approved driver sees roster -> checks in boarding code"
+  ],
+  "page_errors": []
+}

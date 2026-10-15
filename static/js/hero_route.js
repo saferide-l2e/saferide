@@ -20,6 +20,7 @@
   };
   const loaders = new Map();
   let googleBoot = null;
+  let googleUnavailable = false;
   let current = null;
   let sequence = 0;
 
@@ -50,11 +51,31 @@
       const element = document.createElement("script");
       element.src = url;
       element.async = true;
-      element.onload = resolve;
-      element.onerror = () => reject(new Error("Unable to load road map"));
+      const timeout = setTimeout(() => {
+        element.remove(); reject(new Error("Road map loading timed out"));
+      }, 14000);
+      element.onload = () => { clearTimeout(timeout); resolve(); };
+      element.onerror = () => { clearTimeout(timeout); reject(new Error("Unable to load road map")); };
       document.head.append(element);
     }).catch(error => {loaders.delete(name); throw error;});
     loaders.set(name, promise);
+    return promise;
+  }
+
+  function loadVectorStyle() {
+    if (loaders.has("vector-style")) return loaders.get("vector-style");
+    const promise = new Promise((resolve, reject) => {
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = "https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.css";
+      const timeout = setTimeout(() => {
+        link.remove(); reject(new Error("Map styling timed out"));
+      }, 14000);
+      link.onload = () => { clearTimeout(timeout); resolve(); };
+      link.onerror = () => { clearTimeout(timeout); reject(new Error("Map styling unavailable")); };
+      document.head.append(link);
+    }).catch(error => { loaders.delete("vector-style"); throw error; });
+    loaders.set("vector-style", promise);
     return promise;
   }
 
@@ -105,9 +126,10 @@
   }
 
   async function vectorMap(session, start, end) {
-    if (!window.maplibregl) {
-      await loadScript("vector", "https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.js");
-    }
+    await Promise.all([
+      loadVectorStyle(),
+      window.maplibregl ? Promise.resolve() : loadScript("vector", "https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.js")
+    ]);
     if (!isCurrent(session)) return;
     mapNode.replaceChildren();
     const map = new maplibregl.Map({
@@ -278,10 +300,13 @@
       return;
     }
     const start = stops[origin.value], end = stops[destination.value];
-    if (root.dataset.googleKey) {
+    if (root.dataset.googleKey && !googleUnavailable) {
       try {await googleMap(session, start, end); return;}
       catch (error) {
         if (!isCurrent(session)) return;
+        // Keep subsequent stop changes usable after a provider failure instead
+        // of repeating the same SDK/API timeout for every selected journey.
+        googleUnavailable = true;
         session.cleanup?.(); session.cleanup = null;
         console.info("Using an alternate route preview.", error.message);
       }
@@ -292,12 +317,27 @@
     }
   }
 
-  origin.addEventListener("change", showRoute);
-  destination.addEventListener("change", showRoute);
+  let visibilityObserver;
+  function selectRoute() {
+    visibilityObserver?.disconnect();
+    showRoute();
+  }
+  origin.addEventListener("change", selectRoute);
+  destination.addEventListener("change", selectRoute);
   window.addEventListener("pagehide", () => {
     current?.abort.abort();
     current?.cleanup?.();
     current = null;
   });
-  showRoute();
+  window.addEventListener("pageshow", event => {
+    if (event.persisted && root.dataset.mapState) selectRoute();
+  });
+  // The road preview is secondary to the hero and search. Defer provider SDKs
+  // and routing requests until it approaches the viewport or a stop is changed.
+  if ("IntersectionObserver" in window) {
+    visibilityObserver = new IntersectionObserver(entries => {
+      if (entries.some(entry => entry.isIntersecting)) selectRoute();
+    }, {rootMargin: "200px"});
+    visibilityObserver.observe(root);
+  } else selectRoute();
 })();

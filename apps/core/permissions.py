@@ -46,7 +46,7 @@ def verified_required(view):
     @login_required
     def wrapper(request, *args, **kwargs):
         if not request.user.is_active or not request.user.is_verified:
-            raise PermissionDenied("Your demo verification must be approved first.")
+            raise PermissionDenied("Your account must be approved first.")
         return view(request, *args, **kwargs)
 
     return wrapper

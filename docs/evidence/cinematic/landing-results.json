@@ -1,0 +1,495 @@
+{
+  "screens": [
+    {
+      "width": 320,
+      "overflow": 0,
+      "cls": 0,
+      "poster": "http://127.0.0.1:8000/static/media/saferide-lagos-mobile.webp",
+      "brokenImages": [],
+      "lcp": [
+        {
+          "name": "first-paint",
+          "ms": 1428
+        },
+        {
+          "name": "first-contentful-paint",
+          "ms": 1428
+        }
+      ]
+    },
+    {
+      "width": 360,
+      "overflow": 0,
+      "cls": 0,
+      "poster": "http://127.0.0.1:8000/static/media/saferide-lagos-mobile.webp",
+      "brokenImages": [],
+      "lcp": [
+        {
+          "name": "first-paint",
+          "ms": 196
+        },
+        {
+          "name": "first-contentful-paint",
+          "ms": 196
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "overflow": 0,
+      "cls": 0,
+      "poster": "http://127.0.0.1:8000/static/media/saferide-lagos-mobile.webp",
+      "brokenImages": [],
+      "lcp": [
+        {
+          "name": "first-paint",
+          "ms": 572
+        },
+        {
+          "name": "first-contentful-paint",
+          "ms": 572
+        }
+      ]
+    },
+    {
+      "width": 430,
+      "overflow": 0,
+      "cls": 0,
+      "poster": "http://127.0.0.1:8000/static/media/saferide-lagos-mobile.webp",
+      "brokenImages": [],
+      "lcp": [
+        {
+          "name": "first-paint",
+          "ms": 324
+        },
+        {
+          "name": "first-contentful-paint",
+          "ms": 324
+        }
+      ]
+    },
+    {
+      "width": 768,
+      "overflow": 0,
+      "cls": 0,
+      "poster": "http://127.0.0.1:8000/static/media/saferide-lagos-poster.webp",
+      "brokenImages": [],
+      "lcp": [
+        {
+          "name": "first-paint",
+          "ms": 392
+        },
+        {
+          "name": "first-contentful-paint",
+          "ms": 392
+        }
+      ]
+    },
+    {
+      "width": 1024,
+      "overflow": 0,
+      "cls": 0.0020738983154296874,
+      "poster": "http://127.0.0.1:8000/static/media/saferide-lagos-poster.webp",
+      "brokenImages": [],
+      "lcp": [
+        {
+          "name": "first-paint",
+          "ms": 504
+        },
+        {
+          "name": "first-contentful-paint",
+          "ms": 504
+        }
+      ]
+    },
+    {
+      "width": 1440,
+      "overflow": 0,
+      "cls": 0,
+      "poster": "http://127.0.0.1:8000/static/media/saferide-lagos-poster.webp",
+      "brokenImages": [],
+      "lcp": [
+        {
+          "name": "first-paint",
+          "ms": 1208
+        },
+        {
+          "name": "first-contentful-paint",
+          "ms": 1208
+        }
+      ]
+    },
+    {
+      "width": 1920,
+      "overflow": 0,
+      "cls": 0,
+      "poster": "http://127.0.0.1:8000/static/media/saferide-lagos-poster.webp",
+      "brokenImages": [],
+      "lcp": [
+        {
+          "name": "first-paint",
+          "ms": 252
+        },
+        {
+          "name": "first-contentful-paint",
+          "ms": 252
+        }
+      ]
+    }
+  ],
+  "accessibility": [
+    {
+      "path": "/",
+      "theme": "light",
+      "width": 390,
+      "violations": []
+    },
+    {
+      "path": "/how-it-works/",
+      "theme": "light",
+      "width": 390,
+      "violations": []
+    },
+    {
+      "path": "/for-drivers/",
+      "theme": "light",
+      "width": 390,
+      "violations": []
+    },
+    {
+      "path": "/safety-support/",
+      "theme": "light",
+      "width": 390,
+      "violations": []
+    },
+    {
+      "path": "/accounts/login/",
+      "theme": "light",
+      "width": 390,
+      "violations": []
+    },
+    {
+      "path": "/accounts/register/",
+      "theme": "light",
+      "width": 390,
+      "violations": []
+    },
+    {
+      "path": "/departures/search/",
+      "theme": "light",
+      "width": 390,
+      "violations": []
+    },
+    {
+      "path": "/",
+      "theme": "light",
+      "width": 1440,
+      "violations": []
+    },
+    {
+      "path": "/how-it-works/",
+      "theme": "light",
+      "width": 1440,
+      "violations": []
+    },
+    {
+      "path": "/for-drivers/",
+      "theme": "light",
+      "width": 1440,
+      "violations": []
+    },
+    {
+      "path": "/safety-support/",
+      "theme": "light",
+      "width": 1440,
+      "violations": []
+    },
+    {
+      "path": "/accounts/login/",
+      "theme": "light",
+      "width": 1440,
+      "violations": []
+    },
+    {
+      "path": "/accounts/register/",
+      "theme": "light",
+      "width": 1440,
+      "violations": []
+    },
+    {
+      "path": "/departures/search/",
+      "theme": "light",
+      "width": 1440,
+      "violations": []
+    },
+    {
+      "path": "/",
+      "theme": "dark",
+      "width": 390,
+      "violations": []
+    },
+    {
+      "path": "/how-it-works/",
+      "theme": "dark",
+      "width": 390,
+      "violations": []
+    },
+    {
+      "path": "/for-drivers/",
+      "theme": "dark",
+      "width": 390,
+      "violations": []
+    },
+    {
+      "path": "/safety-support/",
+      "theme": "dark",
+      "width": 390,
+      "violations": []
+    },
+    {
+      "path": "/accounts/login/",
+      "theme": "dark",
+      "width": 390,
+      "violations": []
+    },
+    {
+      "path": "/accounts/register/",
+      "theme": "dark",
+      "width": 390,
+      "violations": []
+    },
+    {
+      "path": "/departures/search/",
+      "theme": "dark",
+      "width": 390,
+      "violations": []
+    },
+    {
+      "path": "/",
+      "theme": "dark",
+      "width": 1440,
+      "violations": []
+    },
+    {
+      "path": "/how-it-works/",
+      "theme": "dark",
+      "width": 1440,
+      "violations": []
+    },
+    {
+      "path": "/for-drivers/",
+      "theme": "dark",
+      "width": 1440,
+      "violations": []
+    },
+    {
+      "path": "/safety-support/",
+      "theme": "dark",
+      "width": 1440,
+      "violations": []
+    },
+    {
+      "path": "/accounts/login/",
+      "theme": "dark",
+      "width": 1440,
+      "violations": []
+    },
+    {
+      "path": "/accounts/register/",
+      "theme": "dark",
+      "width": 1440,
+      "violations": []
+    },
+    {
+      "path": "/departures/search/",
+      "theme": "dark",
+      "width": 1440,
+      "violations": []
+    }
+  ],
+  "pages": [
+    {
+      "path": "/",
+      "theme": "light",
+      "width": 390
+    },
+    {
+      "path": "/how-it-works/",
+      "theme": "light",
+      "width": 390
+    },
+    {
+      "path": "/for-drivers/",
+      "theme": "light",
+      "width": 390
+    },
+    {
+      "path": "/safety-support/",
+      "theme": "light",
+      "width": 390
+    },
+    {
+      "path": "/accounts/login/",
+      "theme": "light",
+      "width": 390
+    },
+    {
+      "path": "/accounts/register/",
+      "theme": "light",
+      "width": 390
+    },
+    {
+      "path": "/departures/search/",
+      "theme": "light",
+      "width": 390
+    },
+    {
+      "path": "/",
+      "theme": "light",
+      "width": 1440
+    },
+    {
+      "path": "/how-it-works/",
+      "theme": "light",
+      "width": 1440
+    },
+    {
+      "path": "/for-drivers/",
+      "theme": "light",
+      "width": 1440
+    },
+    {
+      "path": "/safety-support/",
+      "theme": "light",
+      "width": 1440
+    },
+    {
+      "path": "/accounts/login/",
+      "theme": "light",
+      "width": 1440
+    },
+    {
+      "path": "/accounts/register/",
+      "theme": "light",
+      "width": 1440
+    },
+    {
+      "path": "/departures/search/",
+      "theme": "light",
+      "width": 1440
+    },
+    {
+      "path": "/",
+      "theme": "dark",
+      "width": 390
+    },
+    {
+      "path": "/how-it-works/",
+      "theme": "dark",
+      "width": 390
+    },
+    {
+      "path": "/for-drivers/",
+      "theme": "dark",
+      "width": 390
+    },
+    {
+      "path": "/safety-support/",
+      "theme": "dark",
+      "width": 390
+    },
+    {
+      "path": "/accounts/login/",
+      "theme": "dark",
+      "width": 390
+    },
+    {
+      "path": "/accounts/register/",
+      "theme": "dark",
+      "width": 390
+    },
+    {
+      "path": "/departures/search/",
+      "theme": "dark",
+      "width": 390
+    },
+    {
+      "path": "/",
+      "theme": "dark",
+      "width": 1440
+    },
+    {
+      "path": "/how-it-works/",
+      "theme": "dark",
+      "width": 1440
+    },
+    {
+      "path": "/for-drivers/",
+      "theme": "dark",
+      "width": 1440
+    },
+    {
+      "path": "/safety-support/",
+      "theme": "dark",
+      "width": 1440
+    },
+    {
+      "path": "/accounts/login/",
+      "theme": "dark",
+      "width": 1440
+    },
+    {
+      "path": "/accounts/register/",
+      "theme": "dark",
+      "width": 1440
+    },
+    {
+      "path": "/departures/search/",
+      "theme": "dark",
+      "width": 1440
+    }
+  ],
+  "errors": [],
+  "media_fixture": {
+    "normal": {
+      "passed": true,
+      "media_requests": 1,
+      "fixture_only": true
+    },
+    "reduced": {
+      "passed": true,
+      "media_requests": 0,
+      "fixture_only": true
+    },
+    "save-data": {
+      "passed": true,
+      "media_requests": 0,
+      "fixture_only": true
+    },
+    "failure": {
+      "passed": true,
+      "media_requests": 1,
+      "fixture_only": true
+    },
+    "autoplay-blocked": {
+      "passed": true,
+      "media_requests": 1,
+      "fixture_only": true
+    }
+  },
+  "working_homepage_links": [
+    "/departures/search/?origin=Jibowu&destination=Mile+2",
+    "/departures/search/?origin=Agege&destination=Ikeja",
+    "/departures/search/?origin=Yaba&destination=Lekki",
+    "/departures/search/?origin=Surulere&destination=Oshodi",
+    "/how-it-works/",
+    "/departures/search/?origin=Yaba&destination=Ikeja",
+    "/departures/search/?origin=Surulere&destination=CMS",
+    "/accounts/register/?role=DRIVER",
+    "/for-drivers/",
+    "/safety-support/"
+  ],
+  "search_query_preserved": true,
+  "map_selection_and_search_sync": "6 pairs, rapid changes; labels and external directions",
+  "no_javascript": "Navigation, poster and GET search work"
+}

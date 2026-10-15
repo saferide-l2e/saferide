@@ -13,7 +13,7 @@ class VerificationAdmin(admin.ModelAdmin):
     readonly_fields = ("id", "submitted_at", "reviewed_by", "reviewed_at")
     actions = ("approve_selected", "reject_selected", "suspend_selected")
 
-    @admin.action(description="Approve selected (demo verification)")
+    @admin.action(description="Approve selected account reviews")
     def approve_selected(self, request, queryset):
         self._run(request, queryset, services.approve)
 

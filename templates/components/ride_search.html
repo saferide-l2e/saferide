@@ -1,0 +1,13 @@
+    <form class="site-ride-search" method="get" action="{% url 'departures:search' %}" role="search" aria-label="Find Lagos danfo buses">
+      <div class="site-ride-search__field"><label for="site-from">Pickup location</label><input id="site-from" name="origin" placeholder="e.g. Jibowu" value="Jibowu" required maxlength="80" autocomplete="off" list="lagos-stops"></div>
+      <span class="site-ride-search__swap" aria-hidden="true">⇄</span>
+      <div class="site-ride-search__field"><label for="site-to">Destination</label><input id="site-to" name="destination" placeholder="e.g. Mile 2" value="Mile 2" required maxlength="80" autocomplete="off" list="lagos-stops"></div>
+      <button class="site-button site-button--dark" type="submit">Find buses <span aria-hidden="true">{% include "components/arrow_up_right.html" %}</span></button>
+    </form>
+    <div class="lagos-route-chips"><span>Popular journeys</span>
+      <a href="{% url 'departures:search' %}?origin=Jibowu&amp;destination=Mile+2">Jibowu → Mile 2</a>
+      <a href="{% url 'departures:search' %}?origin=Agege&amp;destination=Ikeja">Agege → Ikeja</a>
+      <a href="{% url 'departures:search' %}?origin=Yaba&amp;destination=Lekki">Yaba → Lekki</a>
+      <a href="{% url 'departures:search' %}?origin=Surulere&amp;destination=Oshodi">Surulere → Oshodi</a>
+    </div>
+<datalist id="lagos-stops"><option value="Jibowu"><option value="Mile 2"><option value="Yaba"><option value="Ikeja"><option value="Oshodi"><option value="Agege"><option value="Surulere"><option value="CMS"><option value="Maryland"><option value="Victoria Island"><option value="Lekki Phase 1"></datalist>

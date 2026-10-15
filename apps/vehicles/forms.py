@@ -8,7 +8,7 @@ class VehicleForm(forms.ModelForm):
         model = Vehicle
         fields = ["plate_display", "vehicle_type", "capacity"]
         widgets = {
-            "plate_display": forms.TextInput(attrs={"placeholder": "e.g. DEMO-123XY"}),
+            "plate_display": forms.TextInput(attrs={"placeholder": "e.g. LAG-123XY"}),
             "vehicle_type": forms.TextInput(attrs={"placeholder": "e.g. Toyota Hiace bus"}),
             "capacity": forms.NumberInput(attrs={"min": 1, "step": 1}),
         }

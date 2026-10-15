@@ -1,0 +1,9 @@
+{
+  "production_settings": true,
+  "local_postgresql_only": true,
+  "pages": 5,
+  "compressed_whitenoise_static": true,
+  "theme_persistence": true,
+  "page_errors": [],
+  "missing_static": []
+}

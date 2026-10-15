@@ -47,7 +47,7 @@ with sync_playwright() as playwright:
                 "map_state": map_state,
             })
             assert overflow <= 5, f"{width}px viewport overflows horizontally by {overflow}px"
-            expect(page.locator("h1#site-hero-title")).to_be_visible()
+            expect(page.locator("h1#hero-title")).to_be_visible()
             if width <= 390:
                 toggle = page.locator("[data-nav-toggle]")
                 expect(toggle).to_be_visible()
@@ -62,7 +62,11 @@ with sync_playwright() as playwright:
         expect(page.locator("[data-destination-label]")).to_have_text("Ikeja")
         expect(page.locator("#site-to")).to_have_value("Ikeja")
         page.screenshot(path=str(OUT / "lagos-map-ikeja-selected.png"), full_page=True)
-        assert page.locator("[data-theme-toggle]").count() == 0
+        page.locator("[data-theme-toggle]").click()
+        assert page.locator("html").get_attribute("data-theme") == "dark"
+        page.reload(wait_until="domcontentloaded")
+        assert page.locator("html").get_attribute("data-theme") == "dark"
+        page.locator("[data-theme-toggle]").click()
         assert page.locator("[data-map-motion]").count() == 0
         assert page.locator("[data-map-provider]").count() == 0
         evidence["journeys"].append("Lagos stops update route and search; no broken theme or animation controls")
@@ -75,6 +79,34 @@ with sync_playwright() as playwright:
 
         visit(page, "/accounts/register/?role=DRIVER")
         assert page.locator('input[name="role"][value="DRIVER"]').is_checked()
+        role_group = page.get_by_role("group", name="How will you use SafeRide?")
+        for width, height in viewports:
+            page.set_viewport_size({"width": width, "height": height})
+            role_group.scroll_into_view_if_needed()
+            for radio in role_group.get_by_role("radio").all():
+                bounds = radio.bounding_box()
+                assert bounds and 16 <= bounds["width"] <= 24 and 16 <= bounds["height"] <= 24
+            assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
+            # Empty fields can escape an automated text-contrast audit. Verify
+            # actual input foreground/background colours, including dark mode.
+            for theme in ("light", "dark"):
+                page.evaluate("theme => document.documentElement.dataset.theme = theme", theme)
+                contrast = page.locator('[name="display_name"]').evaluate("""input => {
+                    const style = getComputedStyle(input);
+                    const luminance = colour => colour.match(/[\\d.]+/g).slice(0, 3)
+                        .map(Number).map(v => v / 255)
+                        .map(v => v <= .04045 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4)
+                        .reduce((sum, v, i) => sum + v * [.2126, .7152, .0722][i], 0);
+                    const a = luminance(style.color), b = luminance(style.backgroundColor);
+                    return (Math.max(a, b) + .05) / (Math.min(a, b) + .05);
+                }""")
+                assert contrast >= 4.5, (width, theme, contrast)
+            page.evaluate("document.documentElement.dataset.theme = 'light'")
+            page.screenshot(path=str(OUT / f"signup-role-{width}.png"))
+        role_group.get_by_role("radio", name=re.compile("Passenger")).focus()
+        page.keyboard.press("ArrowRight")
+        assert role_group.get_by_role("radio", name=re.compile("Driver")).is_checked()
+        page.set_viewport_size({"width": 1440, "height": 900})
         evidence["journeys"].append("Driver signup CTA preselects driver")
 
         visit(page, "/accounts/register/")
