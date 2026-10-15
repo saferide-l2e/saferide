@@ -25,7 +25,10 @@ def search(request):
     departures = []
     eligible = passenger_eligible(request.user)
     if eligible and (origin or destination):
-        query = Departure.objects.filter(status=DepartureStatus.BOARDING_OPEN).select_related(
+        query = Departure.objects.filter(
+            status=DepartureStatus.BOARDING_OPEN,
+            scheduled_departure_at__gt=timezone.now() + timedelta(seconds=600),
+        ).select_related(
             "route", "driver", "vehicle"
         )
         if origin:
