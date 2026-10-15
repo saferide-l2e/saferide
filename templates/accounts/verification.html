@@ -40,6 +40,7 @@
       {% if can_submit and form and submit_action %}
       <form method="post" action="{{ submit_action }}" class="verify-form">
         {% csrf_token %}
+        {% if form.errors %}<p class="verify-alert verify-alert--error" role="alert">Please confirm both declarations before submitting your request.</p>{% endif %}
         {% if form.non_field_errors %}<div role="alert" class="verify-alert verify-alert--error">{{ form.non_field_errors }}</div>{% endif %}
         {% for field in form %}
           <div class="form-field{% if field.errors %} form-field--error{% endif %}">
@@ -48,8 +49,8 @@
             {% else %}
               {{ field.label_tag }}{{ field }}
             {% endif %}
-            {% if field.help_text %}<p class="field-help">{{ field.help_text }}</p>{% endif %}
-            {% include "ui/field_errors.html" with field=field only %}
+            {% if field.help_text %}<p class="field-help" id="{{ field.auto_id }}_helptext">{{ field.help_text }}</p>{% endif %}
+            {% if field.errors %}<ul class="field-errors" id="{{ field.auto_id }}_error">{% for error in field.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
           </div>
         {% endfor %}
         <button class="button button--primary" type="submit">Submit for staff review <span aria-hidden="true">→</span></button>
