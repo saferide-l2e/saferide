@@ -2,6 +2,8 @@ from datetime import timedelta
 
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied, ValidationError
+from django.db.models import Value
+from django.db.models.functions import Replace
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -42,8 +44,14 @@ def search(request):
             Departure.objects.filter(
                 status=DepartureStatus.BOARDING_OPEN,
                 scheduled_departure_at__gt=now + timedelta(seconds=600),
-                route__origin_name__icontains=origin,
-                route__destination_name__icontains=destination,
+            )
+            .annotate(
+                origin_compact=Replace("route__origin_name", Value(" "), Value("")),
+                destination_compact=Replace("route__destination_name", Value(" "), Value("")),
+            )
+            .filter(
+                origin_compact__icontains=origin.replace(" ", ""),
+                destination_compact__icontains=destination.replace(" ", ""),
             )
             .select_related("route", "driver", "vehicle")[:20]
         )
