@@ -9,17 +9,21 @@ from apps.verification.models import VerificationStatus
 pytestmark = pytest.mark.django_db
 
 
-def test_home_has_dynamic_lagos_stop_and_dark_mode_controls(client):
+def test_home_has_mobile_first_search_and_stop_controls(client):
     page = client.get(reverse("core:home"))
     assert page.status_code == 200
     html = page.content.decode()
     for required in (
         "data-map-origin", "data-map-destination", "site-from",
         "lagos_experience.css", "lagos_experience.js", "lagos-park.svg",
-        "data-theme-toggle", "Victoria Island", "Lekki Phase 1",
+        "Victoria Island", "Lekki Phase 1",
         "View directions",
     ):
         assert required in html, required
+    assert "data-theme-toggle" not in html
+    assert "data-map-provider" not in html
+    assert "data-map-motion" not in html
+    assert html.index('id="quick-ride"') < html.index('id="hero-route-map"')
 
 
 def test_illustrative_bus_choice_is_informational_and_does_not_write_departures(client):
