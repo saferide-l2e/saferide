@@ -25,13 +25,15 @@ def probe(url):
         return exc.code, dict(exc.headers.items()), exc.read(512)
 
 
-def checked(url, expected, redirect_host=None):
+def checked(url, expected, redirect_host=None, redirect_path=None):
     last = None
     for attempt in range(3):
         try:
             status, headers, body = probe(url)
             location = headers.get("Location") or headers.get("location", "")
-            if status == expected and (not redirect_host or urlparse(location).hostname == redirect_host):
+            if (status == expected
+                and (not redirect_host or urlparse(location).hostname == redirect_host)
+                and (not redirect_path or urlparse(location).path == redirect_path)):
                 print(f"PASS {status}: {url}" + (f" -> {location}" if location else ""))
                 return body
             last = f"HTTP {status}; redirect host {urlparse(location).hostname}"
@@ -52,5 +54,5 @@ if __name__ == "__main__":
     checked(RENDER + "/accounts/register/", 200)
     checked(RENDER + "/accounts/login/", 200)
     # An anonymous verification request must never disclose a private form.
-    checked(RENDER + "/verification/", 302, redirect_host="saferide-friday-web.onrender.com")
+    checked(RENDER + "/verification/", 302, redirect_path="/accounts/login/")
     print("PASS: all public read-only release probes completed; no production POSTs or test users.")
