@@ -42,3 +42,17 @@ def test_no_map_scripts_on_login_page(client):
     assert response.status_code == 200
     assert b'id="hero-route-map"' not in response.content
     assert b"hero_route.js" not in response.content
+
+
+def test_danfo_render_has_verified_asset_digest():
+    """Guard against a mangled binary upload of the 3D illustration."""
+    import hashlib
+    from pathlib import Path
+
+    from django.conf import settings
+
+    asset = (Path(settings.BASE_DIR) / "static/img/danfo-3d.webp").read_bytes()
+    assert asset[:4] == b"RIFF"
+    assert asset[8:12] == b"WEBP"
+    git_blob = b"blob " + str(len(asset)).encode() + b"\x00" + asset
+    assert hashlib.sha1(git_blob).hexdigest() == "1620a13eaaa66e9b4ebab52da9d08779031a880a"
