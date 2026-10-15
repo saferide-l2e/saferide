@@ -2,7 +2,7 @@
 {% load static %}
 {% block title %}SafeRide — Move around Lagos with more confidence{% endblock %}
 {% block description %}Explore Lagos bus routes, find boarding points and plan your next journey with SafeRide.{% endblock %}
-{% block extra_head %}<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"><link rel="stylesheet" href="{% static 'css/site_route.css' %}">{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.css"><link rel="stylesheet" href="{% static 'css/site_route.css' %}">{% endblock %}
 {% block extra_scripts %}<script defer src="{% static 'js/hero_route.js' %}"></script>{% endblock %}
 {% block content %}
 <section class="site-hero" aria-labelledby="site-hero-title">
