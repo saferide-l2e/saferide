@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{{ ride.ride_class }} | SafeRide Lagos{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/ride_experience.css' %}">{% endblock %}
+{% block content %}
+<section class="ride-product container" aria-labelledby="ride-product-title">
+  <div class="ride-product__breadcrumb"><a href="{% url 'departures:search' %}?origin={{ origin|urlencode }}&amp;destination={{ destination|urlencode }}">← All bus options</a><span>YOUR ROUTE</span></div>
+  <div class="ride-product__grid">
+    <div class="ride-product__content">
+      <div class="ride-product__banner" role="img" aria-label="Illustration of yellow danfo minibuses at a Lagos bus park"><span class="ride-product__banner-pill">LAGOS • DANFO FIRST</span><div><strong>Your city.<br>Your next move.</strong><small>{{ origin }} → {{ destination }}</small></div></div>
+      <div class="ride-product__heading"><div><span class="eyebrow">THE RIDE EXPERIENCE</span><h1 id="ride-product-title">{{ ride.ride_class }}</h1><p>{{ origin }} <span aria-hidden="true">→</span> {{ destination }}</p></div><span class="ride-product__type">Sample itinerary</span></div>
+      <div class="ride-product__stops">
+        <div><span class="ride-product__point ride-product__point--start"></span><span><small>PICKUP STOP</small><strong>{{ origin }}</strong><small>{{ ride.boarding_point }}</small></span></div>
+        <div class="ride-product__dash" aria-hidden="true"></div>
+        <div><span class="ride-product__point ride-product__point--finish"></span><span><small>DROP-OFF STOP</small><strong>{{ destination }}</strong><small>{{ ride.destination_point }}</small></span></div>
+      </div>
+      <div class="ride-product__facts">
+        <div><span>◷</span><small>Travel time</small><strong>{{ ride.travel_minutes }} min</strong></div>
+        <div><span>▣</span><small>Estimated fare</small><strong>₦{{ ride.fare_estimate_naira }}</strong></div>
+        <div><span>▦</span><small>Example seats</small><strong>{{ ride.available_seats }}</strong></div>
+      </div>
+      <a href="https://www.google.com/maps/dir/?api=1&amp;origin={{ origin|urlencode }}&amp;destination={{ destination|urlencode }}&amp;travelmode=driving" target="_blank" rel="noopener noreferrer" class="ride-product__directions">View the actual road directions in Google Maps ↗</a>
+      <p class="ride-product__clarity">This itinerary, price, seat count and vehicle are illustrative, not an actual bookable service. Road directions are supplied by Google Maps and are not live bus tracking.</p>
+    </div>
+    <aside class="ride-product__checkout" aria-label="Ride options and journey safety">
+      <span class="ride-product__checkout-kicker">YOUR CHOICE</span>
+      <h2>Ready to move?</h2>
+      <p>Explore a danfo itinerary and learn how reservations work.</p>
+      <div class="ride-product__checkout-option"><strong>{{ ride.ride_class }}</strong><span>₦{{ ride.fare_estimate_naira }} <small>example fare</small></span></div>
+      <div class="ride-product__checkout-option"><strong>Ride protection</strong><a href="{% url 'safety:route_updates' %}">Safety &amp; route updates ↗</a></div>
+      <div class="ride-product__checkout-option"><strong>Payment options</strong><span>Pay-at-boarding information</span></div>
+      <p class="ride-product__checkout-note">No payment is collected on this page. Online checkout requires a verified payment provider and a published departure.</p>
+      <a class="button button--primary ride-product__checkout-main" href="{% url 'departures:search' %}?origin={{ origin|urlencode }}&amp;destination={{ destination|urlencode }}">Compare bus options →</a>
+      {% if user.is_authenticated %}<a class="ride-product__secondary" href="{% url 'bookings:index' %}">View your trip history ↗</a>{% else %}<a class="ride-product__secondary" href="{% url 'accounts:register' %}">Create your SafeRide account ↗</a>{% endif %}
+      <div class="ride-product__loyalty"><span aria-hidden="true">★</span><div><strong>Ride rewards</strong><p>Track completed journeys from your account dashboard.</p></div></div>
+    </aside>
+  </div>
+</section>
+{% endblock %}
