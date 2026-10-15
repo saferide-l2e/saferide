@@ -62,6 +62,11 @@ with sync_playwright() as playwright:
         assert page.locator(".demo-bus-card form").count() == 0
         page.locator(".demo-bus-details summary").first.click()
         expect(page.locator(".demo-bus-card").first.get_by_text("Preview only. Not a published route")).to_be_visible()
+        content_width = page.locator(".demo-bus-card .bus-card__body").first.evaluate(
+            "(element) => element.getBoundingClientRect().width"
+        )
+        assert content_width >= 220, f"Example bus text squeezed into {content_width}px"
+        page.evaluate("window.scrollTo(0, 0)")
         page.screenshot(path=str(OUT / "arbitrary-route-suggestions.png"), full_page=True)
         evidence["journeys"].append("Arbitrary locations produce four fictional, non-bookable bus options")
 
