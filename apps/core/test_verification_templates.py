@@ -23,7 +23,7 @@ class VerificationUITests(SimpleTestCase):
     def test_statuses_do_not_offer_self_approval(self):
         messages = {
             "NOT_SUBMITTED": "Not submitted",
-            "PENDING": "Awaiting review",
+            "PENDING": "Profile submitted",
             "VERIFIED": "Simulated approval complete",
             "REJECTED": "Review not approved",
             "SUSPENDED": "Account restricted",
