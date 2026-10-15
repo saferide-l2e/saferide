@@ -1,5 +1,6 @@
 from datetime import timedelta
 
+from django.conf import settings
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db.models import Value
@@ -25,11 +26,7 @@ from .services import apply_transition, create_departure
 
 @require_http_methods(["GET"])
 def search(request):
-    """Browse published journeys publicly, with safe fictional examples for any route.
-
-    Only existing database departures can enter the booking flow; simulation
-    previews are read-only and do not claim real drivers, seats or live routes.
-    """
+    """Browse database departures; fictional examples require a local opt-in."""
     origin = clean_stop(request.GET.get("origin", ""))
     destination = clean_stop(request.GET.get("destination", ""))
     has_searched = bool(origin or destination)
@@ -60,16 +57,17 @@ def search(request):
             departures.append(departure)
 
     cards = [departure_card(d, d.available) for d in departures]
-    previews = sample_buses(origin, destination, now=now) if valid_search and not cards else []
+    preview_requested = settings.DEBUG and request.GET.get("preview") == "1"
+    previews = sample_buses(origin, destination, now=now) if preview_requested and valid_search and not cards else []
     if has_searched and not valid_search:
-        error_message = "Enter two different locations to see demo bus options."
+        error_message = "Enter two different Lagos stops to find published departures."
     else:
         error_message = ""
 
     if has_searched and not eligible:
         eligibility_message = (
             "Only staff-approved passengers can reserve a seat. You can still browse "
-            "published journeys and fictional demo examples."
+            "published journeys and review driver and vehicle information."
         )
     else:
         eligibility_message = ""

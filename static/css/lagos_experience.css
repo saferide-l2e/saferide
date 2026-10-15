@@ -18,7 +18,6 @@
 .lagos-stop-selectors select{display:block;min-height:43px;width:100%;border:1px solid #c9dcd1;border-radius:10px;background:#f3f9f3;color:#0e4435;padding:9px 12px;font-size:.83rem;font-weight:780;cursor:pointer}
 .lagos-stop-selectors select:focus-visible{outline:3px solid #bcf06c;outline-offset:2px}
 .lagos-stop-selectors__arrow{font-weight:900;color:#04815c;padding-bottom:12px;text-align:center}
-.lagos-map .site-map-google-bus{width:54px!important;max-width:54px!important}
 .lagos-quick-ride{padding:0 0 40px}
 .lagos-quick-ride__intro{display:flex;align-items:baseline;gap:14px;margin-bottom:10px}
 .lagos-quick-ride__intro>span{color:#d6f86c;font-size:.68rem;font-weight:900;letter-spacing:.1em}
@@ -68,3 +67,6 @@
 @media(max-width:970px){.lagos-hero__grid{grid-template-columns:1fr;padding-block:55px 44px;gap:34px}.lagos-hero__story h1{max-width:720px}.lagos-map{width:100%}.lagos-map .site-route-map{height:390px}.lagos-driver__body{grid-template-columns:1fr 1fr}}
 @media(max-width:680px){.lagos-hero__grid{padding-top:46px;gap:28px}.lagos-hero__story h1{font-size:clamp(3rem,12.4vw,4.9rem)}.lagos-hero__lead{font-size:1rem}.lagos-hero__buttons{margin-top:22px}.lagos-map .site-route-map{height:290px}.lagos-map{border-radius:20px;padding:8px}.lagos-stop-selectors{gap:5px;padding-inline:4px}.lagos-stop-selectors select{font-size:.74rem;padding:8px}.lagos-quick-ride{padding-bottom:30px}.lagos-quick-ride .site-ride-search{gap:10px}.lagos-how{padding-block:64px}.lagos-how__cards{grid-template-columns:1fr}.lagos-step{min-height:0;padding:25px}.lagos-driver__body{grid-template-columns:1fr}.lagos-driver__visual{min-height:240px}.lagos-driver__content{padding:30px 16px 48px}.lagos-route-chips{font-size:.72rem}.site-map-summary__actions{gap:9px;flex-wrap:wrap}}
 @media(prefers-reduced-motion:reduce){.lagos-route-chips>a,.site-button{transition:none}}
+
+@media(min-width:981px){.lagos-quick-ride .site-ride-search{grid-template-columns:minmax(0,1fr) 30px minmax(0,1fr) 180px}}
+@media(prefers-reduced-motion:no-preference) and (hover:hover){.lagos-step{transition:transform .2s,box-shadow .2s}.lagos-step:hover{transform:translateY(-3px);box-shadow:0 18px 38px #10513816}}

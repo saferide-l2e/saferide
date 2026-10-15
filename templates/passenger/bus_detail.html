@@ -57,6 +57,12 @@
           </div>
           {% if bus.driver_approved %}{% include "ui/status_badge.html" with badge_text="Profile approved" badge_variant="positive" only %}
           {% else %}{% include "ui/status_badge.html" with badge_text="Approval unavailable" badge_variant="neutral" only %}{% endif %}
+          {% if bus.driver_public_bio %}<p>{{ bus.driver_public_bio }}</p>{% endif %}
+          <dl class="detail-facts">
+            <div><dt>Account review</dt><dd>{% if bus.driver_account_approved %}Approved{% else %}Not approved{% endif %}</dd></div>
+            <div><dt>Driver eligibility review</dt><dd>{% if bus.driver_licence_approved %}Approved{% else %}Not approved{% endif %}</dd></div>
+            <div><dt>Assigned vehicle review</dt><dd>{% if bus.vehicle_approved %}Approved{% else %}Not approved{% endif %}</dd></div>
+          </dl>
           <p class="driver-privacy">We show only the driver's public profile and approval status. Private documents and personal contact details are not displayed.</p>
         </article>
         {% if route_notices %}
@@ -95,7 +101,7 @@
           {% endif %}
           <p class="detail-booking__fineprint">Seat availability may change. Booking and queue limits are enforced by SafeRide, not the timer shown in your browser.</p>
         </div>
-        {% include "ui/demo_notice.html" %}
+        <aside class="data-notice" role="note"><strong>About profile reviews</strong><p>Eligibility reviews are currently simulated. They are not government identity checks, background checks or a guarantee of travel safety.</p></aside>
       </aside>
     </div>
   {% else %}

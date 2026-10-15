@@ -17,7 +17,7 @@ def test_home_has_dynamic_lagos_stop_and_dark_mode_controls(client):
         "data-map-origin", "data-map-destination", "site-from",
         "lagos_experience.css", "lagos_experience.js", "lagos-park.svg",
         "data-theme-toggle", "Victoria Island", "Lekki Phase 1",
-        "Open in Google Maps",
+        "View directions",
     ):
         assert required in html, required
 

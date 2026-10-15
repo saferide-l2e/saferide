@@ -14,12 +14,12 @@
   {% if has_searched and valid_search %}
   <section class="results-main" aria-labelledby="live-results-title" style="margin-top:28px">
     <div class="results-count">
-      <h2 id="live-results-title">{% if buses %}Scheduled SafeRide departures{% else %}Your sample buses{% endif %}</h2>
-      <span>{% if buses %}{{ buses|length }} published{% else %}{{ sample_buses|length }} fictional examples{% endif %}</span>
+      <h2 id="live-results-title">{% if sample_buses %}Development examples{% else %}Published departures{% endif %}</h2>
+      <span>{% if sample_buses %}{{ sample_buses|length }} fictional examples{% else %}{{ buses|length }} published{% endif %}</span>
     </div>
     {% if eligibility_message %}<div class="eligibility-note" role="status">{{ eligibility_message }} <a href="{% url 'verification:status' %}" class="demo-review-link">Review account status →</a></div>{% endif %}
     {% if buses %}
-      <p class="demo-search-note">Published departure information from SafeRide. Availability is checked again when you reserve a demo seat.</p>
+      <p class="demo-search-note">Review the assigned driver and vehicle before choosing your bus. Seat availability is checked again when you reserve.</p>
       {% for bus in buses %}
       <article class="bus-card" style="margin-top:14px">
         <div class="bus-card__body">
@@ -88,7 +88,7 @@
     <aside class="route-map-panel demo-any-route" aria-label="Your selected search route">
       <span class="eyebrow">Your route search</span>
       <h3>{{ origin }} <span aria-hidden="true">→</span> {{ destination }}</h3>
-      <p>These locations have not been checked against a live bus network. The suggestions above are fictional and do not represent real bus operators or bookings.</p>
+      <p>Only published SafeRide departures appear in your results. Road directions can help you plan while you wait for a suitable departure.</p>
       <a href="https://www.google.com/maps/dir/?api=1&amp;origin={{ origin|urlencode }}&amp;destination={{ destination|urlencode }}&amp;travelmode=driving" target="_blank" rel="noopener noreferrer" class="button button--outline">Check roads in Google Maps ↗</a>
       <small>Opens Google Maps for directions only; SafeRide does not track vehicles.</small>
     </aside>

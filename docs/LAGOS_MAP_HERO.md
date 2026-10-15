@@ -1,30 +1,85 @@
-# SafeRide Lagos Route Hero
+# Lagos route map and danfo motion
 
-The new hero is a split grid on desktop (copy left; map right, from 980 CSS pixels). Tablets and phones stack the copy above a full-width map. Motion respects reduced-motion preferences and includes a Pause/Play control.
+The homepage uses real driving geometry between curated Lagos public-stop areas.
+These are approximate public locations, not confirmed operator boarding bays. The
+bus is an illustration of the selected journey, not a live vehicle feed.
 
-## Actual geography
+## Marker and motion
 
-Jibowu Bus Stop, Ikorodu Road, Lagos: approximately 6.52104, 3.36779 (public WorldPlaces location). Mile 2 Lagos interchange vicinity: approximately 6.45998, 3.31175 (Mapcarta/OpenStreetMap). These identify real geographic areas, not verified bus operator boarding bays.
+`static/img/danfo-top.svg` is an original overhead yellow danfo with its front
+pointing right (+screen X). The former 72×52 perspective WebP remains unchanged,
+but is no longer the map marker: it cannot convincingly represent every heading.
 
-## Available immediately
+`static/js/danfo_motion.js` handles cumulative road distance, interpolation,
+projected tangents, shortest-angle smoothing and animation state. It advances by
+time, at approximately 30 CSS pixels per second using the local projection scale.
+A small projected road neighbourhood smooths the heading around bends. Position
+always remains on the returned polyline; no artificial curves or direct lines are
+substituted. At arrival it stops; Replay explicitly starts another journey.
 
-Without a Google key the homepage renders real OpenFreeMap vector street tiles with MapLibre GL JS (https://tiles.openfreemap.org/styles/liberty), and requests road geometry from the public OSRM sample routing server. This avoids direct use of OpenStreetMap Foundation's donation-funded raster tile servers, which returned 403 Access blocked in browser tests. OpenFreeMap explicitly permits keyless public/commercial use; attribution is shown automatically by MapLibre. The 3D yellow danfo illustration is generated for SafeRide and animates on the returned geometry. The path is never a made-up decorative curve. If routing is unavailable, the street map remains with real stop markers and a Google Maps directions link; animation stays disabled.
+The library owns the outer marker's positioning transform. A separate inner image
+owns visual rotation, centred on the road. Width is 40px on phones, 44px on tablets
+and 48px on desktop; the SVG's aspect ratio is preserved.
 
-OpenFreeMap's public vector tile service and OSRM's public demo routing endpoint are both best-effort; OpenFreeMap does not offer an SLA. For sustained production traffic, arrange a reliable hosted map and routing service. Neither provider supplies real live danfo GPS.
+`static/js/hero_route.js` provides two adapters:
 
-## Enable interactive Google Maps
+- Google: a supported `OverlayView` DOM marker, without a required map ID. Screen
+  direction uses `MapCanvasProjection.fromLatLngToDivPixel`. Wait for the async
+  SDK callback and the overlay's first usable draw, not merely script load or map
+  idle, before requesting libraries or starting the animation.
+- MapLibre: a custom HTML marker with viewport pitch/rotation alignment. Direction
+  uses `map.project`, which includes camera bearing and pitch.
 
-Google Maps JavaScript API now supports the Routes library and Route.computeRoutes with a path field. New Google Cloud projects may not be able to enable legacy Directions API.
+Pause retains distance. Resume does not jump. Hidden-tab time is discarded.
+Reduced motion prevents autoplay and pauses an active animation when enabled.
+A ResizeObserver refits the route when the map card changes size, with room for
+stops and required attribution. Camera changes refresh marker orientation.
 
-1. In Google Cloud Console enable Maps JavaScript API and Routes API (check billing/pricing or eligible prototyping demo key).
-2. Create an HTTP referrer-restricted browser key limited to the site's hostname https://saferide-friday-web.onrender.com/* and only the Maps APIs used. Set usage quota/budget alerts.
-3. In Render Web Service, set GOOGLE_MAPS_BROWSER_KEY in Environment, then Save and deploy. Do not paste keys into ChatGPT or commit them.
-4. Refresh homepage: the map will show the actual Google driving route and animate the same 3D bus marker on that polyline. If Google's key or route fails, the independent OpenFreeMap/OSRM fallback remains available. The street map can display even if the demo routing server is down; it will then show stop markers and a directions link, without invented road geometry.
+Each selection owns an AbortController, map, markers and cleanup. Stale Google
+responses are ignored; old OSRM requests and animation frames are cancelled.
+Destroyed animations cannot refresh detached markers. Route failures clear the
+old journey and leave an external directions link, without an invented distance.
 
-Google routes and interactive maps can have usage costs. A public browser key is visible to browsers by design and must have HTTP referrer/API restrictions.
+## Product interface and attribution
 
-## Verification
+The header is **YOUR LAGOS ROUTE**. SafeRide's additional provider badge and
+provider-specific descriptions have been removed. **View directions** opens the
+selected route externally. Native Google logos/Terms/copyright and MapLibre's
+OpenFreeMap/OpenMapTiles/OpenStreetMap attribution remain intact and visible.
 
-Automated template checks live at tests/test_lagos_map_hero.py; CI runs Ruff, Django checks and PostgreSQL pytest. Manually verify Google when configured; fallback when absent; OSRM outage handling; 320, 390, 768, 1024 and 1440px widths; keyboard and reduced-motion settings. Animated yellow bus indicates visual trip illustration, not actual location tracking.
+Google uses `GOOGLE_MAPS_BROWSER_KEY` from secure runtime configuration, Maps
+JavaScript API and Routes API. Never commit keys or place them in screenshots.
+Restrict browser keys to approved referrers and APIs. Keyless fallback uses
+OpenFreeMap tiles and public OSRM routing; production traffic needs appropriately
+provisioned services rather than an assumption of unlimited public capacity.
 
-No changes to team's main branch, booking services or Render database.
+Network dependencies: maps.googleapis.com, maps.gstatic.com,
+routes.googleapis.com, fonts.googleapis.com, fonts.gstatic.com, unpkg.com,
+tiles.openfreemap.org and router.project-osrm.org.
+
+## Validation
+
+Run the isolated PostgreSQL checks in the repository, plus:
+
+```sh
+node --test tests/js/*.test.cjs
+node scripts/browser_map_check.cjs
+node scripts/browser_map_check.cjs --keyless
+```
+
+The Chromium check records five viewport sizes, required attribution, actual
+marker frames and heading error, drift from the projected road, pause/resume,
+five additional stop pairs, rapid selection, reduced motion, dark mode and
+explicit routing-failure handling. It encodes successive Chromium captures as
+`danfo-motion.mp4` with their measured timing using system FFmpeg. Set
+`SAFERIDE_MAP_ARTIFACTS` to select the output directory.
+
+`--fixture-basemap` is a separate, local-only offline-canvas test of the real
+MapLibre engine and live OSRM geometry. Its evidence is explicitly labelled and
+must never be described as successful street-map or live-site validation.
+
+The read-only live check can use `SAFERIDE_MAP_BASE=https://saferide-friday-web.onrender.com`.
+Use `scripts/browser_release_check.py` only with an isolated local database for
+account, driver and booking regressions. Reservation screenshots mask the private
+boarding code. Render builds expose only the Git SHA at `/static/release.json`,
+so the deployed build can be compared with the tested release.

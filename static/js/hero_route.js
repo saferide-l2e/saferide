@@ -1,20 +1,15 @@
-/* SafeRide Lagos public stop-to-stop road preview. No GPS or live bus telemetry. */
+/* Public road-route illustration. No live vehicle telemetry. */
 (() => {
   "use strict";
   const root = document.querySelector("[data-route-hero]");
   if (!root) return;
   const mapNode = root.querySelector("#hero-route-map");
-  const provider = root.querySelector("[data-map-provider]");
   const message = root.querySelector("[data-map-distance]");
   const motion = root.querySelector("[data-map-motion]");
   const from = root.querySelector("[data-map-origin]");
   const to = root.querySelector("[data-map-destination]");
-  const originLabel = root.querySelector("[data-origin-label]");
-  const destinationLabel = root.querySelector("[data-destination-label]");
   const directions = root.querySelector("[data-map-directions]");
-  const busImage = root.dataset.danfoIcon;
-  const googleKey = root.dataset.googleKey;
-  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
   const stops = {
     "Jibowu": [3.36779, 6.52104], "Mile 2": [3.31175, 6.45998],
     "Yaba": [3.3792, 6.5098], "Oshodi": [3.3437, 6.5557],
@@ -24,297 +19,306 @@
     "Maryland": [3.3719, 6.5692], "Berger": [3.3701, 6.6465],
     "Ojota": [3.3811, 6.5841], "Iyana Ipaja": [3.2823, 6.6036]
   };
-  let activeMap = null;
-  let activeMarker = null;
-  let activeBus = null;
-  let currentRoute = [];
-  let cumulative = [];
-  let distance = 0;
-  let raf = null;
-  let lastFrame = null;
-  let elapsed = 0;
-  let moving = false;
+  const loaders = new Map();
+  let googleReady = null;
+  let active = null;
   let generation = 0;
-  let abortController = null;
-  const duration = 24000;
+  const live = session => active === session && !session.controller.signal.aborted;
+  const coordinate = p => [p.lng, p.lat];
+  const latlng = p => ({lng: p[0], lat: p[1]});
+  const valid = path => Array.isArray(path) && path.length > 1 && path.length < 15000 &&
+    path.every(p => Number.isFinite(p.lat) && Number.isFinite(p.lng) &&
+      p.lat > 5 && p.lat < 7 && p.lng > 2 && p.lng < 5);
 
-  const point = name => ({ lng: stops[name][0], lat: stops[name][1] });
-  const setMessage = value => { message.textContent = value; };
-  const googleLink = () =>
-    "https://www.google.com/maps/dir/?api=1&origin=" +
-    encodeURIComponent(from.value + ", Lagos, Nigeria") + "&destination=" +
-    encodeURIComponent(to.value + ", Lagos, Nigeria") + "&travelmode=driving";
-
-  function syncLabels() {
-    if (originLabel) originLabel.textContent = from.value;
-    if (destinationLabel) destinationLabel.textContent = to.value;
-    if (directions) directions.href = googleLink();
-    mapNode.setAttribute("aria-label", "Road map from " + from.value + " to " + to.value + " in Lagos");
-  }
-
-  function script(src) {
+  function bounded(promise, signal, timeout = 16000) {
     return new Promise((resolve, reject) => {
-      const item = document.createElement("script");
-      item.src = src; item.async = true;
-      item.onload = resolve;
-      item.onerror = () => reject(new Error("Map script could not load"));
-      document.head.append(item);
+      const abort = () => { clearTimeout(timer); reject(new Error("Route cancelled")); };
+      const timer = setTimeout(() => {
+        signal?.removeEventListener("abort", abort);
+        reject(new Error("Route request timed out"));
+      }, timeout);
+      if (signal?.aborted) { abort(); return; }
+      signal?.addEventListener("abort", abort, {once: true});
+      promise.then(value => {
+        clearTimeout(timer); signal?.removeEventListener("abort", abort); resolve(value);
+      }, error => {
+        clearTimeout(timer); signal?.removeEventListener("abort", abort); reject(error);
+      });
     });
   }
-
-  function valid(path) {
-    return Array.isArray(path) && path.length > 1 && path.length < 15000 &&
-      path.every(p => Number.isFinite(p.lat) && Number.isFinite(p.lng) &&
-        p.lat > 5 && p.lat < 7 && p.lng > 2 && p.lng < 5);
+  function script(name, src) {
+    if (loaders.has(name)) return loaders.get(name);
+    const pending = new Promise((resolve, reject) => {
+      const tag = document.createElement("script");
+      const timer = setTimeout(() => { tag.remove(); reject(new Error("Map script timed out")); }, 16000);
+      tag.src = src; tag.async = true;
+      tag.onload = () => { clearTimeout(timer); resolve(); };
+      tag.onerror = () => { clearTimeout(timer); tag.remove(); reject(new Error("Map script unavailable")); };
+      document.head.append(tag);
+    }).catch(error => { loaders.delete(name); throw error; });
+    loaders.set(name, pending);
+    return pending;
   }
-  function meters(a, b) {
-    const r = Math.PI / 180;
-    const y = Math.sin((b.lat - a.lat) * r / 2);
-    const x = Math.sin((b.lng - a.lng) * r / 2);
-    return 12742000 * Math.asin(Math.min(1, Math.sqrt(
-      y * y + Math.cos(a.lat * r) * Math.cos(b.lat * r) * x * x
-    )));
+  function syncLabels() {
+    root.querySelector("[data-origin-label]").textContent = from.value;
+    root.querySelector("[data-destination-label]").textContent = to.value;
+    directions.href = "https://www.google.com/maps/dir/?api=1&origin=" +
+      encodeURIComponent(from.value + ", Lagos, Nigeria") + "&destination=" +
+      encodeURIComponent(to.value + ", Lagos, Nigeria") + "&travelmode=driving";
+    mapNode.setAttribute("aria-label", `Lagos road map from ${from.value} to ${to.value}`);
+    const searchFrom = document.querySelector("#site-from"), searchTo = document.querySelector("#site-to");
+    if (searchFrom) searchFrom.value = from.value;
+    if (searchTo) searchTo.value = to.value;
   }
-  function atProgress(progress) {
-    const goal = Math.min(1, Math.max(0, progress)) * distance;
-    let low = 1, high = cumulative.length - 1;
-    while (low < high) {
-      const mid = (low + high) >> 1;
-      if (cumulative[mid] < goal) low = mid + 1;
-      else high = mid;
-    }
-    const i = Math.max(1, low);
-    const left = currentRoute[i - 1], right = currentRoute[i];
-    const span = cumulative[i] - cumulative[i - 1];
-    const portion = span ? (goal - cumulative[i - 1]) / span : 0;
-    return { lat: left.lat + (right.lat - left.lat) * portion,
-      lng: left.lng + (right.lng - left.lng) * portion };
+  function motionState(state) {
+    root.dataset.motion = state;
+    motion.textContent = state === "playing" ? "Pause" : state === "arrived" ? "Replay" : "Play";
+    motion.setAttribute("aria-label", state === "playing" ? "Pause bus animation" :
+      state === "arrived" ? "Replay bus animation" : "Play bus animation");
+    motion.setAttribute("aria-pressed", String(state !== "playing"));
   }
-  function bearing(a, b) {
-    const rad = Math.PI / 180;
-    const dy = (b.lng - a.lng) * Math.cos((a.lat + b.lat) * rad / 2);
-    const dx = b.lat - a.lat;
-    return Math.atan2(dy, dx) * 180 / Math.PI;
-  }
-  function pause() {
-    moving = false;
-    if (raf !== null) cancelAnimationFrame(raf);
-    raf = null; lastFrame = null;
-    motion.textContent = "Play bus animation ▶";
-    motion.setAttribute("aria-pressed", "true");
-  }
-  function play() {
-    if (moving || !activeMarker || !currentRoute.length) return;
-    moving = true; lastFrame = null;
-    motion.textContent = "Pause bus animation Ⅱ";
-    motion.setAttribute("aria-pressed", "false");
-    const frame = now => {
-      if (!moving) return;
-      if (!document.hidden && lastFrame !== null) elapsed = (elapsed +
-        Math.min(80, Math.max(0, now - lastFrame))) % duration;
-      lastFrame = now;
-      const progress = elapsed / duration, p = atProgress(progress);
-      const next = atProgress(Math.min(.9999, progress + .001));
-      activeMarker(p, bearing(p, next));
-      raf = requestAnimationFrame(frame);
-    };
-    raf = requestAnimationFrame(frame);
-  }
-  motion.addEventListener("click", () => moving ? pause() : play());
-  reduceMotion.addEventListener?.("change", event => { if (event.matches) pause(); });
-  document.addEventListener("visibilitychange", () => { lastFrame = null; });
-
-  function animate(path, update) {
-    pause(); currentRoute = path; activeMarker = update;
-    cumulative = [0];
-    for (let i = 1; i < path.length; i++) {
-      cumulative.push(cumulative[i - 1] + meters(path[i - 1], path[i]));
-    }
-    distance = cumulative[cumulative.length - 1];
-    elapsed = 0;
-    if (distance > 0) {
-      motion.disabled = false;
-      update(path[0], bearing(path[0], path[1]));
-      if (!reduceMotion.matches) play();
-    }
-  }
-  function icon() {
+  function vehicle() {
+    // The library owns the outer transform; only our inner sprite rotates.
+    const element = document.createElement("div");
+    element.className = "danfo-marker";
+    element.setAttribute("aria-hidden", "true");
     const image = document.createElement("img");
-    image.src = busImage;
-    image.alt = "";
-    image.setAttribute("aria-hidden", "true");
-    image.className = "site-map-google-bus";
-    image.style.width = "54px";
-    image.style.maxWidth = "54px";
-    image.style.filter = "drop-shadow(0 4px 4px #0b241d70)";
-    return image;
+    image.className = "danfo-vehicle";
+    image.src = root.dataset.danfoIcon;
+    image.alt = ""; image.draggable = false;
+    image.width = 80; image.height = 44;
+    element.append(image);
+    return {element, image};
+  }
+  function orient(image, heading) {
+    image.style.transform = `rotate(${heading}deg)`;
+    image.dataset.heading = heading.toFixed(2);
+  }
+  function stopElement(name, end) {
+    const pin = document.createElement("span");
+    pin.className = "site-map-stop" + (end ? " site-map-stop--end" : "");
+    pin.textContent = end ? "B" : "A";
+    pin.title = name;
+    pin.setAttribute("aria-label", name);
+    return pin;
+  }
+  function startAnimation(session, adapter, path) {
+    if (!live(session)) return;
+    session.animation = SafeRideMotion.createAnimator({
+      path, marker: adapter.vehicle(path[0]), project: p => adapter.project(p), onState: motionState
+    });
+    adapter.onMove(() => session.animation?.refresh());
+    root.dataset.mapState = "ready";
+    mapNode.setAttribute("aria-busy", "false");
+    motion.disabled = false;
+    motionState("paused");
+    if (!reduceMotion.matches) session.animation.play();
+  }
+  function distanceLabel(value) {
+    return Number.isFinite(value) && value > 0 ? `Approx. ${(value / 1000).toFixed(1)} km by road` : "Road route ready";
+  }
+  function watchSize(callback) {
+    let previous = mapNode.getBoundingClientRect();
+    const observer = new ResizeObserver(() => {
+      const size = mapNode.getBoundingClientRect();
+      if (Math.abs(size.width - previous.width) > 1 || Math.abs(size.height - previous.height) > 1) {
+        previous = size; callback();
+      }
+    });
+    observer.observe(mapNode);
+    return () => observer.disconnect();
   }
 
-  async function openFreeMap(id, start, end) {
-    if (!window.maplibregl) {
-      await script("https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.js");
-    }
-    if (id !== generation) return;
+  async function freeMap(session, start, end) {
+    await bounded(window.maplibregl ? Promise.resolve() :
+      script("maplibre", "https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.js"), session.controller.signal);
+    if (!live(session)) return;
     mapNode.replaceChildren();
     const map = new maplibregl.Map({
       container: mapNode, style: "https://tiles.openfreemap.org/styles/liberty",
-      center: start, zoom: 10.4, attributionControl: true,
-      dragRotate: false, pitchWithRotate: false
+      center: start, zoom: 11, attributionControl: true, dragRotate: false, pitchWithRotate: false
     });
-    activeMap = map;
-    map.scrollZoom.disable();
-    map.touchZoomRotate.disableRotation();
-    map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-left");
-    await new Promise((resolve, reject) => {
-      const timer = setTimeout(() => reject(new Error("Map tiles timed out")), 16000);
-      map.once("load", () => { clearTimeout(timer); resolve(); });
-      map.on("error", event => {
-        if (!map.isStyleLoaded()) { clearTimeout(timer); reject(event.error || new Error("Tiles unavailable")); }
-      });
-    });
-    if (id !== generation) return;
-    provider.textContent = "OpenFreeMap";
-    for (const [coordinate, label, last] of [[start, "A", false], [end, "B", true]]) {
-      const pin = document.createElement("span");
-      pin.className = "site-map-stop" + (last ? " site-map-stop--end" : "");
-      pin.textContent = label;
-      pin.setAttribute("aria-hidden", "true");
-      new maplibregl.Marker({ element: pin }).setLngLat(coordinate).addTo(map);
-    }
+    const markers = [];
+    let unwatch = () => {};
+    session.cleanup = () => { unwatch(); markers.forEach(m => m.remove()); map.remove(); };
+    map.scrollZoom.disable(); map.touchZoomRotate.disableRotation();
+    map.addControl(new maplibregl.NavigationControl({showCompass: false}), "top-left");
+    await bounded(new Promise((resolve, reject) => {
+      map.once("load", resolve);
+      map.on("error", e => { if (!map.isStyleLoaded()) reject(e.error || new Error("Map unavailable")); });
+    }), session.controller.signal);
+    if (!live(session)) return;
     const fit = points => {
-      const bounds = points.reduce((box, value) => box.extend(value),
-        new maplibregl.LngLatBounds(points[0], points[0]));
-      map.fitBounds(bounds, { padding: 48, maxZoom: 13, duration: 0 });
+      const bounds = points.reduce((box, p) => box.extend(p), new maplibregl.LngLatBounds(points[0], points[0]));
+      map.fitBounds(bounds, {padding: {top: 45, bottom: 78, left: 36, right: 36}, maxZoom: 14, duration: 0});
     };
     fit([start, end]);
-    setMessage("Finding a road route between your stops…");
-    abortController = new AbortController();
-    const timer = setTimeout(() => abortController.abort(), 12000);
+    const url = "https://router.project-osrm.org/route/v1/driving/" +
+      start.join(",") + ";" + end.join(",") + "?overview=full&geometries=geojson";
+    const request = new AbortController();
+    const cancel = () => request.abort();
+    session.controller.signal.addEventListener("abort", cancel, {once: true});
+    const timeout = setTimeout(cancel, 16000);
+    let road;
     try {
-      const url = "https://router.project-osrm.org/route/v1/driving/" +
-        start.join(",") + ";" + end.join(",") + "?overview=full&geometries=geojson";
-      const response = await fetch(url, { signal: abortController.signal });
-      if (!response.ok) throw new Error("Road routing unavailable");
-      const body = await response.json();
-      const road = body.routes?.[0];
-      const path = road?.geometry?.coordinates?.map(([lng, lat]) => ({ lng, lat }));
-      if (!valid(path)) throw new Error("Invalid mapped road route");
-      if (id !== generation) return;
-      const positions = path.map(p => [p.lng, p.lat]);
-      map.addSource("journey", {
-        type: "geojson", data: {
-          type: "Feature", properties: {}, geometry: { type: "LineString", coordinates: positions }
-        }
-      });
-      map.addLayer({
-        id: "journey-glow", type: "line", source: "journey",
-        layout: { "line-join": "round", "line-cap": "round" },
-        paint: { "line-color": "#cfff47", "line-width": 9 }
-      });
-      map.addLayer({
-        id: "journey-line", type: "line", source: "journey",
-        layout: { "line-join": "round", "line-cap": "round" },
-        paint: { "line-color": "#03795b", "line-width": 4 }
-      });
-      fit(positions);
-      const bus = icon();
-      activeBus = new maplibregl.Marker({ element: bus, anchor: "center",
-        rotationAlignment: "viewport" }).setLngLat(positions[0]).addTo(map);
-      animate(path, (position, direction) => {
-        activeBus.setLngLat([position.lng, position.lat]);
-        // Slight course correction keeps the illustrative danfo upright and small.
-        bus.style.rotate = Math.max(-18, Math.min(18, direction - 90)) + "deg";
-      });
-      setMessage("Approx. " + (road.distance / 1000).toFixed(1) + " km by road · Bus follows the mapped route");
-    } catch (error) {
-      if (id === generation) setMessage("Road directions temporarily unavailable. Open in Google Maps for directions.");
-      console.warn("SafeRide route preview:", error.message);
+      const response = await fetch(url, {signal: request.signal});
+      if (!response.ok) throw new Error("Road directions unavailable");
+      road = (await response.json()).routes?.[0];
     } finally {
-      clearTimeout(timer);
-      if (id === generation) setTimeout(() => map.resize(), 100);
+      clearTimeout(timeout); session.controller.signal.removeEventListener("abort", cancel);
     }
+    if (!live(session)) return;
+    const path = road?.geometry?.coordinates?.map(latlng);
+    if (!valid(path)) throw new Error("No suitable road route");
+    const positions = path.map(coordinate);
+    map.addSource("journey", {type: "geojson", data: {
+      type: "Feature", properties: {}, geometry: {type: "LineString", coordinates: positions}
+    }});
+    for (const [id, color, width] of [["journey-halo", "#d6f86c", 9], ["journey-line", "#087657", 4]]) {
+      map.addLayer({id, type: "line", source: "journey", layout: {"line-join": "round", "line-cap": "round"},
+        paint: {"line-color": color, "line-width": width}});
+    }
+    fit(positions);
+    for (const [p, name, endStop] of [[positions[0], from.value, false], [positions.at(-1), to.value, true]]) {
+      markers.push(new maplibregl.Marker({element: stopElement(name, endStop)}).setLngLat(p).addTo(map));
+    }
+    startAnimation(session, {
+      project: p => map.project(coordinate(p)),
+      onMove: callback => map.on("move", callback),
+      vehicle(p) {
+        const {element, image} = vehicle();
+        const marker = new maplibregl.Marker({element, anchor: "center", rotationAlignment: "viewport",
+          pitchAlignment: "viewport", subpixelPositioning: true}).setLngLat(coordinate(p)).addTo(map);
+        markers.push(marker);
+        return {update(position, angle) { marker.setLngLat(coordinate(position)); orient(image, angle); },
+          remove: () => marker.remove()};
+      }
+    }, path);
+    unwatch = watchSize(() => { map.resize(); fit(positions); });
+    message.textContent = distanceLabel(road.distance);
   }
 
-  async function googleRoute(id, start, end) {
-    if (!googleKey) throw new Error("No Google key");
-    if (!window.google?.maps?.importLibrary) {
-      await script("https://maps.googleapis.com/maps/api/js?key=" +
-        encodeURIComponent(googleKey) + "&v=weekly&loading=async");
+  async function googleMap(session, start, end) {
+    if (!window.google?.maps?.importLibrary && !googleReady) {
+      // loading=async may fire script.onload before the Maps bootstrap is ready.
+      // Its documented callback is the readiness contract, not the script event.
+      googleReady = new Promise((resolve, reject) => {
+        window.safeRideMapsReady = () => { delete window.safeRideMapsReady; resolve(); };
+        script("google", "https://maps.googleapis.com/maps/api/js?key=" +
+          encodeURIComponent(root.dataset.googleKey) +
+          "&v=weekly&loading=async&callback=safeRideMapsReady").catch(reject);
+      });
     }
-    if (id !== generation) return;
-    const [{ Map }, { Route }] = await Promise.all([
+    await bounded(window.google?.maps?.importLibrary ? Promise.resolve() : googleReady, session.controller.signal);
+    const [{Map}, {Route}] = await bounded(Promise.all([
       google.maps.importLibrary("maps"), google.maps.importLibrary("routes")
-    ]);
-    const result = await Route.computeRoutes({
-      origin: { lat: start[1], lng: start[0] },
-      destination: { lat: end[1], lng: end[0] },
-      travelMode: "DRIVING", fields: ["path", "distanceMeters"]
-    });
+    ]), session.controller.signal);
+    const result = await bounded(Route.computeRoutes({origin: latlng(start), destination: latlng(end),
+      travelMode: "DRIVING", fields: ["path", "distanceMeters"]}), session.controller.signal);
+    if (!live(session)) return;
     const road = result.routes?.[0];
-    const path = road?.path?.map(p => ({
-      lat: typeof p.lat === "function" ? p.lat() : p.lat,
-      lng: typeof p.lng === "function" ? p.lng() : p.lng
-    }));
-    if (!valid(path)) throw new Error("Google route has no valid geometry");
-    if (id !== generation) return;
+    const path = road?.path?.map(p => ({lat: typeof p.lat === "function" ? p.lat() : p.lat,
+      lng: typeof p.lng === "function" ? p.lng() : p.lng}));
+    if (!valid(path)) throw new Error("No suitable road route");
     mapNode.replaceChildren();
-    const map = new Map(mapNode, {
-      center: { lat: start[1], lng: start[0] }, zoom: 11,
-      gestureHandling: "cooperative", mapTypeControl: false,
-      streetViewControl: false, fullscreenControl: false
-    });
-    new google.maps.Polyline({
-      map, path, strokeColor: "#087657", strokeWeight: 7, strokeOpacity: .95
-    });
-    const bounds = new google.maps.LatLngBounds();
-    path.forEach(p => bounds.extend(p)); map.fitBounds(bounds, 50);
-    for (const [position, label] of [[start, "A"], [end, "B"]]) {
-      new google.maps.Marker({ map, label, position: { lat: position[1], lng: position[0] } });
+    const map = new Map(mapNode, {center: path[0], zoom: 11, tilt: 0, gestureHandling: "cooperative",
+      mapTypeControl: false, streetViewControl: false, fullscreenControl: false});
+    const overlays = [];
+    let unwatch = () => {};
+    // OverlayView is a supported DOM marker without an AdvancedMarker map-ID requirement.
+    class DomMarker extends google.maps.OverlayView {
+      constructor(element, position) {
+        super(); this.element = element; this.position = position;
+        this.ready = new Promise(resolve => { this.resolveReady = resolve; });
+        this.setMap(map);
+      }
+      onAdd() { this.getPanes().overlayMouseTarget.append(this.element); }
+      draw() {
+        const p = this.getProjection()?.fromLatLngToDivPixel(new google.maps.LatLng(this.position));
+        if (p) {
+          this.element.style.left = p.x + "px"; this.element.style.top = p.y + "px";
+          this.resolveReady?.(); this.resolveReady = null;
+        }
+      }
+      onRemove() { this.element.remove(); }
     }
-    const danfo = new google.maps.Marker({
-      map, position: path[0], title: "Illustrative SafeRide danfo",
-      icon: { url: busImage, scaledSize: new google.maps.Size(54, 39),
-        anchor: new google.maps.Point(27, 25) }
-    });
-    activeBus = danfo;
-    provider.textContent = "Google Maps";
-    animate(path, p => danfo.setPosition(p));
-    setMessage("Approx. " + ((road.distanceMeters || distance) / 1000).toFixed(1) +
-      " km by road · Bus follows the mapped route");
+    const line = new google.maps.Polyline({map, path, strokeColor: "#087657", strokeWeight: 5, strokeOpacity: .95});
+    session.cleanup = () => {
+      unwatch(); line.setMap(null); overlays.forEach(item => item.setMap(null));
+      google.maps.event.clearInstanceListeners(map);
+    };
+    const bounds = new google.maps.LatLngBounds();
+    path.forEach(p => bounds.extend(p));
+    const fit = () => map.fitBounds(bounds, {top: 45, bottom: 60, left: 36, right: 36});
+    fit();
+    for (const [p, name, last] of [[path[0], from.value, false], [path.at(-1), to.value, true]]) {
+      const element = document.createElement("div");
+      element.className = "danfo-overlay-stop"; element.append(stopElement(name, last));
+      overlays.push(new DomMarker(element, p));
+    }
+    const probe = new DomMarker(document.createElement("span"), path[0]);
+    overlays.push(probe);
+    // idle can precede an overlay's first draw. Wait for its usable projection.
+    await bounded(probe.ready, session.controller.signal);
+    if (!live(session)) return;
+    startAnimation(session, {
+      project: p => probe.getProjection().fromLatLngToDivPixel(new google.maps.LatLng(p)),
+      onMove: callback => google.maps.event.addListener(map, "bounds_changed", callback),
+      vehicle(p) {
+        const {element, image} = vehicle(); element.classList.add("danfo-google-marker");
+        const marker = new DomMarker(element, p); overlays.push(marker);
+        return {update(position, angle) { marker.position = position; marker.draw(); orient(image, angle); },
+          remove: () => marker.setMap(null)};
+      }
+    }, path);
+    unwatch = watchSize(fit);
+    message.textContent = distanceLabel(road.distanceMeters);
   }
 
+  function fallback(session) {
+    if (!live(session)) return;
+    session.cleanup?.(); session.cleanup = null;
+    session.animation?.destroy(); session.animation = null;
+    root.dataset.mapState = "unavailable";
+    mapNode.setAttribute("aria-busy", "false");
+    const panel = document.createElement("div"); panel.className = "site-map-loading";
+    const text = document.createElement("strong"); text.textContent = "Your route, one tap away";
+    const link = document.createElement("a");
+    link.href = directions.href; link.target = "_blank"; link.rel = "noopener noreferrer";
+    link.textContent = "View directions ↗"; panel.append(text, link);
+    mapNode.replaceChildren(panel);
+    message.textContent = "Road preview unavailable. View directions to plan your journey.";
+  }
   async function show() {
-    const id = ++generation;
-    pause(); motion.disabled = true;
-    currentRoute = []; activeMarker = null; activeBus = null;
-    if (abortController) abortController.abort();
-    if (activeMap) { activeMap.remove(); activeMap = null; }
-    syncLabels();
-    mapNode.replaceChildren();
+    if (active) {
+      active.controller.abort(); active.animation?.destroy(); active.cleanup?.();
+    }
+    const session = {id: ++generation, controller: new AbortController()};
+    active = session;
+    motion.disabled = true; motionState("paused"); syncLabels();
+    root.dataset.mapState = "loading"; mapNode.setAttribute("aria-busy", "true");
+    const loading = document.createElement("div"); loading.className = "site-map-loading";
+    loading.textContent = "Finding your road route…"; mapNode.replaceChildren(loading);
+    message.textContent = "Connecting your stops…";
     if (!stops[from.value] || !stops[to.value] || from.value === to.value) {
-      provider.textContent = "Select a route";
-      setMessage("Choose two different Lagos bus stops.");
-      return;
+      fallback(session); message.textContent = "Choose two different Lagos stops."; return;
     }
     const start = stops[from.value], end = stops[to.value];
-    provider.textContent = "Loading route…";
-    setMessage("Connecting " + from.value + " to " + to.value + "…");
-    if (googleKey) {
-      try { await googleRoute(id, start, end); return; }
-      catch (error) { console.warn("Google route unavailable; trying OpenFreeMap", error.message); }
+    if (root.dataset.googleKey) {
+      try { await googleMap(session, start, end); return; }
+      catch (_) { if (!live(session)) return; session.cleanup?.(); session.cleanup = null; }
     }
-    try { await openFreeMap(id, start, end); }
-    catch (error) {
-      if (id !== generation) return;
-      provider.textContent = "Map unavailable";
-      const link = document.createElement("a");
-      link.href = googleLink(); link.rel = "noopener noreferrer";
-      link.target = "_blank"; link.textContent = "Open road directions in Google Maps ↗";
-      mapNode.replaceChildren(link);
-      setMessage("Map provider is temporarily unavailable.");
-    }
+    try { await freeMap(session, start, end); }
+    catch (_) { fallback(session); }
   }
-  from.addEventListener("change", show);
-  to.addEventListener("change", show);
+  motion.addEventListener("click", () => {
+    if (root.dataset.motion === "playing") active?.animation?.pause();
+    else active?.animation?.play();
+  });
+  reduceMotion.addEventListener("change", event => { if (event.matches) active?.animation?.pause(); });
+  from.addEventListener("change", show); to.addEventListener("change", show);
+  window.addEventListener("pagehide", () => {
+    active?.controller.abort(); active?.animation?.destroy(); active?.cleanup?.(); active = null;
+  });
   show();
 })();

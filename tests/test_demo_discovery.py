@@ -32,10 +32,11 @@ def test_empty_or_identical_stops_do_not_generate_fictional_options(origin, dest
     assert sample_buses(origin, destination) == []
 
 
-def test_arbitrary_route_shows_four_labelled_examples_without_database_writes(client):
+def test_local_opt_in_shows_labelled_examples_without_database_writes(client, settings):
+    settings.DEBUG = True
     before = Departure.objects.count()
     route = reverse("departures:search")
-    response = client.get(route, {"origin": "Agege", "destination": "Lekki Phase 1"})
+    response = client.get(route, {"origin": "Agege", "destination": "Lekki Phase 1", "preview": "1"})
     assert response.status_code == 200
     html = response.content.decode()
     assert b"Find buses" in response.content
@@ -48,6 +49,18 @@ def test_arbitrary_route_shows_four_labelled_examples_without_database_writes(cl
     assert Departure.objects.count() == before
     assert "/reserve/" not in html
     assert html.count('class="bus-card demo-bus-card"') == 4
+
+
+@pytest.mark.parametrize("debug,preview", [(True, ""), (False, ""), (False, "1")])
+def test_normal_search_never_invents_buses(client, settings, debug, preview):
+    settings.DEBUG = debug
+    response = client.get(reverse("departures:search"), {
+        "origin": "Agege", "destination": "Lekki Phase 1", "preview": preview,
+    })
+    assert response.status_code == 200
+    assert not response.context["sample_buses"]
+    assert b"No matching departures" in response.content
+    assert b"demo-bus-card" not in response.content
 
 
 def test_unverified_user_can_browse_but_cannot_reserve(client, unverified_passenger, departure):

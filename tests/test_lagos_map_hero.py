@@ -15,7 +15,7 @@ def test_home_map_and_real_directions_link(client):
         "Jibowu", "Mile 2",
         "maps/dir/?api=1",
         "Not live vehicle tracking",
-        "img/danfo-3d.webp",
+        "img/danfo-top.svg",
         "site_route.css",
         "hero_route.js",
         'method="get" action="/departures/search/"',
@@ -33,7 +33,7 @@ def test_without_google_key_map_has_fallback(client, monkeypatch):
     monkeypatch.delenv("GOOGLE_MAPS_BROWSER_KEY", raising=False)
     html = client.get(reverse("core:home")).content.decode()
     assert 'data-google-key=""' in html
-    assert "Open in Google Maps" in html
+    assert "View directions" in html
     assert "unpkg.com/maplibre-gl@5.6.0" in html
     from pathlib import Path
 
@@ -63,3 +63,13 @@ def test_danfo_render_has_verified_asset_digest():
     assert asset[8:12] == b"WEBP"
     git_blob = b"blob " + str(len(asset)).encode() + b"\x00" + asset
     assert hashlib.sha1(git_blob).hexdigest() == "1620a13eaaa66e9b4ebab52da9d08779031a880a"
+
+
+def test_route_card_is_product_focused_and_has_search_metadata(client):
+    html = client.get(reverse("core:home")).content.decode()
+    assert "YOUR LAGOS ROUTE" in html
+    assert "data-map-provider" not in html
+    assert "danfo_motion.js" in html
+    assert 'rel="canonical"' in html
+    assert 'property="og:title"' in html
+    assert 'application/ld+json' in html
