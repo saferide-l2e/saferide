@@ -1,12 +1,19 @@
 """Booking service contract (BE-05 to BE-08, BE-14).
 
-Public functions:
+Public operations:
     reserve(passenger, departure, now_utc)
     cancel(booking, actor, now_utc)
     join_waitlist(passenger, departure, now_utc)
     accept_offer(entry, passenger, now_utc)
     check_in(booking, driver, code, now_utc)
+    confirm_arrival(booking, passenger, now_utc)
     reconcile(departure, now_utc)
+
+Boarding-credential and waitlist helpers (database contract, DB-04/DB-05):
+    hash_boarding_code(raw_code)
+    verify_boarding_code(raw_code, code_digest)
+    issue_boarding_credential(booking, raw_code=None)
+    offer_next_waitlist_entry(departure, now=None, offer_window=OFFER_WINDOW)
 
 Every inventory-changing operation locks the departure row, reconciles expired
 holds/offers, re-checks eligibility and capacity, then writes the change and its
@@ -19,7 +26,7 @@ from datetime import datetime, timedelta
 
 from django.conf import settings
 from django.contrib.auth.hashers import check_password, make_password
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
 from django.db.models import Q
 from django.utils import timezone
@@ -40,6 +47,7 @@ from apps.verification.services import is_verified
 from .models import BoardingCredential, Booking, BookingStatus, WaitlistEntry, WaitlistStatus
 
 ACTIVE_BOOKING_STATUSES = (BookingStatus.HELD, BookingStatus.BOARDED)
+OFFER_WINDOW = timedelta(seconds=settings.SAFERIDE_OFFER_SECONDS)
 
 
 def _now(value=None):
@@ -57,6 +65,66 @@ def _offer_duration():
     return timedelta(seconds=settings.SAFERIDE_OFFER_SECONDS)
 
 
+# --------------------------------------------------------------------------- #
+# Boarding credentials
+# --------------------------------------------------------------------------- #
+def hash_boarding_code(raw_code):
+    """Return a salted Django password hash; callers must never log the raw code."""
+    return make_password(raw_code)
+
+
+def verify_boarding_code(raw_code, code_digest):
+    """Constant-time verification helper for backend boarding flows."""
+    return check_password(raw_code, code_digest)
+
+
+def issue_boarding_credential(booking, raw_code=None):
+    """Create one credential for ``booking`` and return ``(credential, raw_code)``.
+
+    When ``raw_code`` is omitted a random URL-safe code is generated. Only the
+    salted digest is persisted; the raw code is returned once to the caller and
+    must not be logged or stored.
+    """
+    raw_code = raw_code or secrets.token_urlsafe(16)
+    credential = BoardingCredential.objects.create(
+        booking=booking,
+        code_digest=hash_boarding_code(raw_code),
+    )
+    return credential, raw_code
+
+
+@transaction.atomic
+def offer_next_waitlist_entry(departure, *, now=None, offer_window=OFFER_WINDOW):
+    """Offer one released seat to the next FIFO entry.
+
+    Call inside the departure inventory transaction after a seat is released.
+    The caller must count unexpired OFFERED entries as occupied inventory.
+    """
+    now = now or timezone.now()
+    if not timezone.is_aware(now):
+        raise ValidationError("Offer timestamps must be timezone-aware.")
+    if offer_window <= timedelta(0):
+        raise ValidationError("Offer duration must be positive.")
+
+    entry = (
+        WaitlistEntry.objects.select_for_update(skip_locked=True)
+        .filter(departure=departure, status=WaitlistStatus.WAITING)
+        .fifo()
+        .first()
+    )
+    if entry is None:
+        return None
+
+    entry.status = WaitlistStatus.OFFERED
+    entry.offered_at = now
+    entry.offer_expires_at = now + offer_window
+    entry.save(update_fields=["status", "offered_at", "offer_expires_at"])
+    return entry
+
+
+# --------------------------------------------------------------------------- #
+# Eligibility
+# --------------------------------------------------------------------------- #
 def passenger_eligible(user):
     return bool(
         user
@@ -204,8 +272,9 @@ def _require_no_overlap(passenger, departure, now):
 
 
 def _issue_credential(booking):
+    """Issue the six-digit boarding code the passenger sees for this hold."""
     code = f"{secrets.randbelow(1_000_000):06d}"
-    BoardingCredential.objects.create(booking=booking, code_hash=make_password(code))
+    issue_boarding_credential(booking, raw_code=code)
     return code
 
 
@@ -304,8 +373,6 @@ def accept_offer(entry, passenger, now_utc=None):
         if locked_entry.offer_expires_at is None or locked_entry.offer_expires_at <= now:
             raise ExpiredError("This offer has expired.")
 
-        locked_entry.status = WaitlistStatus.ACCEPTED
-        locked_entry.save(update_fields=["status"])
         booking = Booking.objects.create(
             departure=departure,
             passenger=passenger,
@@ -313,6 +380,11 @@ def accept_offer(entry, passenger, now_utc=None):
             expires_at=now + _hold_duration(),
         )
         code = _issue_credential(booking)
+        # The database requires ACCEPTED entries to name the booking they took,
+        # so both columns are written together.
+        locked_entry.status = WaitlistStatus.ACCEPTED
+        locked_entry.accepted_booking = booking
+        locked_entry.save(update_fields=["status", "accepted_booking"])
         record(passenger, "waitlist.accepted", locked_entry, {"departure": str(departure.id)})
     return booking, code
 
@@ -336,7 +408,7 @@ def check_in(booking, driver, code, now_utc=None):
         credential = getattr(locked_booking, "boarding_credential", None)
         if credential is None or not credential.is_usable:
             raise CodeError("No valid boarding code for this reservation.")
-        if not check_password((code or "").strip(), credential.code_hash):
+        if not verify_boarding_code((code or "").strip(), credential.code_digest):
             raise CodeError("The boarding code is incorrect.")
 
         locked_booking.status = BookingStatus.BOARDED
@@ -375,6 +447,7 @@ def confirm_arrival(booking, passenger, now_utc=None):
 
 
 __all__ = [
+    "OFFER_WINDOW",
     "Booking",
     "BookingStatus",
     "WaitlistEntry",
@@ -384,8 +457,12 @@ __all__ = [
     "cancel",
     "check_in",
     "confirm_arrival",
+    "hash_boarding_code",
+    "issue_boarding_credential",
     "join_waitlist",
+    "offer_next_waitlist_entry",
     "passenger_eligible",
     "reconcile",
     "reserve",
+    "verify_boarding_code",
 ]

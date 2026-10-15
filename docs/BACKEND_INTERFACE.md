@@ -74,7 +74,7 @@ fields and constraints below, or the service contract breaks:
 - `vehicles.DriverProfile` / `vehicles.Vehicle` — `Vehicle.capacity > 0`, unique `plate_normalized`, `approval_status`.
 - `routes.Route` — origin/destination/boarding/destination points, `is_active`.
 - `departures.Departure` — `route`, `driver`, `vehicle`, `scheduled_departure_at`, `snapshot_capacity`, `walk_in_count >= 0`, `status`.
-- `bookings.Booking` / `WaitlistEntry` / `BoardingCredential` — partial unique indexes for active bookings and active waitlist entries; `BoardingCredential.booking` one-to-one with a salted `code_hash`.
+- `bookings.Booking` / `WaitlistEntry` / `BoardingCredential` — partial unique indexes for active bookings and active waitlist entries; `BoardingCredential.booking` one-to-one with a unique salted `code_digest`.
 - `safety.Review` (stars 1–5, one per booking), `IncidentReport`, `RouteUpdate`.
 - `audit.AuditEvent` — append-only.
 

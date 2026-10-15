@@ -23,4 +23,4 @@ class WaitlistEntryAdmin(admin.ModelAdmin):
 class BoardingCredentialAdmin(admin.ModelAdmin):
     list_display = ("booking", "issued_at", "consumed_at", "revoked_at")
     list_filter = ("consumed_at", "revoked_at")
-    readonly_fields = ("id", "code_hash", "issued_at")
+    readonly_fields = ("id", "code_digest", "issued_at")

@@ -43,8 +43,8 @@ def test_reserve_holds_exactly_600_seconds(passenger, departure):
     assert (booking.expires_at - now) == timedelta(seconds=600)
     assert len(code) == 6 and code.isdigit()
     credential = BoardingCredential.objects.get(booking=booking)
-    assert credential.code_hash != code
-    assert check_password(code, credential.code_hash)
+    assert credential.code_digest != code
+    assert check_password(code, credential.code_digest)
     assert available_seats(departure, now) == departure.snapshot_capacity - 1
 
 
