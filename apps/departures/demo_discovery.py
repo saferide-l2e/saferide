@@ -6,7 +6,6 @@ external services. The result cannot be booked or checked in.
 
 import hashlib
 import random
-import re
 from datetime import timedelta
 
 from django.utils import timezone
@@ -25,7 +24,7 @@ def clean_stop(value):
         return ""
     # Ignore control characters rather than allowing misleading invisible labels.
     value = "".join(char for char in value if char.isprintable())
-    return re.sub(r"\\s+", " ", value).strip()[:80].strip()
+    return " ".join(value.split())[:80].strip()
 
 
 def sample_buses(origin, destination, *, now=None, count=4):
