@@ -1,0 +1,55 @@
+{
+  "base": "http://127.0.0.1:8000",
+  "fixtureBasemap": false,
+  "keyless": false,
+  "screenshots": [
+    "map-320.png",
+    "map-390.png",
+    "map-768.png",
+    "map-1024.png",
+    "map-1440.png",
+    "map-dark.png",
+    "map-routing-unavailable.png"
+  ],
+  "routes": [
+    {
+      "origin": "Lekki Phase 1",
+      "destination": "Jibowu",
+      "distance": "Approx. 19.3 km by road"
+    },
+    {
+      "origin": "Yaba",
+      "destination": "Ikeja",
+      "distance": "Approx. 12.7 km by road"
+    },
+    {
+      "origin": "Agege",
+      "destination": "Oshodi",
+      "distance": "Approx. 8.7 km by road"
+    },
+    {
+      "origin": "Surulere",
+      "destination": "CMS",
+      "distance": "Approx. 8.9 km by road"
+    },
+    {
+      "origin": "Maryland",
+      "destination": "Victoria Island",
+      "distance": "Approx. 20.9 km by road"
+    }
+  ],
+  "errors": [],
+  "renderer": "Google Maps",
+  "attribution": "Keyboard shortcuts Map DataMap data \u00a92026 Google 2 km\u00a0Click to toggle between metric and imperial units Terms Report a map error",
+  "motion": {
+    "frames": 493,
+    "maxHeadingError": 37.844302529052584,
+    "meanHeadingError": 2.637064707633389,
+    "maxRouteDrift": 0.024203308180057677
+  },
+  "pauseResume": "passed",
+  "video": "danfo-motion.mp4",
+  "staleResponses": "passed",
+  "reducedMotion": "passed",
+  "failureFallback": "passed"
+}

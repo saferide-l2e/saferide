@@ -1,24 +1,36 @@
 {% extends "base.html" %}
 {% load static %}
 {% block title %}SafeRide | Your Lagos, your route{% endblock %}
-{% block description %}Find danfo routes, compare your options and plan your next journey across Lagos.{% endblock %}
-{% block extra_head %}<link rel="preload" as="image" href="{% static 'img/lagos-park.svg' %}"><link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.css"><link rel="stylesheet" href="{% static 'css/site_route.css' %}">{% endblock %}
-{% block extra_scripts %}<script defer src="{% static 'js/hero_route.js' %}"></script>{% endblock %}
+{% block description %}Plan Lagos bus journeys from Jibowu, Yaba, Ikeja, Lekki and more. Explore road routes, find published departures and keep your boarding details together.{% endblock %}
+{% block extra_head %}
+<link rel="canonical" href="https://saferide-friday-web.onrender.com/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="SafeRide">
+<meta property="og:title" content="SafeRide | Plan your Lagos bus journey">
+<meta property="og:description" content="Explore Lagos road routes, find published departures and keep your boarding details together.">
+<meta property="og:url" content="https://saferide-friday-web.onrender.com/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SafeRide | Plan your Lagos bus journey">
+<meta name="twitter:description" content="Explore Lagos routes and find your next published departure.">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"SafeRide","url":"https://saferide-friday-web.onrender.com/","description":"Lagos bus route planning and published departure discovery","inLanguage":"en-NG"}</script>
+<link rel="preload" as="image" href="{% static 'img/lagos-park.svg' %}"><link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.6.0/dist/maplibre-gl.css"><link rel="stylesheet" href="{% static 'css/site_route.css' %}">
+{% endblock %}
+{% block extra_scripts %}<script defer src="{% static 'js/danfo_motion.js' %}"></script><script defer src="{% static 'js/hero_route.js' %}"></script>{% endblock %}
 {% block content %}
 <section class="site-hero lagos-hero" aria-labelledby="site-hero-title">
   <div class="container lagos-hero__grid">
     <div class="lagos-hero__story">
       <span class="lagos-eyebrow"><span aria-hidden="true">✦</span> MADE FOR THE STREETS OF LAGOS</span>
       <h1 id="site-hero-title">Your city.<br><em>Your route.</em><br>Your ride.</h1>
-      <p class="lagos-hero__lead">Move smarter. Find a danfo, choose your stop, and enjoy a clearer journey through Lagos.</p>
+      <p class="lagos-hero__lead">From your first stop to your last. Explore Lagos routes, find a published departure and keep your boarding details close.</p>
       <div class="lagos-hero__buttons">
         <a class="site-button site-button--lime" href="#quick-ride">Find my ride <span aria-hidden="true">↗</span></a>
         <a class="site-button site-button--ghost" href="#how-it-works">Explore SafeRide <span aria-hidden="true">→</span></a>
       </div>
       <div class="lagos-hero__trust"><span aria-hidden="true">↗</span> Built for Lagos commuters and the yellow buses that keep us moving.</div>
     </div>
-    <div class="site-hero__scene site-hero__scene--map lagos-map" data-route-hero data-google-key="{{ google_maps_browser_key }}" data-danfo-icon="{% static 'img/danfo-3d.webp' %}">
-      <div class="site-hero__scene-top"><span class="site-mini-label"><span class="site-map-dot" aria-hidden="true"></span> YOUR LAGOS ROUTE</span><span class="site-map-provider" data-map-provider>Loading route…</span></div>
+    <div class="site-hero__scene site-hero__scene--map lagos-map" data-route-hero data-google-key="{{ google_maps_browser_key }}" data-danfo-icon="{% static 'img/danfo-top.svg' %}">
+      <div class="site-hero__scene-top"><span class="site-mini-label"><span class="site-map-dot" aria-hidden="true"></span> YOUR LAGOS ROUTE</span></div>
       <div class="lagos-stop-selectors" aria-label="Select stops for the route preview">
         <div><label for="map-stop-from">Pickup stop</label><select id="map-stop-from" data-map-origin>
           <option>Jibowu</option><option>Yaba</option><option>Oshodi</option><option>Ikeja</option><option>Agege</option><option>Surulere</option><option>CMS</option><option>Victoria Island</option><option>Lekki Phase 1</option><option>Maryland</option><option>Berger</option><option>Ojota</option><option>Iyana Ipaja</option><option>Mile 2</option>
@@ -35,7 +47,7 @@
         <div class="site-map-summary__places"><span class="site-map-summary__place"><span class="site-map-summary__pin" aria-hidden="true"></span><span><small>FROM</small><strong data-origin-label>Jibowu</strong></span></span><span class="site-map-summary__connector" aria-hidden="true"></span><span class="site-map-summary__place"><span class="site-map-summary__pin site-map-summary__pin--end" aria-hidden="true"></span><span><small>TO</small><strong data-destination-label>Mile 2</strong></span></span></div>
         <p class="site-map-summary__meta" data-map-distance aria-live="polite">Calculating road route…</p>
         <p class="site-map-summary__disclaimer">Illustrated journey · Not live vehicle tracking.</p>
-        <div class="site-map-summary__actions"><button class="site-map-pause" type="button" data-map-motion aria-pressed="false" disabled>Pause bus animation <span aria-hidden="true">Ⅱ</span></button><a class="site-map-open" data-map-directions target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/dir/?api=1&amp;origin=Jibowu%2C%20Lagos&amp;destination=Mile%202%2C%20Lagos&amp;travelmode=driving">Open in Google Maps ↗</a></div>
+        <div class="site-map-summary__actions"><button class="site-map-pause" type="button" data-map-motion aria-pressed="false" disabled>Pause</button><a class="site-map-open" data-map-directions target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/dir/?api=1&amp;origin=Jibowu%2C%20Lagos&amp;destination=Mile%202%2C%20Lagos&amp;travelmode=driving">View directions <svg aria-hidden="true" width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M4 12 12 4M4 4h8v8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div>
       </div>
     </div>
   </div>
@@ -60,7 +72,7 @@
   <div class="lagos-how__cards">
     <article class="lagos-step"><span class="lagos-step__number">01</span><span class="lagos-step__icon" aria-hidden="true">⌖</span><h3>Choose your route</h3><p>Pick your pickup and drop-off stops around Lagos.</p></article>
     <article class="lagos-step"><span class="lagos-step__number">02</span><span class="lagos-step__icon" aria-hidden="true">▰</span><h3>Explore buses</h3><p>Compare departure information and view the mapped journey.</p></article>
-    <article class="lagos-step"><span class="lagos-step__number">03</span><span class="lagos-step__icon" aria-hidden="true">↗</span><h3>Book &amp; board</h3><p>Reserve an eligible published seat and get your private boarding code.</p></article>
+    <article class="lagos-step"><span class="lagos-step__number">03</span><span class="lagos-step__icon" aria-hidden="true">↗</span><h3>Book &amp; board</h3><p>Choose an available departure, hold your seat for 10 minutes and board with your private code.</p></article>
   </div>
 </section>
 <section class="lagos-driver" id="for-drivers"><div class="container lagos-driver__body">

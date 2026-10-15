@@ -27,6 +27,10 @@ def departure_card(departure, available):
             for word in (profile.approved_display_name if profile else "SafeRide Driver").split()[:2]
         ),
         "driver_approved": bool(profile and profile.is_approved and departure.driver.is_verified),
+        "driver_account_approved": departure.driver.is_verified,
+        "driver_licence_approved": bool(profile and profile.is_approved),
+        "driver_public_bio": profile.bio if profile and profile.is_approved and departure.driver.is_verified else "",
+        "vehicle_approved": departure.vehicle.is_approved,
         "available_seats": seats,
         "capacity": departure.snapshot_capacity,
         "is_full": seats == 0,

@@ -1,0 +1,55 @@
+{
+  "base": "http://127.0.0.1:8000",
+  "fixtureBasemap": false,
+  "keyless": true,
+  "screenshots": [
+    "map-320.png",
+    "map-390.png",
+    "map-768.png",
+    "map-1024.png",
+    "map-1440.png",
+    "map-dark.png",
+    "map-routing-unavailable.png"
+  ],
+  "routes": [
+    {
+      "origin": "Lekki Phase 1",
+      "destination": "Jibowu",
+      "distance": "Approx. 19.3 km by road"
+    },
+    {
+      "origin": "Yaba",
+      "destination": "Ikeja",
+      "distance": "Approx. 14.3 km by road"
+    },
+    {
+      "origin": "Agege",
+      "destination": "Oshodi",
+      "distance": "Approx. 9.2 km by road"
+    },
+    {
+      "origin": "Surulere",
+      "destination": "CMS",
+      "distance": "Approx. 7.9 km by road"
+    },
+    {
+      "origin": "Maryland",
+      "destination": "Victoria Island",
+      "distance": "Approx. 20.8 km by road"
+    }
+  ],
+  "errors": [],
+  "renderer": "MapLibre",
+  "attribution": "MapLibre | OpenFreeMap \u00a9 OpenMapTiles Data from OpenStreetMap",
+  "motion": {
+    "frames": 574,
+    "maxHeadingError": 71.83123457878628,
+    "meanHeadingError": 3.164089528967047,
+    "maxRouteDrift": 8.391923865646644e-05
+  },
+  "pauseResume": "passed",
+  "video": "Local full QA recording retained outside Git",
+  "staleResponses": "passed",
+  "reducedMotion": "passed",
+  "failureFallback": "passed"
+}

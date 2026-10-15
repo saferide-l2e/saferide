@@ -3,10 +3,10 @@
 ## Design scope
 
 - New homepage retains the Django template stack. Responsive editorial hero with an original source-controlled SVG illustration (`static/img/lagos-park.svg`), a single high-priority route search, an interactive real-road map and three journey steps.
-- The map offers curated Lagos public-stop coordinates, selectable pickup/drop-off, interactive updated route line, a 54px illustrative yellow danfo and a heading correction with maximum tilt ±18°. The actual route geometry comes from OSRM/Google when reachable, not invented. The reduced-motion preference prevents automatic animation.
+- The map offers curated Lagos public-stop coordinates, selectable pickup/drop-off, interactive updated route line, a responsive 40–48px overhead yellow danfo aligned to the projected road tangent. The actual route geometry comes from OSRM/Google when reachable, not invented. The reduced-motion preference prevents automatic animation.
 - OpenFreeMap vector tiles are the keyless fallback; Google Maps Routes API is used only when a secured browser-restricted key is configured. Neither backend represents actual bus telemetry.
 - Global light/dark switch stores only the preference locally in the browser. It does not affect Django sessions.
-- `/departures/search/` shows actual Django-published departures separately from deterministic illustrative options; `/departures/sample-ride/` shows an optional full-screen fictional ride preview with indicative fares, travel time, safety link and directions, without database writes or fake checkout.
+- `/departures/search/` normally shows only actual Django-published departures; deterministic illustrative options require DEBUG=true and an explicit preview=1 query; `/departures/sample-ride/` shows an optional full-screen fictional ride preview with indicative fares, travel time, safety link and directions, without database writes or fake checkout.
 - Profile form stores the minimum user-provided display name, Lagos commuting area and preferred boarding stop; **do not accept real identity documents, ID numbers, driver's licences, date of birth or home addresses through this workflow**. Pending users can edit it, while eligibility remains staff-approved.
 - The dashboard calculates 10 informational milestone points per COMPLETED booking; points have no monetary value or redemption functionality. The existing actual booking history remains the source of truth.
 
