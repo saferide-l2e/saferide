@@ -1,3 +1,5 @@
+> For the current deployed page connections, automatic approval policy and known workflow gaps, use [SafeRide — Page and Workflow Map](WORKFLOWS.md). This earlier integration handoff retains its original implementation context.
+
 # SafeRide — End-to-End User Flow & Integration Map
 **Checked 15 October 2026.** This is the design intent plus what has actually been verified in the repository.
 

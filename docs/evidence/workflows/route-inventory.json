@@ -1,0 +1,200 @@
+{
+  "source_commit": "94df60ce21fe1a0503e3fdf9fc6538e74a7aba0f",
+  "application_routes": [
+    {
+      "path": "/",
+      "name": "core:home",
+      "view": "apps.core.views.home"
+    },
+    {
+      "path": "/how-it-works/",
+      "name": "core:how_it_works",
+      "view": "apps.core.views.how_it_works"
+    },
+    {
+      "path": "/for-drivers/",
+      "name": "core:for_drivers",
+      "view": "apps.core.views.for_drivers"
+    },
+    {
+      "path": "/safety-support/",
+      "name": "core:safety_support",
+      "view": "apps.core.views.safety_support"
+    },
+    {
+      "path": "/review-progress/",
+      "name": "core:review_progress",
+      "view": "apps.core.views.review_progress"
+    },
+    {
+      "path": "/health/",
+      "name": "core:health",
+      "view": "apps.core.views.health"
+    },
+    {
+      "path": "/dashboard/",
+      "name": "core:dashboard",
+      "view": "apps.core.views.dashboard"
+    },
+    {
+      "path": "/accounts/register/",
+      "name": "accounts:register",
+      "view": "apps.accounts.views.register"
+    },
+    {
+      "path": "/accounts/login/",
+      "name": "accounts:login",
+      "view": "apps.accounts.views.login_view"
+    },
+    {
+      "path": "/accounts/logout/",
+      "name": "accounts:logout",
+      "view": "apps.accounts.views.logout_view"
+    },
+    {
+      "path": "/accounts/profile/",
+      "name": "accounts:profile",
+      "view": "apps.accounts.views.profile"
+    },
+    {
+      "path": "/verification/",
+      "name": "verification:status",
+      "view": "apps.verification.views.status"
+    },
+    {
+      "path": "/verification/submit/",
+      "name": "verification:submit",
+      "view": "apps.verification.views.submit_request"
+    },
+    {
+      "path": "/driver/vehicles/",
+      "name": "vehicles:list",
+      "view": "apps.vehicles.views.vehicle_list"
+    },
+    {
+      "path": "/driver/vehicles/new/",
+      "name": "vehicles:create",
+      "view": "apps.vehicles.views.vehicle_create"
+    },
+    {
+      "path": "/driver/vehicles/profile/",
+      "name": "vehicles:profile",
+      "view": "apps.vehicles.views.driver_profile"
+    },
+    {
+      "path": "/routes/",
+      "name": "routes:list",
+      "view": "apps.routes.views.route_list"
+    },
+    {
+      "path": "/departures/search/",
+      "name": "departures:search",
+      "view": "apps.departures.views.search"
+    },
+    {
+      "path": "/departures/sample-ride/",
+      "name": "departures:sample_ride",
+      "view": "apps.departures.views.sample_ride"
+    },
+    {
+      "path": "/departures/<uuid:departure_id>/",
+      "name": "departures:detail",
+      "view": "apps.departures.views.departure_detail"
+    },
+    {
+      "path": "/departures/<uuid:departure_id>/availability/",
+      "name": "departures:availability",
+      "view": "apps.departures.views.availability"
+    },
+    {
+      "path": "/departures/driver/",
+      "name": "departures:dashboard",
+      "view": "apps.departures.views.driver_dashboard"
+    },
+    {
+      "path": "/departures/driver/new/",
+      "name": "departures:create",
+      "view": "apps.departures.views.departure_create"
+    },
+    {
+      "path": "/departures/driver/<uuid:departure_id>/manage/",
+      "name": "departures:manage",
+      "view": "apps.departures.views.departure_manage"
+    },
+    {
+      "path": "/departures/driver/<uuid:departure_id>/transition/",
+      "name": "departures:transition",
+      "view": "apps.departures.views.departure_transition"
+    },
+    {
+      "path": "/departures/driver/<uuid:departure_id>/check-in/",
+      "name": "departures:check_in",
+      "view": "apps.departures.views.departure_check_in"
+    },
+    {
+      "path": "/bookings/",
+      "name": "bookings:index",
+      "view": "apps.bookings.views.my_bookings"
+    },
+    {
+      "path": "/bookings/<uuid:booking_id>/",
+      "name": "bookings:detail",
+      "view": "apps.bookings.views.booking_detail"
+    },
+    {
+      "path": "/bookings/<uuid:booking_id>/status/",
+      "name": "bookings:status",
+      "view": "apps.bookings.views.booking_status"
+    },
+    {
+      "path": "/bookings/departures/<uuid:departure_id>/reserve/",
+      "name": "bookings:reserve",
+      "view": "apps.bookings.views.reserve_seat"
+    },
+    {
+      "path": "/bookings/<uuid:booking_id>/cancel/",
+      "name": "bookings:cancel",
+      "view": "apps.bookings.views.cancel_booking"
+    },
+    {
+      "path": "/bookings/departures/<uuid:departure_id>/waitlist/",
+      "name": "bookings:join_waitlist",
+      "view": "apps.bookings.views.join_waitlist_view"
+    },
+    {
+      "path": "/bookings/waitlist/<uuid:entry_id>/accept/",
+      "name": "bookings:accept_offer",
+      "view": "apps.bookings.views.accept_offer_view"
+    },
+    {
+      "path": "/bookings/<uuid:booking_id>/confirm-arrival/",
+      "name": "bookings:confirm_arrival",
+      "view": "apps.bookings.views.confirm_arrival_view"
+    },
+    {
+      "path": "/safety/reviews/<uuid:booking_id>/",
+      "name": "safety:review",
+      "view": "apps.safety.views.review_booking"
+    },
+    {
+      "path": "/safety/reports/",
+      "name": "safety:report",
+      "view": "apps.safety.views.report_incident"
+    },
+    {
+      "path": "/safety/reports/<uuid:booking_id>/",
+      "name": "safety:report_booking",
+      "view": "apps.safety.views.report_incident"
+    },
+    {
+      "path": "/safety/route-updates/",
+      "name": "safety:route_updates",
+      "view": "apps.safety.views.route_updates"
+    },
+    {
+      "path": "/safety/route-updates/new/",
+      "name": "safety:route_update_new",
+      "view": "apps.safety.views.route_update"
+    }
+  ]
+}
