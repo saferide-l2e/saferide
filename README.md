@@ -1,5 +1,9 @@
 # SafeRide — Learn2Earn MVP
 
+## Current product workflows
+
+[Complete page and workflow map](docs/WORKFLOWS.md) — current routes, passenger/driver/staff journeys, five-second approvals, state transitions and known gaps. Baseline: 16 October 2026. Older foundation/release notes below are historical.
+
 ## New to SafeRide? Start here! 👋
 
 **[Group meeting script and screenshot checklist](docs/TEAM_MEETING_GUIDE.md)**

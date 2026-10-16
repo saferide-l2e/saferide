@@ -1,0 +1,66 @@
+{
+  "checked_at": "2026-10-16T00:07:16.669Z",
+  "mode": "Read-only public browser checks; no production account, booking or review submissions.",
+  "pages": [
+    {
+      "path": "/",
+      "status": 200,
+      "title": "SafeRide | Lagos moves. Move with it.",
+      "automatic_policy_text": false,
+      "horizontal_overflow": false
+    },
+    {
+      "path": "/how-it-works/",
+      "status": 200,
+      "title": "How SafeRide Works | Plan, book and board",
+      "automatic_policy_text": true,
+      "horizontal_overflow": false
+    },
+    {
+      "path": "/for-drivers/",
+      "status": 200,
+      "title": "For Drivers | Your bus. Your business. SafeRide.",
+      "automatic_policy_text": true,
+      "horizontal_overflow": false
+    },
+    {
+      "path": "/safety-support/",
+      "status": 200,
+      "title": "Safety & Support | SafeRide",
+      "automatic_policy_text": true,
+      "horizontal_overflow": false
+    },
+    {
+      "path": "/routes/",
+      "status": 200,
+      "title": "Routes | SafeRide",
+      "automatic_policy_text": false,
+      "horizontal_overflow": false
+    },
+    {
+      "path": "/departures/search/",
+      "status": 200,
+      "title": "Find a bus | SafeRide Discover",
+      "automatic_policy_text": false,
+      "horizontal_overflow": false
+    },
+    {
+      "path": "/accounts/login/",
+      "status": 200,
+      "title": "Sign in | SafeRide",
+      "automatic_policy_text": false,
+      "horizontal_overflow": false
+    },
+    {
+      "path": "/accounts/register/",
+      "status": 200,
+      "title": "Create an account | SafeRide",
+      "automatic_policy_text": false,
+      "horizontal_overflow": false
+    }
+  ],
+  "errors": [],
+  "release": {
+    "commit": "94df60ce21fe1a0503e3fdf9fc6538e74a7aba0f"
+  }
+}
