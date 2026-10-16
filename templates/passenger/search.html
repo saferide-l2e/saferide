@@ -21,7 +21,7 @@
     {% if buses %}
       <p class="demo-search-note">Review the assigned driver and vehicle before choosing your bus. Seat availability is checked again when you reserve.</p>
       {% for bus in buses %}
-      <article class="bus-card" style="margin-top:14px">
+      <article class="bus-card bus-card--published" style="margin-top:14px">
         <div class="bus-card__body">
           <h3>{{ bus.route_label }}</h3>
           <p class="bus-card__date">{{ bus.scheduled_departure_at|date:"D j M, g:i A" }}</p>
