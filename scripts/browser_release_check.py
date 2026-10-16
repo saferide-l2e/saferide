@@ -160,6 +160,36 @@ with sync_playwright() as playwright:
         page.wait_for_url("**/dashboard/", timeout=20000)
         visit(page, "/departures/search/?origin=Jibowu&destination=Mile%202")
         expect(page.get_by_role("link", name=re.compile("View bus")).first).to_be_visible()
+        published = page.locator(".results-main > .bus-card--published").first
+        expect(published).to_be_visible()
+        for width, height in viewports:
+            page.set_viewport_size({"width": width, "height": height})
+            published.scroll_into_view_if_needed()
+            metrics = published.evaluate("""card => {
+                const details = card.querySelector('.bus-card__body').getBoundingClientRect();
+                const actions = card.querySelector('.bus-card__actions').getBoundingClientRect();
+                const panel = card.getBoundingClientRect();
+                const button = card.querySelector('.bus-card__actions .button').getBoundingClientRect();
+                return {
+                    cardWidth: panel.width, detailsWidth: details.width,
+                    actionWidth: actions.width, buttonWidth: button.width,
+                    actionsBelow: actions.top >= details.bottom - 2,
+                    actionsBeside: actions.left >= details.right - 2,
+                    scrollWidth: document.documentElement.scrollWidth
+                };
+            }""")
+            assert metrics["scrollWidth"] <= width + 5, (width, metrics)
+            assert metrics["detailsWidth"] >= 240, (width, metrics)
+            assert metrics["buttonWidth"] > 95, (width, metrics)
+            if width >= 920:
+                assert metrics["detailsWidth"] >= metrics["cardWidth"] * .57, (width, metrics)
+                assert metrics["actionWidth"] <= 205, (width, metrics)
+                assert metrics["actionsBeside"], (width, metrics)
+            else:
+                assert metrics["actionsBelow"], (width, metrics)
+            page.screenshot(path=str(OUT / f"published-bus-card-{width}.png"))
+        page.set_viewport_size({"width": 1440, "height": 900})
+        evidence["journeys"].append("Published departure cards keep readable details and sized CTAs at all breakpoints")
         candidates = page.get_by_role("link", name=re.compile("View bus")).evaluate_all(
             "links => links.map(link => link.getAttribute('href'))"
         )
