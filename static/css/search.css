@@ -117,3 +117,68 @@
  .demo-bus-grid .demo-bus-card{padding:18px}
  .demo-bus-grid .demo-bus-card .bus-facts{grid-template-columns:1fr 1fr}
 }
+
+/*
+ * Published bus cards have TWO children: details and a CTA, not an icon.
+ * The shared .bus-card desktop grid reserves a 120px icon column, which
+ * previously squeezed route facts into 120px and stretched the CTA.
+ * Keep this scoped to real published departures; demo option cards unchanged.
+ */
+.results-main > .bus-card--published{
+  grid-template-columns:minmax(0,1fr);
+  align-items:start;
+  gap:18px;
+  padding:clamp(18px,2vw,27px);
+}
+.results-main > .bus-card--published .bus-card__body{
+  min-width:0;
+}
+.results-main > .bus-card--published h3{
+  font-size:clamp(1.25rem,2vw,1.55rem);
+  line-height:1.25;
+  letter-spacing:-.045em;
+  margin:0 0 7px;
+  overflow-wrap:break-word;
+}
+.results-main > .bus-card--published .bus-card__date{
+  margin:0 0 19px;
+  line-height:1.45;
+}
+.results-main > .bus-card--published .bus-facts{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:16px 22px;
+}
+.results-main > .bus-card--published .bus-facts div{
+  min-width:0;
+}
+.results-main > .bus-card--published .bus-facts dd{
+  line-height:1.5;
+  overflow-wrap:break-word;
+}
+.results-main > .bus-card--published .bus-card__actions{
+  grid-column:1;
+  justify-content:flex-start;
+  align-items:stretch;
+  min-width:0;
+}
+.results-main > .bus-card--published .bus-card__actions .button{
+  width:100%;
+  text-align:center;
+}
+@media(min-width:920px){
+  .results-main > .bus-card--published{
+    grid-template-columns:minmax(0,1fr) 180px;
+    align-items:center;
+    gap:28px;
+  }
+  .results-main > .bus-card--published .bus-card__actions{
+    grid-column:2;
+    align-self:center;
+  }
+}
+@media(max-width:589px){
+  .results-main > .bus-card--published .bus-facts{
+    gap:13px 14px;
+  }
+}
