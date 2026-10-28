@@ -9,7 +9,6 @@ Usage:
 """
 import argparse
 import json
-import re
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import urlparse
@@ -80,8 +79,12 @@ def main():
     base = approved_base(args.base_url)
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
-    result = {"source": base, "captured_at_utc": datetime.now(timezone.utc).isoformat(),
-              "read_only": True, "screens": []}
+    result = {
+        "source": base,
+        "captured_at_utc": datetime.now(timezone.utc).isoformat(),
+        "read_only": True,
+        "screens": [],
+    }
     with sync_playwright() as pw:
         browser = pw.chromium.launch(headless=True)
         context = browser.new_context(viewport={"width": 1440, "height": 900},
