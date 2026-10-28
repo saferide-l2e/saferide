@@ -1,16 +1,11 @@
-# SafeRide — instructions for Codex and coding agents
+# SafeRide — instructions for Codex / coding agents
+**Updated 28 October 2026.** Read [docs/CODEX_UI_HANDOFF.md](docs/CODEX_UI_HANDOFF.md) and [docs/WORKFLOWS.md](docs/WORKFLOWS.md) **before editing**.
 
-## Read first
-- Full context, URLs, browser workflow and priorities: [docs/CODEX_UI_HANDOFF.md](docs/CODEX_UI_HANDOFF.md)
-- Map implementation: [docs/LAGOS_MAP_HERO.md](docs/LAGOS_MAP_HERO.md)
-- Render deployment: [docs/RENDER_SHOWCASE_DEPLOY.md](docs/RENDER_SHOWCASE_DEPLOY.md)
-
-## Working rules
-1. This checkout uses the **codex/ui-visual-polish-handoff** working branch, based on the currently deployed Render branch. Keep `main` and `deploy/render-demo-2026-10-16` unchanged until the team reviews a PR.
-2. **Inspect the actual UI using a graphical browser** (Codex browser or Playwright/Chromium) before and after changes. Live reference: https://saferide-friday-web.onrender.com/. Use local/staging browser preview to see changes not yet deployed.
-3. Fixed stack: Django 5.2 LTS + Django templates + HTML/CSS/vanilla JS + PostgreSQL. Don't swap to React/Next.js or rewrite backend business logic for a UI task.
-4. Keep responsive desktop/tablet/mobile layouts, keyboard accessibility, reduced-motion and real page navigation. Avoid decorative, fictional routes presented as real. A moving danfo on a Google/OSRM road line is **illustrative, not live tracking**.
-5. The Google Maps key appeared in a chat; **never copy that key to code, docs, commits, or screenshots**. Ask operator to rotate/restrict it and set `GOOGLE_MAPS_BROWSER_KEY` as a Render environment variable.
-6. Do not expose credentials, use the live PostgreSQL database for tests, overwrite original teammate Figma files, or merge into `main` automatically.
-7. Test with `ruff check .`, `python manage.py check`, `pytest -q` with local PostgreSQL and real-browser screenshots at 320/390/768/1024/1440px. Report unverified tests honestly.
-8. Work iteratively: baseline screenshots → priority bugs → local browser inspection → QA → PR to `deploy/render-demo-2026-10-16`.
+1. Use branch `codex/ui-browser-review-2026-10-28` (based on `main` at `0255ced56595`). The old `codex/ui-visual-polish-handoff` branch and October 15 branch instructions are obsolete.
+2. Inspect the actual website **graphically** at https://saferide-friday-web.onrender.com/ first. Use Codex's browser or `python scripts/codex_public_ui_capture.py` with Chromium and inspect the resulting screenshots. Do not claim an inspection if the browser was unavailable.
+3. Current UI: cinematic Lagos hero with original generated imagery, search and a separate real-road map preview; not the old all-screen gallery and not necessarily a moving danfo. Inspect code and screenshots rather than old assumptions.
+4. Fixed stack: Django 5.2 LTS, templates/HTML/CSS/vanilla JS, PostgreSQL. Preserve service-level 600s holds, 120s offers, server permissions and private reporting.
+5. Work on this safe branch; review a PR into `main` when tests/screenshots are complete. Render deploys a different branch `deploy/render-demo-2026-10-16`; never update Render or `main` directly without explicit team review.
+6. Browser QA: widths 320/390/768/1024/1440, dark/light, keyboard/200% zoom, reduced-motion, route fallback and public page errors. Use a separate LOCAL PostgreSQL DB for live form/E2E testing; the browser capture is deliberately GET-only on production.
+7. Never expose credentials or the previously pasted Google Maps key; rotate/restrict the browser key in Google Cloud. Do not overwrite the original teammate Figma file.
+8. Keep it professional, responsive and authentic: no fictional live GPS, official KYC, payment, insurance, emergency dispatch or fake successful bookings.
